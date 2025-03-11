@@ -30,3 +30,27 @@ The deployment terminal is set to 80 columns by 24 rows. That means that each li
 ---
 
 Happy coding!
+
+# ReelTracker CLI
+
+## Summary
+
+In today's streaming landscape, users face information overload with thousands of movies and TV shows spread across multiple platforms like Netflix, Disney+, etc. Many struggle to keep track of what they want to watch, often relying on messy notes, memory, or scattered lists across different apps. A [recent survey](https://nypost.com/2024/12/19/lifestyle/why-its-so-hard-to-find-something-to-watch-lately/) revealed that people spend an average of 110 hours a year just searching for content, while 51% feel overwhelmed by excessive recommendations. Additionally, growing [privacy concerns](https://www.thetimes.com/uk/technology-uk/article/how-to-stop-smart-tv-spying-on-you-pzfxx7mr8) around smart TVs and streaming services highlight the need for user-controlled, non-intrusive tracking tools.
+
+Reel Tracker CLI is a lightweight, command-line-based personal watchlist manager designed for movie lovers, binge-watchers, film critics, and streaming enthusiasts. It helps users save and organize their watchlists, track watched content, and provide ratings and recommendations—all without intrusive data collection or algorithmic manipulation. By offering a privacy-focused, efficient, and customizable alternative to mainstream tracking apps, Reel Tracker CLI appeals to tech-savvy, data-conscious users who prefer self-managed solutions. The project also has potential for future expansion, including a front-end interface, user authentication, and database integration, making it valuable for market researchers and content licensing professionals as well.
+
+More details at [#1](https://github.com/larevolucia/reeltracker_cli/issues/1)
+
+## Project Goals
+1. Address Information Overload in Entertainment
+2. Develop a Personal Watchlist Tracker
+3. Cater to Target Users with a CLI-Based Solution
+4. Focus on Privacy and User-Controlled Data
+5. Build a Scalable and Expandable Tool
+
+## User Goals
+1. Effortless Watchlist Management
+2. Track Viewing History Easily
+3. Make Better Viewing Choices
+4. Stay in Control of Their Data & Privacy
+5. Optimize Their Viewing Experience Across Multiple Platforms
