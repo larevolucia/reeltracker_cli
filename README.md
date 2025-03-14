@@ -50,21 +50,21 @@ More details at [#1](https://github.com/larevolucia/reeltracker_cli/issues/1)
 - Script was coded using Python version 3.12.8
 - To install dependencies run `pip3 freeze > requirements.txt`
 
-## Google API
+### Google API
 
 This project uses Google Sheets to store personal viewing history and watchlist. You'll need to enable Drive and Google Sheets API on your Google Cloud to be able to configure your personal list.
 
-### Creating a project
+#### Creating a project
 
 - Start by navigating to [Google Cloud Console](https://console.cloud.google.com/). If you don't have a Google account, you'll to create one.
 - Create a new project. [Check the official documentation on new project creation.](https://developers.google.com/workspace/guides/create-project).
 
-### Enable APIs
+#### Enable APIs
 - Go to your project home and navigate to _APIs and Services > Library_.
 - Search for Google Drive API, navigate to its page and click on **Enable**.
 - Follow the same process to activate Google Sheets API.
 
-### Get Credentials
+#### Get Credentials
 - In your project view, navigate to _APIs and Services > Credentials_.
 - Click on **Create credentials** button, select **Help me choose**.
 - On the form, select **Google Drive API** on the dropdownlist os APIs.
@@ -72,14 +72,14 @@ This project uses Google Sheets to store personal viewing history and watchlist.
 - Fill in the name of the service account and the account ID (_You'll need this to configure your script_).
 - Click and create and continue. 
 
-### Save credentials information
+#### Save credentials information
 - You'll be redirect to a credential screen. Select the e-mail address under **Service Account** and click on the edit button.
 - Navigate to Keys and click go to _Add Key > Create New Key_
 - Select JSON and create.
 - The create will automatically trigger a download of the json file.
 
-### Project configuration
-- Move the downloaded file and rename it **creds.json**
+#### Project configuration
+- Move the downloaded file to the root folder of your project. You can name it **creds.json** as I did, or give it another name. Just be sure that the name is matching in your `run.py` file.
 - On your Google account, create a new Google Sheets document. You can name it `reeltracker_cli` as I did, or give it another unique name. Just be sure that the name is matching in your `run.py` file.
 - On your new file, click on the share button and copy&paste the e-mail address that can be found in your creds.json.
 - If you haven't yet, install `gspread` and `google-auth` libraries.
