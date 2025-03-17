@@ -54,17 +54,17 @@ More details at [#1](https://github.com/larevolucia/reeltracker_cli/issues/1)
 
 This project uses Google Sheets to store personal viewing history and watchlist. You'll need to enable Drive and Google Sheets API on your Google Cloud to be able to configure your personal list.
 
-#### Creating a project
+#### 1. Creating a project
 
 - Start by navigating to [Google Cloud Console](https://console.cloud.google.com/). If you don't have a Google account, you'll to create one.
-- Create a new project. [Check the official documentation on new project creation.](https://developers.google.com/workspace/guides/create-project).
+- Create a new project. [Check the official documentation on new project creation](https://developers.google.com/workspace/guides/create-project).
 
-#### Enable APIs
+#### 2. Enable APIs
 - Go to your project home and navigate to _APIs and Services > Library_.
 - Search for Google Drive API, navigate to its page and click on **Enable**.
 - Follow the same process to activate Google Sheets API.
 
-#### Get Credentials
+#### 3. Get Credentials
 - In your project view, navigate to _APIs and Services > Credentials_.
 - Click on **Create credentials** button, select **Help me choose**.
 - On the form, select **Google Drive API** on the dropdownlist os APIs.
@@ -72,13 +72,13 @@ This project uses Google Sheets to store personal viewing history and watchlist.
 - Fill in the name of the service account and the account ID (_You'll need this to configure your script_).
 - Click and create and continue. 
 
-#### Save credentials information
+#### 4. Save credentials information
 - You'll be redirect to a credential screen. Select the e-mail address under **Service Account** and click on the edit button.
 - Navigate to Keys and click go to _Add Key > Create New Key_
 - Select JSON and create.
 - The create will automatically trigger a download of the json file.
 
-#### Project configuration
+#### 5. Project configuration
 - Move the downloaded file to the root folder of your project. You can name it **creds.json** as I did, or give it another name. Just be sure that the name is matching in your `run.py` file.
 - On your Google account, create a new Google Sheets document. You can name it `reeltracker_cli` as I did, or give it another unique name. Just be sure that the name is matching in your `run.py` file.
 - On your new file, click on the share button and copy&paste the e-mail address that can be found in your creds.json.
@@ -100,6 +100,66 @@ This project uses Google Sheets to store personal viewing history and watchlist.
     GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
     SHEET =  GSPREAD_CLIENT.open('<your_google_sheet_name>')
     ```
+
+### TMDB API
+
+This project uses TMDB API to fetch data of movies and TV Shows. You'll need to create an account and request an API Key.
+
+#### 1. Requesting the API Key
+
+- Go to [TMDB Signup](https://www.themoviedb.org/signup)
+- Once signed in, request an API key at [TMDB API page](https://www.themoviedb.org/settings/api).
+
+#### 2. Project Configuration
+-  If you haven't yet, install `requests` and `python-dotenv` libraries.
+- Create a .env file on your root folder and add your API key `TMDB_API_KEY=your_actual_tmdb_api_key_here`.
+- Add .env to your .gitignore file to ensure it's never pushed to GitHub.
+- Load API Key from .env file:
+
+    ```python
+    import os
+    from dotenv import load_dotenv
+
+    # Load environment variables from .env file
+    load_dotenv()
+
+    # Access TMDB API key
+    api_key = os.getenv('TMDB_API_KEY')
+
+    if api_key is None:
+       raise ValueError("TMDB_API_KEY not found. Check your .env file.")
+    ```
+
+#### 3. Test API Request
+- Test your configuration by sending an API request:
+    ```python
+    TMDB_URL ='https://api.themoviedb.org/3'
+    LANGUAGE ='language=en-US'
+    tmdb_api_key = os.getenv('TMDB_API_KEY')
+
+    url = f'{TMDB_URL}/movie/popular?api_key={api_key}&{LANGUAGE}&page=1'
+    response = requests.get(url,timeout=10)
+    if response.status_code == 200:
+        data = response.json()
+        return data['results']
+    else:
+        print(f"Error: {response.status_code}, {response.text}")
+        return []
+
+    ```
+- You can install `rich` library for an easier read of the json response
+    ```python
+    import json
+    from rich import print_json
+
+    url = f'{TMDB_URL}/movie/popular?api_key={api_key}&{LANGUAGE}&page=1'
+    response = requests.get(url,timeout=10)
+    if response.status_code == 200:
+        data = response.json()
+        return data['results']
+    ```
+
+
 
 
 
