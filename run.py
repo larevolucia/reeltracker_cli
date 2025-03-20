@@ -20,40 +20,7 @@ tmdb_api_key = os.getenv('TMDB_API_KEY')
 if tmdb_api_key is None:
     raise EnvironmentError("TMDB_API_KEY not found! Check your .env file.")
 
-def fetch_popular_movies(api_key):
-    """
-    Fetches a list of  popular movies from TMDb API.
-
-    Args:
-        api_key (str): TMDb API key authenticates the request.
-
-    Returns:
-        list: A list of dictionaries with movie data
-              Or an empty list if the request fails
-    """
-    url = f'{TMDB_URL}/movie/popular?api_key={api_key}&{LANGUAGE}&page=1'
-    response = requests.get(url,timeout=10)
-    if response.status_code == 200:
-        data = response.json()
-        print_json(json.dumps(data))
-        return data['results']
-    else:
-        print(f"Error: {response.status_code}, {response.text}")
-        return []
-
-def main():
-    """
-    Main function currently used for testing purpose
-    """
-    movies = fetch_popular_movies(tmdb_api_key)
-    # print(movies)
-    print("Popular Movies from TMDB:\n")
-    for movie in movies:
-        print(f"{movie['title']} (Released: {movie['release_date']})")
-
-if __name__ == "__main__":
-    main()
-
+# Access to Google API and worksheet
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
@@ -64,6 +31,88 @@ CREDS = Credentials.from_service_account_file('creds.json')
 SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET =  GSPREAD_CLIENT.open('reeltracker_cli')
+
+def search_title():
+    """
+    Requests user input for searching API
+    """
+    while True:
+        search = input("Search a title to get started: ")
+        if search:
+            return search
+        print('Search query cannot be emtpy. Please try again.\n')
+
+def fetch_title(search_key, api_key, page=1, language="en-US"):
+    """
+    Fetches a list of movies matching users search term
+
+    Args:
+        search_key (str): User search input
+        api_key (str): TMDb API key authenticates the request
+        page(int): limits result pages on API responses
+        language(str): ISO 639 language code
+    Returns:
+        list: A list with movie data
+    """
+    url = f'{TMDB_URL}/search/multi'
+    params = {
+        'query': search_key,
+        'api_key': api_key,
+        'language': language,
+        'page': page,
+        'sort_by': 'vote_average.desc',
+        'include_adult': False  
+    }
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        return data.get('results', [])
+    except requests.RequestException as e:
+        print(f"API request failed: {e}")
+        return []
+
+def filter_by_media_type(result_list):
+    """
+    Filters the list to the scoped media_types
+    Args:
+        result_list (list): list of dictionaries from API
+    Return: Filtered list limited to 
+    """
+    new_result_list = [
+        result for result in result_list
+        if result.get("media_type") in ["movie", "tv"]
+        ]
+    return new_result_list
+
+def print_results(result_list):
+    """_summary_
+    """
+    for result in result_list[:5]:
+        title = result.get("title") or result.get("name")
+        date = result.get("release_date") or result.get("first_air_date")
+        if title and date:  # Print if both information exists
+            print(f"{title} - {result["media_type"]} - Release Date: {date}")
+        elif title:  # Print if only title exists"
+            print(f"{title} - {result["media_type"]} - No release date found.")
+        elif date:  # Print if only date exists
+            print(f"No title found. - {result["media_type"]} - Release Date: {date}")
+        else:  # Handle case where both are missing
+            print("No title or name and no date found for this result.")
+
+def main():
+    """
+    Main function currently used for testing purpose
+    """
+    search_query = search_title()
+    search_results = fetch_title(search_query, tmdb_api_key)
+    print_json(json.dumps(search_results))
+    filtered_results = filter_by_media_type(search_results)
+    print_results(filtered_results)
+
+
+if __name__ == "__main__":
+    main()
 
 # Test to find a specific sheet
 # try:
@@ -88,3 +137,24 @@ SHEET =  GSPREAD_CLIENT.open('reeltracker_cli')
 # print("Fetched data from the sheet:")
 # for row in fetched_data:
 #     print(row)
+
+# Test TMDB API by fetching popular titles
+# def fetch_popular_movies(api_key):
+#     """
+#     Fetches a list of  popular movies from TMDb API.
+
+#     Args:
+#         api_key (str): TMDb API key authenticates the request.
+
+#     Returns:
+#         list: A list of dictionaries with movie data
+#               Or an empty list if the request fails
+#     """
+#     url = f'{TMDB_URL}/movie/popular?api_key={api_key}&{LANGUAGE}&page=1'
+#     response = requests.get(url,timeout=10)
+#     if response.status_code == 200:
+#         data = response.json()
+#         return data['results']
+#     else:
+#         print(f"Error: {response.status_code}, {response.text}")
+#         return []
