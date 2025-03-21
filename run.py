@@ -189,6 +189,42 @@ def display_search_results(results, max_results=5):
         print(f"   Overview: {entry['Overview']}\n")
     return formatted_entries
 
+def select_item_from_results(formatted_entries):
+    """
+    Allows user to select an item from previously displayed results
+    
+    Arg:
+        formatted_entries(list): List of formatted dictionaries
+    Return:
+        dictionary object: selected item from list
+    """
+    while True:
+        user_input = input(
+            f"Select an item (1-{len(formatted_entries)}) or "
+            f"type 'n' for a new search: "
+        )
+
+        if user_input.lower() == 'n':
+            return None  # Indicates the user wants to perform a new search
+
+        try:
+            selection = int(user_input)
+            if not 1 <= selection <= len(formatted_entries):
+                raise ValueError(
+                    f'Number out of range. You must choose between 1 and '
+                    f'{len(formatted_entries)}'
+                )
+
+            chosen_item = formatted_entries[selection - 1]
+            print(
+                f"\nYou selected: {chosen_item['Title']} "
+                f"(ID: {chosen_item['id']})"
+            )
+            return chosen_item
+
+        except ValueError as e:
+            print(f"Invalid input: {e}. Please enter a number or 'n'.")
+
 def main():
     """
     Main execution function for the CLI Reel Tracker.
@@ -201,7 +237,7 @@ def main():
     sorted_results = sort_items_by_popularity(filtered_results)
     print_json(json.dumps(sorted_results))
     formatted_results = display_search_results(sorted_results)
-
+    select_item_from_results(formatted_results)
 
     # display_search_results(filtered_results)
     # google_sheet = initialize_google_sheets('reeltracker_cli')
