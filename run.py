@@ -148,10 +148,26 @@ def format_result_entry(result):
     Returns:
         str: Formatted result string.
     """
+    title_id = result.get("id")
     title = result.get("title") or result.get("name") or "No title available"
     date = result.get("release_date") or result.get("first_air_date") or "No release date available"
     media_type = result.get("media_type", "Unknown media type")
-    return f"{title} - {media_type.capitalize()} - Release Date: {date}"
+    genre_ids = result.get("genre_ids", [])
+    weighted_popularity = round(result.get("weighted_popularity", 0), 2)
+    overview = result.get("overview", "No overview available")
+    if len(overview) > 150:
+        overview = overview[:150].rstrip() + "..."
+    # Formtted dictionary
+    structured_data = {
+        "id": title_id,
+        "Title": title,
+        "Media Type": media_type,
+        "Release Date": date,
+        "Genres": genre_ids,
+        "Weighted Popularity": weighted_popularity,
+        "Overview": overview,
+    }
+    return structured_data
 
 def display_search_results(results, max_results=5):
     """
@@ -163,7 +179,7 @@ def display_search_results(results, max_results=5):
     """
     for result in results[:max_results]:
         formatted_entry = format_result_entry(result)
-        print(formatted_entry)
+        print(formatted_entry['Title'])
 
 def main():
     """
@@ -174,9 +190,10 @@ def main():
 
     search_results = fetch_tmdb_results(search_query, TMDB_API_KEY)
     filtered_results = filter_results_by_media_type(search_results)
-    print_json(json.dumps(filtered_results))
     sorted_results = sort_items_by_popularity(filtered_results)
     print_json(json.dumps(sorted_results))
+    display_search_results(sorted_results)
+
 
     # display_search_results(filtered_results)
     # google_sheet = initialize_google_sheets('reeltracker_cli')
