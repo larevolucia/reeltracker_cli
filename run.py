@@ -216,10 +216,7 @@ def select_item_from_results(formatted_entries):
                 )
 
             chosen_item = formatted_entries[selection - 1]
-            print(
-                f"\nYou selected: {chosen_item['Title']} "
-                f"(ID: {chosen_item['id']})"
-            )
+
             return chosen_item
 
         except ValueError as e:
@@ -229,17 +226,33 @@ def main():
     """
     Main execution function for the CLI Reel Tracker.
     """
-
-    search_query = get_user_search_input()
-
-    search_results = fetch_tmdb_results(search_query, TMDB_API_KEY)
-    filtered_results = filter_results_by_media_type(search_results)
-    sorted_results = sort_items_by_popularity(filtered_results)
-    print_json(json.dumps(sorted_results))
-    formatted_results = display_search_results(sorted_results)
-    select_item_from_results(formatted_results)
-
-    # display_search_results(filtered_results)
+    while True:
+        # 1. Prompt user to enter a search query
+        search_query = get_user_search_input()
+        # 2. Use the query to fetch API results
+        search_results = fetch_tmdb_results(search_query, TMDB_API_KEY)
+        # 3. Filter out non-movie/TV results
+        filtered_results = filter_results_by_media_type(search_results)
+        # 4. Handle case where no valid results are found
+        if not filtered_results:
+            print("No results found. Try another search/\n")
+            continue # Go back to search (1)
+        # 5. Sort results by custom weighted popularity
+        sorted_results = sort_items_by_popularity(filtered_results)
+        # 6. Display top results
+        formatted_results = display_search_results(sorted_results)
+        # 7. Let user select result or go back to search
+        selected_item = select_item_from_results(formatted_results)
+        # 8. If user types 'n', goes back to search (1)
+        if selected_item is None:
+            print("\nStarting a new search\n")
+            continue
+        # 9. Valid item (int) is selected
+        print(
+            f"You've selected {selected_item['Title']} "
+            f"({selected_item['Release Date']})\n"
+            )
+        break # Exit the loop
     # google_sheet = initialize_google_sheets('reeltracker_cli')
 
 
