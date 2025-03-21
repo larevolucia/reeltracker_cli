@@ -22,7 +22,7 @@ More details at [#1](https://github.com/larevolucia/reeltracker_cli/issues/1)
 4. Stay in Control of Their Data & Privacy
 5. Optimize Their Viewing Experience Across Multiple Platforms
 
-## Features
+## User Stories
 
 ### Must Have (MVP)
 - [As a user, I want to search for a title so that I can find relevant information.](https://github.com/larevolucia/reeltracker_cli/issues/3)
@@ -42,6 +42,31 @@ More details at [#1](https://github.com/larevolucia/reeltracker_cli/issues/1)
 - [As a user, I want to receive random movie suggestions so that I can easily pick what to watch next.](https://github.com/larevolucia/reeltracker_cli/issues/12)
 - [As a user, I want to categorize my watchlist into sublists (e.g. “Must Watch”, “For Later”) so that I can organize my movies better.](https://github.com/larevolucia/reeltracker_cli/issues/13)
 
+
+## Features
+
+
+### Popularity Sorting
+Initially, I intended to use API provided popularity to sort the items. Upon testing with a few queries, I noticed that titles with very few high ratings would dominate over more mainstream titles. This would lead to very niche titles with limited user feedback to peear as more popular than well established ones, reducing reliability of the popularity data.
+
+To address that, I've created the `sort_items_by_popularity` and the `calculate_weighted_popularity` functions, in which a weighted popularity score is calculated by multiplying a title’s raw popularity with the logarithm (base 10) of its number of votes. This logarithmic weighting reduces the disproportionate influence of titles that have high popularity scores but very few ratings, ensuring that titles with both strong popularity and substantial viewer feedback rise to the top. 
+
+Why use logarithms? Using multiplication would result on the opposite problem. Items with a lot of user feedback, even if predominantly negative would end up on top of the list. With logarithms extremes are more easily controlled as the increments are relatively small.
+
+*Logarithmic scale reference (base 10):*
+| vote_count | log₁₀(vote_count + 1) |
+|------------|-----------------------|
+| 1          | 0.30                  |
+| 10         | 1.04                  |
+| 100        | 2.00                  |
+| 1000       | 3.00                  |
+| 10000      | 4.00                  |
+
+
+Consulted references:
+- [Python Math](https://docs.python.org/3/library/math.html)
+- [W3School sorted()](https://www.w3schools.com/python/ref_func_sorted.asp)
+- [FreeCodeCamp lambda sort list in Python](https://www.freecodecamp.org/news/lambda-sort-list-in-python/)
 
 ## Requirements
 

@@ -2,6 +2,7 @@
 CLI Movie tracker
 """
 import os
+import math
 import json
 import requests
 import gspread
@@ -78,7 +79,6 @@ def fetch_tmdb_results(search_key, api_key, page=1, language=DEFAULT_LANGUAGE):
         'api_key': api_key,
         'language': language,
         'page': page,
-        'sort_by': 'vote_average.desc',
         'include_adult': False  
     }
     try:
@@ -103,6 +103,40 @@ def filter_results_by_media_type(result_list, allowed_media_types=('movie', 'tv'
         result for result in result_list
         if result.get("media_type") in allowed_media_types
         ]
+
+def calculate_weighted_popularity(item):
+    """
+    Calculates weighted popularity based on popularity and vote_count
+
+    Args:
+        item (dict): TMDb item dictionary
+
+    Returns:
+        float: Weighted popularity score
+    """
+    popularity = item.get('popularity', 0)
+    vote_count = item.get('vote_count', 0)
+    # Apply logarithms weighting vote_count to prevent extreme dominance
+    weighted_popularity = popularity * math.log(vote_count + 1, 10)
+
+    return weighted_popularity
+
+def sort_items_by_popularity(items):
+    """
+    Sorts a list of TMDb items by popularity
+
+    Args:
+        items (list): List of TMDb items dictionaries
+
+    Returns:
+        list: Sorted list by descending popularity
+    """
+    for item in items:
+        weighted_popularity = calculate_weighted_popularity(item)
+        item['weighted_popularity'] = weighted_popularity
+
+    # for each x(item) in my list, sort by weighted_popularity
+    return sorted(items, key=lambda x: x['weighted_popularity'], reverse=True)
 
 def format_result_entry(result):
     """
@@ -139,9 +173,12 @@ def main():
     search_query = get_user_search_input()
 
     search_results = fetch_tmdb_results(search_query, TMDB_API_KEY)
-    print_json(json.dumps(search_results))
     filtered_results = filter_results_by_media_type(search_results)
-    display_search_results(filtered_results)
+    print_json(json.dumps(filtered_results))
+    sorted_results = sort_items_by_popularity(filtered_results)
+    print_json(json.dumps(sorted_results))
+
+    # display_search_results(filtered_results)
     # google_sheet = initialize_google_sheets('reeltracker_cli')
 
 
