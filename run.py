@@ -9,66 +9,68 @@ from google.oauth2.service_account import Credentials
 from dotenv import load_dotenv
 from rich import print_json
 
+# Constants
+TMDB_URL ='https://api.themoviedb.org/3'
+DEFAULT_LANGUAGE ='language=en-US'
+
 # Load environment variables from .env file
 load_dotenv()
 
-# Access TMDB API key
-TMDB_URL ='https://api.themoviedb.org/3'
-LANGUAGE ='language=en-US'
-tmdb_api_key = os.getenv('TMDB_API_KEY')
+TMDB_API_KEY = os.getenv('TMDB_API_KEY')
 
-if tmdb_api_key is None:
+if TMDB_API_KEY is None:
     raise EnvironmentError("TMDB_API_KEY not found! Check your .env file.")
 
-# Access to Google API and worksheet
+# Google API authentication
 GOOGLE_SHEETS_SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/drive"
     ]
 
-# CREDS = Credentials.from_service_account_file('creds.json')
-# SCOPED_CREDS = CREDS.with_scopes(GOOGLE_SHEETS_SCOPE)
-# GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
-# SHEET =  GSPREAD_CLIENT.open('reeltracker_cli')
-
 def initialize_google_sheets(sheet_name='reeltracker_cli', credentials_file='creds.json'):
     """
-    Initializes and returns a Google Sheets object.
+    Initializes and returns a Google Sheets
 
     Args:
-        sheet_name (str): Name of the Google Sheet to open.
-        credentials_file (str): Path to credentials JSON file.
+        sheet_name (str): Name of the Google Sheet to open
+        credentials_file (str): Path to credentials JSON file
 
     Returns:
-        gspread.Spreadsheet: An authorized Google Sheets object.
+        gspread.Spreadsheet: An authorized Google Sheets object
     """
     creds = Credentials.from_service_account_file(credentials_file)
     scoped_creds = creds.with_scopes(GOOGLE_SHEETS_SCOPE)
     client = gspread.authorize(scoped_creds)
     return client.open(sheet_name)
 
-def get_user_search_input():
+def get_user_search_input(prompt="Search a title to get started: "):
     """
-    Requests user input for searching API
+    Prompts user input for searching a title. Ensures non-empty input
+    
+    Args:
+        prompt (str): Prompt message presented before input
+    
+    Returns:
+        str: User input string
     """
     while True:
-        search = input("Search a title to get started: ")
-        if search:
-            return search
+        user_query = input(prompt)
+        if user_query:
+            return user_query
         print('Search query cannot be emtpy. Please try again.\n')
 
-def fetch_tmdb_results(search_key, api_key, page=1, language="en-US"):
+def fetch_tmdb_results(search_key, api_key, page=1, language=DEFAULT_LANGUAGE):
     """
-    Fetches a list of movies matching users search term
+    Fetches a list of titles from TMDB based on user's query
 
     Args:
-        search_key (str): User search input
-        api_key (str): TMDb API key authenticates the request
-        page(int): limits result pages on API responses
-        language(str): ISO 639 language code
+        search_key (str): User search query
+        api_key (str): TMDb API authentication key
+        page(int): Page number of results
+        language(str): language code for results
     Returns:
-        list: A list with movie data
+        list: A list of dictionaries with results data
     """
     url = f'{TMDB_URL}/search/multi'
     params = {
@@ -88,45 +90,59 @@ def fetch_tmdb_results(search_key, api_key, page=1, language="en-US"):
         print(f"API request failed: {e}")
         return []
 
-def filter_results_by_media_type(result_list):
+def filter_results_by_media_type(result_list, allowed_media_types=('movie', 'tv')):
     """
-    Filters the list to the scoped media_types
+    Filters the TMDB results by media_type
     Args:
         result_list (list): list of dictionaries from API
-    Return: Filtered list limited to 
+        allowed_media_types(tuple): Types used for filtering
+        
+    Return: Filtered list limited to allowed media types
     """
-    new_result_list = [
+    return [
         result for result in result_list
-        if result.get("media_type") in ["movie", "tv"]
+        if result.get("media_type") in allowed_media_types
         ]
-    return new_result_list
 
-def display_search_results(result_list):
-    """_summary_
+def format_result_entry(result):
     """
-    for result in result_list[:5]:
-        title = result.get("title") or result.get("name")
-        date = result.get("release_date") or result.get("first_air_date")
-        if title and date:  # Print if both information exists
-            print(f"{title} - {result["media_type"]} - Release Date: {date}")
-        elif title:  # Print if only title exists"
-            print(f"{title} - {result["media_type"]} - No release date found.")
-        elif date:  # Print if only date exists
-            print(f"No title found. - {result["media_type"]} - Release Date: {date}")
-        else:  # Handle case where both are missing
-            print("No title or name and no date found for this result.")
+    Formats a single result entry for displaying to the user
+
+    Args:
+        result (dict): Dictionary containing individual result data
+
+    Returns:
+        str: Formatted result string.
+    """
+    title = result.get("title") or result.get("name") or "No title available"
+    date = result.get("release_date") or result.get("first_air_date") or "No release date available"
+    media_type = result.get("media_type", "Unknown media type")
+    return f"{title} - {media_type.capitalize()} - Release Date: {date}"
+
+def display_search_results(results, max_results=5):
+    """
+    Display formatted TMDB search results
+    
+    Arg:
+        results (list): Filtered list of results
+        max_results (int): Maximum number of results to display
+    """
+    for result in results[:max_results]:
+        formatted_entry = format_result_entry(result)
+        print(formatted_entry)
 
 def main():
     """
-    Main function currently used for testing purpose
+    Main execution function for the CLI Reel Tracker.
     """
 
     search_query = get_user_search_input()
 
-    search_results = fetch_tmdb_results(search_query, tmdb_api_key)
+    search_results = fetch_tmdb_results(search_query, TMDB_API_KEY)
     print_json(json.dumps(search_results))
     filtered_results = filter_results_by_media_type(search_results)
     display_search_results(filtered_results)
+    # google_sheet = initialize_google_sheets('reeltracker_cli')
 
 
 if __name__ == "__main__":
@@ -160,7 +176,7 @@ if __name__ == "__main__":
 #         list: A list of dictionaries with movie data
 #               Or an empty list if the request fails
 #     """
-#     url = f'{TMDB_URL}/movie/popular?api_key={api_key}&{LANGUAGE}&page=1'
+#     url = f'{TMDB_URL}/movie/popular?api_key={api_key}&{DEFAULT_LANGUAGE}&page=1'
 #     response = requests.get(url,timeout=10)
 #     if response.status_code == 200:
 #         data = response.json()
