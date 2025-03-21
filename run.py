@@ -140,24 +140,25 @@ def sort_items_by_popularity(items):
 
 def format_result_entry(result):
     """
-    Formats a single result entry for displaying to the user
+    Formats a single result entry to display to the user and save to Google Sheet
 
     Args:
         result (dict): Dictionary containing individual result data
 
     Returns:
-        str: Formatted result string.
+        dict: Reduce dictionary data and format its values
     """
     title_id = result.get("id")
     title = result.get("title") or result.get("name") or "No title available"
     date = result.get("release_date") or result.get("first_air_date") or "No release date available"
     media_type = result.get("media_type", "Unknown media type")
+    # TO-DO: GENRE ID MAPPING
     genre_ids = result.get("genre_ids", [])
     weighted_popularity = round(result.get("weighted_popularity", 0), 2)
     overview = result.get("overview", "No overview available")
     if len(overview) > 150:
         overview = overview[:150].rstrip() + "..."
-    # Formtted dictionary
+    # Formatted dictionary
     structured_data = {
         "id": title_id,
         "Title": title,
@@ -177,9 +178,16 @@ def display_search_results(results, max_results=5):
         results (list): Filtered list of results
         max_results (int): Maximum number of results to display
     """
-    for result in results[:max_results]:
-        formatted_entry = format_result_entry(result)
-        print(formatted_entry['Title'])
+    print("\nSearch Results:\n" + "-"*60)
+    formatted_entries = []
+    # https://stackoverflow.com/questions/522563/how-to-access-the-index-value-in-a-for-loop
+    for index, result in enumerate(results[:max_results], start=1):
+        entry = format_result_entry(result)
+        formatted_entries.append(entry)
+        print(f"{index}. {entry['Title']} ({entry['Release Date']})")
+        print(f"   Type: {entry['Media Type']} | Popularity: {entry['Weighted Popularity']}")
+        print(f"   Overview: {entry['Overview']}\n")
+    return formatted_entries
 
 def main():
     """
@@ -192,7 +200,7 @@ def main():
     filtered_results = filter_results_by_media_type(search_results)
     sorted_results = sort_items_by_popularity(filtered_results)
     print_json(json.dumps(sorted_results))
-    display_search_results(sorted_results)
+    formatted_results = display_search_results(sorted_results)
 
 
     # display_search_results(filtered_results)
