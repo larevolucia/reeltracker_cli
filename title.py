@@ -33,12 +33,9 @@ class Title:
             rating (int): User rating
 
         Raises:
-            ValueError: Notify if rating is not a digit
-            ValueError: Notify if rating is outside range
+            ValueError: Notify if rating is not valid
         """
-        if not rating.isdigit():
-            raise ValueError("Invalid input: Please enter a number.")
-        if 1 <= rating <= 10:
+        if not 1 <= rating <= 10:
             raise ValueError("Rating must be between 1 and 10.")
         self.rating = rating
     def to_dict(self):

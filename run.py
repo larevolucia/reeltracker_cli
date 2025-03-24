@@ -141,38 +141,6 @@ def sort_items_by_popularity(items):
     # for each x(item) in my list, sort by weighted_popularity
     return sorted(items, key=lambda x: x['weighted_popularity'], reverse=True)
 
-def format_result_entry(result):
-    """
-    Formats a single result entry to display to the user and save to Google Sheet
-
-    Args:
-        result (dict): Dictionary containing individual result data
-
-    Returns:
-        dict: Reduce dictionary data and format its values
-    """
-    title_id = result.get("id")
-    title = result.get("title") or result.get("name") or "No title available"
-    date = result.get("release_date") or result.get("first_air_date") or "No release date available"
-    media_type = result.get("media_type", "Unknown media type")
-    # TO-DO: GENRE ID MAPPING
-    genre_ids = result.get("genre_ids", [])
-    weighted_popularity = round(result.get("weighted_popularity", 0), 2)
-    overview = result.get("overview", "No overview available")
-    # if len(overview) > 150:
-    #     overview = overview[:150].rstrip() + "..."
-    # Formatted dictionary
-    structured_data = {
-        "id": title_id,
-        "Title": title,
-        "Media Type": media_type,
-        "Release Date": date,
-        "Genres": genre_ids,
-        "Weighted Popularity": weighted_popularity,
-        "Overview": overview,
-    }
-    return structured_data
-
 def display_search_results(title_objects, max_results=5):
     """
     Display formatted TMDB search results
@@ -188,118 +156,92 @@ def display_search_results(title_objects, max_results=5):
         print(f"   Overview: {title.overview}\n")
     return title_objects[:max_results]
 
-
-def select_item_from_results(formatted_entries):
+def select_item_from_results(title_list):
     """
     Allows user to select an item from previously displayed results
     
     Arg:
-        formatted_entries(list): List of formatted dictionaries
+        title_list (list[Title]): List of Title objects
     Return:
         dictionary object: selected item from list
     """
     while True:
         user_input = input(
-            f"Select an item (1-{len(formatted_entries)}) to save it "
+            f"Select an item (1-{len(title_list)}) to save it "
             f"or type 'n' for a new search: "
-        )
+        ).strip().lower()
 
-        if user_input.lower() == 'n':
+        if user_input == 'n':
             return None  # Indicates the user wants to perform a new search
 
         try:
             selection = int(user_input)
-            if not 1 <= selection <= len(formatted_entries):
+            if not 1 <= selection <= len(title_list):
                 raise ValueError(
                     f'Number out of range. You must choose between 1 and '
-                    f'{len(formatted_entries)}'
+                    f'{len(title_list)}'
                 )
 
-            chosen_item = formatted_entries[selection - 1]
+            chosen_item = title_list[selection - 1]
 
             return chosen_item
 
         except ValueError as e:
             print(f"Invalid input: {e}. Please enter a number or 'n'.")
 
-def convert_dict_to_list(item: dict):
-    """Converts single item dictionary into a list of headers and values
-    compatible to gspread use
-
-    Args:
-        item (dict): API formatted dict item
-    Returns:
-        List converted to comma-separated strings
-    """
-    # Save dict keys into list with header entries
-    headers = list(item.keys())
-    # Loop through value in dictionary and save to variable
-    values = []
-    
-    for value in item.values():
-        if isinstance(value, list):
-        # if value is a list
-        # convert each to joined str
-            values.append(', '.join(map(str, value)))
-        else:
-            values.append(str(value))
-
-    return headers, values
-
-def save_item_to_list(sheet, item, is_watched, rating="N/A"):
-    """Saves an item to worksheet with current watch status
+def save_item_to_list(sheet, title_obj):
+    """Saves an item to worksheet 
 
     Args:
         sheet (str): Google sheet name 
-        item (dict): dictionary with title information
-        isWatched (bool): watch status of the item
+        title_obj (Title): The Title object to save
     """
-    print_json(data=item)
+    print_json(data=title_obj.to_dict())
 
     try:
         worksheet = sheet.worksheet('My_List')
     except gspread.exceptions.WorksheetNotFound:
         worksheet = sheet.add_worksheet(title='My_List', rows='100', cols='20')
         # Create headers if worksheet is new
-        headers, _ = convert_dict_to_list(item)
-        headers.extend(['Watched', 'Timestamp', 'Rating'])
+        headers = [
+            "id", "Title", "Media Type", "Release Date",
+            "Genres", "Weighted Popularity", "Overview",
+            "Watched", "Timestamp", "Rating"
+        ]
         worksheet.append_row(headers)
     
     # Prepare row
-    _, values = convert_dict_to_list(item)
-    values.extend([is_watched, datetime.timestamp(datetime.now()), rating])
-    worksheet.append_row(values)
-    print("Data successfully written to the sheet.")
+    worksheet.append_row(title_obj.to_sheet_row())
+    print("Title successfully written to the sheet.")
 
-def get_watch_status(item):
+def get_watch_status(title_obj):
     """
     Promps user to inform if item has already been watched
     
     Args:
-        item (dict): API data of title
+        title_obj (Title): The Title object to save
     Returns:
         bool: True, False
     """
     while True:
-        choice = input(f'Have you already watched {item['Title']}? (y/n): ').strip().lower()
+        choice = input(f'Have you already watched {title_obj.title}? (y/n): ').strip().lower()
         if choice == 'y':
             return True
         elif choice == 'n':
             return False
         print("Invalid input. Please type 'y' for yes or 'n' for no.")
 
-def get_title_rating(item):
+def get_title_rating(title_obj):
     """
     Prompts user to provide movie rating 1-10
 
     Args:
-        item (dict): API data of title
-    Returns:
-        int: User rating 1-10 
+        title_obj(Title): The Title object to save
+
     """
     while True:
         user_input = input(
-            f'How would you rate {item['Title']}?' 
+            f'How would you rate {title_obj.title}? ' 
             f'Select a number from 1-10: ').strip()
             
         if not user_input.isdigit():
@@ -307,16 +249,19 @@ def get_title_rating(item):
             continue
 
         rating = int(user_input)
-        if 1 <= rating <= 10:
-            return rating
+        try:
+            title_obj.set_rating(rating)
+            return 
+        except ValueError as e:
+            print(f"Invalid input: {e}")
 
-        print("Invalid input: Rating must be between 1 and 10.")
+def check_for_duplicate(title_obj, sheet):
+    """
+    Checks if the given Title object is already in the Google Sheet.
 
-def check_for_duplicate(item, sheet):
-    """_summary_
 
     Args:
-        item (dict): API data of title
+        title_obj (Title): The Title instance to check
         sheet (str): initialized google sheet
     """
     try:
@@ -329,7 +274,7 @@ def check_for_duplicate(item, sheet):
 
         for row in all_values[1:]:  
             if len(row) > max(id_index, type_index):
-                if row[id_index] == str(item['id']) and row[type_index] == item['Media Type']:
+                if row[id_index] == str(title_obj.id) and row[type_index] == title_obj.media_type:
                     print("Item already in List.")
                     return True
 
@@ -356,56 +301,29 @@ def main():
         sorted_results = sort_items_by_popularity(filtered_results)
         # 6. Display top results
         title_objects = [Title(result) for result in sorted_results]
-        display_search_results(title_objects)
-
-        # # 7. Let user select result or go back to search
-        # selected_item = select_item_from_results(formatted_results)
-        # # 8. If user types 'n', goes back to search (1)
-        # if selected_item is None:
-        #     print("\nStarting a new search\n")
-        #     continue # Go back to search (1)
-        # # 9. Valid item (int) is selected
-        # print(
-        #     f"You've selected {selected_item['Title']} "
-        #     f"({selected_item['Release Date']})\n"
-        #     )
-        # # 10. Check if item is already in the list
-        # google_sheet = initialize_google_sheets('reeltracker_cli')
-        # already_in_list = check_for_duplicate(selected_item, google_sheet)
-        # if already_in_list is False:
-        #     # 11. Check if item is watched
-        #     watched_status = get_watch_status(selected_item)
-        #     # 12. If item is watched, get user rating
-        #     title_rating = "N/A"
-        #     if watched_status is True:
-        #         title_rating = get_title_rating(selected_item)
-        #     # print_json(data=selected_item)
-        #     # 13. Save item
-        #     save_item_to_list(google_sheet, selected_item, watched_status, title_rating)
-            
-        break # Exit the loop
+        displayed_titles = display_search_results(title_objects)
+        # 7. Let user select result or go back to search
+        selected_item = select_item_from_results(displayed_titles)
+        # 8. If user types 'n', goes back to search (1)
+        if selected_item is None:
+            print("\nStarting a new search\n")
+            continue # Go back to search (1)
+        # 9. Valid item (int) is selected
+        print(f"You've selected {selected_item.title} ({selected_item.release_date})\n")
+        # 10. Check if item is already in the list
+        google_sheet = initialize_google_sheets('reeltracker_cli')
+        if not check_for_duplicate(selected_item, google_sheet):
+            if get_watch_status(selected_item):
+                get_title_rating(selected_item)
+                selected_item.mark_watched()
+            else:
+                selected_item.watched = False
+            save_item_to_list(google_sheet, selected_item)
+        break
 
 if __name__ == "__main__":
     main()
 
-# Test to find a specific sheet
-# try:
-#     worksheet = SHEET.worksheet('TestSheet')
-# # Test to create a specific sheet if not found
-# except gspread.exceptions.WorksheetNotFound:
-#     worksheet = SHEET.add_worksheet(title='TestSheet', rows='100', cols='20')
-# # Test data to be added to sheet
-# test_data = [['Title', 'Year', 'Status'],
-#              ['Clueless', 1995, 'Watched'],
-#              ['A real pain', 2024, 'To Watch'],
-#              ['Dreams', 1900, 'Watched']]
-# worksheet.append_rows(test_data)
-# print("Data successfully written to the sheet.")
-# # Test to read the data from sheet
-# fetched_data = worksheet.get_all_values()
-# print("Fetched data from the sheet:")
-# for row in fetched_data:
-#     print(row)
 
 # Test TMDB API by fetching popular titles
 # def fetch_popular_movies(api_key):
