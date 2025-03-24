@@ -200,8 +200,8 @@ def select_item_from_results(formatted_entries):
     """
     while True:
         user_input = input(
-            f"Select an item (1-{len(formatted_entries)}) or "
-            f"type 'n' for a new search: "
+            f"Select an item (1-{len(formatted_entries)}) to save it "
+            f"or type 'n' for a new search: "
         )
 
         if user_input.lower() == 'n':
@@ -230,8 +230,6 @@ def convert_dict_to_list(item: dict):
         item (dict): API formatted dict item
     Returns:
         List converted to comma-separated strings
-        https://stackoverflow.com/questions/1679384/converting-dictionary-to-list
-        https://www.geeksforgeeks.org/convert-a-dictionary-to-a-list-in-python/
     """
     # Save dict keys into list with header entries
     headers = list(item.keys())
@@ -248,13 +246,11 @@ def convert_dict_to_list(item: dict):
 
     return headers, values
 
-
-
-
-def save_item_to_list(sheet, item, is_watched):
+def save_item_to_list(sheet, item, is_watched, rating="N/A"):
     """Saves an item to worksheet with current watch status
 
     Args:
+        sheet (str): Google sheet name 
         item (dict): dictionary with title information
         isWatched (bool): watch status of the item
     """
@@ -265,16 +261,54 @@ def save_item_to_list(sheet, item, is_watched):
     except gspread.exceptions.WorksheetNotFound:
         worksheet = sheet.add_worksheet(title='My_List', rows='100', cols='20')
         # Create headers if worksheet is new
-        # https://stackoverflow.com/questions/36315309/how-does-python-throw-away-variable-work
         headers, _ = convert_dict_to_list(item)
-        headers.extend(['Watched', 'Timestamp'])
+        headers.extend(['Watched', 'Timestamp', 'Rating'])
         worksheet.append_row(headers)
     
     # Prepare row
     _, values = convert_dict_to_list(item)
-    values.extend([is_watched, datetime.timestamp(datetime.now())])
+    values.extend([is_watched, datetime.timestamp(datetime.now()), rating])
     worksheet.append_row(values)
     print("Data successfully written to the sheet.")
+
+def get_watch_status(item):
+    """
+    Promps user to inform if item has already been watched
+    
+    Args:
+        item (dict): API data of title
+    Returns:
+        bool: True, False
+    """
+    while True:
+        choice = input(f'Have you already watched {item['Title']}? (y/n): ').strip().lower()
+        if choice == 'y':
+            return True
+        elif choice == 'n':
+            return False
+        print("Invalid input. Please type 'y' for yes or 'n' for no.")
+
+def get_title_rating(item):
+    """
+    Prompts user to provide movie rating 1-10
+
+    Args:
+        item (dict): API data of title
+    Returns:
+        int: User rating 1-10 
+    """
+    while True:
+        user_input = input(f'How would you rate {item['Title']}? Select a number from 1-10: ').strip()
+            
+        if not user_input.isdigit():
+            print("Invalid input: Please enter a number.")
+            continue
+
+        rating = int(user_input)
+        if 1 <= rating <= 10:
+            return rating
+
+        print("Invalid input: Rating must be between 1 and 10.")
 
 def main():
     """
@@ -306,9 +340,13 @@ def main():
             f"You've selected {selected_item['Title']} "
             f"({selected_item['Release Date']})\n"
             )
+        watched_status = get_watch_status(selected_item)
+        title_rating = "N/A"
+        if watched_status == True:
+            title_rating = get_title_rating(selected_item)
         # print_json(data=selected_item)
         google_sheet = initialize_google_sheets('reeltracker_cli')
-        save_item_to_list(google_sheet, selected_item, False)
+        save_item_to_list(google_sheet, selected_item, watched_status, title_rating)
         break # Exit the loop
 
 if __name__ == "__main__":
