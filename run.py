@@ -298,7 +298,9 @@ def get_title_rating(item):
         int: User rating 1-10 
     """
     while True:
-        user_input = input(f'How would you rate {item['Title']}? Select a number from 1-10: ').strip()
+        user_input = input(
+            f'How would you rate {item['Title']}?' 
+            f'Select a number from 1-10: ').strip()
             
         if not user_input.isdigit():
             print("Invalid input: Please enter a number.")
@@ -309,6 +311,30 @@ def get_title_rating(item):
             return rating
 
         print("Invalid input: Rating must be between 1 and 10.")
+
+def check_for_duplicate(item, sheet):
+    """_summary_
+
+    Args:
+        item (dict): API data of title
+        sheet (str): initialized google sheet
+    """
+
+    worksheet = sheet.worksheet('My_List')
+    all_values = worksheet.get_all_values()
+    # Get headers and indexes
+    headers = all_values[0]
+    id_index = headers.index("id")
+    type_index = headers.index("Media Type")
+
+    for row in all_values[1:]:  
+        if len(row) > max(id_index, type_index):
+            if row[id_index] == str(item['id']) and row[type_index] == item['Media Type']:
+                print("Item already in List.")
+                return True
+
+    print("Registering a new item.")
+    return False
 
 def main():
     """
@@ -340,13 +366,20 @@ def main():
             f"You've selected {selected_item['Title']} "
             f"({selected_item['Release Date']})\n"
             )
-        watched_status = get_watch_status(selected_item)
-        title_rating = "N/A"
-        if watched_status == True:
-            title_rating = get_title_rating(selected_item)
-        # print_json(data=selected_item)
+        # 10. Check if item is already in the list
         google_sheet = initialize_google_sheets('reeltracker_cli')
-        save_item_to_list(google_sheet, selected_item, watched_status, title_rating)
+        already_in_list = check_for_duplicate(selected_item, google_sheet)
+        if already_in_list is False:
+            # 11. Check if item is watched
+            watched_status = get_watch_status(selected_item)
+            # 12. If item is watched, get user rating
+            title_rating = "N/A"
+            if watched_status is True:
+                title_rating = get_title_rating(selected_item)
+            # print_json(data=selected_item)
+            # 13. Save item
+            save_item_to_list(google_sheet, selected_item, watched_status, title_rating)
+            
         break # Exit the loop
 
 if __name__ == "__main__":
@@ -370,6 +403,7 @@ if __name__ == "__main__":
 # print("Fetched data from the sheet:")
 # for row in fetched_data:
 #     print(row)
+
 # Test TMDB API by fetching popular titles
 # def fetch_popular_movies(api_key):
 #     """
