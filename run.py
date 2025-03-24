@@ -156,8 +156,8 @@ def format_result_entry(result):
     genre_ids = result.get("genre_ids", [])
     weighted_popularity = round(result.get("weighted_popularity", 0), 2)
     overview = result.get("overview", "No overview available")
-    if len(overview) > 150:
-        overview = overview[:150].rstrip() + "..."
+    # if len(overview) > 150:
+    #     overview = overview[:150].rstrip() + "..."
     # Formatted dictionary
     structured_data = {
         "id": title_id,
@@ -180,7 +180,6 @@ def display_search_results(results, max_results=5):
     """
     print("\nSearch Results:\n" + "-"*60)
     formatted_entries = []
-    # https://stackoverflow.com/questions/522563/how-to-access-the-index-value-in-a-for-loop
     for index, result in enumerate(results[:max_results], start=1):
         entry = format_result_entry(result)
         formatted_entries.append(entry)
@@ -222,6 +221,52 @@ def select_item_from_results(formatted_entries):
         except ValueError as e:
             print(f"Invalid input: {e}. Please enter a number or 'n'.")
 
+def convert_dict_to_list(item: dict):
+    """Converts single item dictionary into a list of headers and values
+    compatible to gspread use
+
+    Args:
+        item (dict): API formatted dict item
+    Returns:
+        List converted to comma-separated strings
+        https://stackoverflow.com/questions/1679384/converting-dictionary-to-list
+        https://www.geeksforgeeks.org/convert-a-dictionary-to-a-list-in-python/
+    """
+    # Save dict keys into list with header entries
+    headers = list(item.keys())
+    # Loop through value in dictionary and save to variable
+    values = []
+    
+    for value in item.values():
+        if isinstance(value, list):
+        # if value is a list
+        # convert each to joined str
+            values.append(', '.join(map(str, value)))
+        else:
+            values.append(str(value))
+
+    return headers, values
+
+
+
+
+def save_item_to_list(sheet, item, is_watched):
+    """Saves an item to worksheet with current watch status
+
+    Args:
+        item (dict): dictionary with title information
+        isWatched (boolean): watch status of the item
+    """
+    print_json(data=item)
+
+    try:
+        worksheet = sheet.worksheet('My_List')
+    except gspread.exceptions.WorksheetNotFound:
+        worksheet = sheet.add_worksheet(title='My_List', rows='100', cols='20')
+    
+    # worksheet.append_row(item)
+    print("Data successfully written to the sheet.")
+
 def main():
     """
     Main execution function for the CLI Reel Tracker.
@@ -235,7 +280,7 @@ def main():
         filtered_results = filter_results_by_media_type(search_results)
         # 4. Handle case where no valid results are found
         if not filtered_results:
-            print("No results found. Try another search/\n")
+            print("No results found. Try another search.\n")
             continue # Go back to search (1)
         # 5. Sort results by custom weighted popularity
         sorted_results = sort_items_by_popularity(filtered_results)
@@ -246,15 +291,17 @@ def main():
         # 8. If user types 'n', goes back to search (1)
         if selected_item is None:
             print("\nStarting a new search\n")
-            continue
+            continue # Go back to search (1)
         # 9. Valid item (int) is selected
         print(
             f"You've selected {selected_item['Title']} "
             f"({selected_item['Release Date']})\n"
             )
+        # print_json(data=selected_item)
+        google_sheet = initialize_google_sheets('reeltracker_cli')
+        item_list = convert_dict_to_list(selected_item)
+        save_item_to_list(google_sheet, item_list, False)
         break # Exit the loop
-    # google_sheet = initialize_google_sheets('reeltracker_cli')
-
 
 if __name__ == "__main__":
     main()
