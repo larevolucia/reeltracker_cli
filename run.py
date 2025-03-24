@@ -319,22 +319,23 @@ def check_for_duplicate(item, sheet):
         item (dict): API data of title
         sheet (str): initialized google sheet
     """
+    try:
+        worksheet = sheet.worksheet('My_List')
+        all_values = worksheet.get_all_values()
+        # Get headers and indexes
+        headers = all_values[0]
+        id_index = headers.index("id")
+        type_index = headers.index("Media Type")
 
-    worksheet = sheet.worksheet('My_List')
-    all_values = worksheet.get_all_values()
-    # Get headers and indexes
-    headers = all_values[0]
-    id_index = headers.index("id")
-    type_index = headers.index("Media Type")
+        for row in all_values[1:]:  
+            if len(row) > max(id_index, type_index):
+                if row[id_index] == str(item['id']) and row[type_index] == item['Media Type']:
+                    print("Item already in List.")
+                    return True
 
-    for row in all_values[1:]:  
-        if len(row) > max(id_index, type_index):
-            if row[id_index] == str(item['id']) and row[type_index] == item['Media Type']:
-                print("Item already in List.")
-                return True
-
-    print("Registering a new item.")
-    return False
+        return False
+    except gspread.exceptions.WorksheetNotFound:
+        return False
 
 def main():
     """
