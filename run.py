@@ -4,12 +4,14 @@ CLI Movie tracker
 import os
 import math
 import json
-from datetime import datetime
 import requests
 import gspread
 from google.oauth2.service_account import Credentials
 from dotenv import load_dotenv
 from rich import print_json
+from title import Title
+from datetime import datetime
+
 
 # Constants
 TMDB_URL ='https://api.themoviedb.org/3'
@@ -171,7 +173,7 @@ def format_result_entry(result):
     }
     return structured_data
 
-def display_search_results(results, max_results=5):
+def display_search_results(title_objects, max_results=5):
     """
     Display formatted TMDB search results
     
@@ -180,14 +182,12 @@ def display_search_results(results, max_results=5):
         max_results (int): Maximum number of results to display
     """
     print("\nSearch Results:\n" + "-"*60)
-    formatted_entries = []
-    for index, result in enumerate(results[:max_results], start=1):
-        entry = format_result_entry(result)
-        formatted_entries.append(entry)
-        print(f"{index}. {entry['Title']} ({entry['Release Date']})")
-        print(f"   Type: {entry['Media Type']} | Popularity: {entry['Weighted Popularity']}")
-        print(f"   Overview: {entry['Overview']}\n")
-    return formatted_entries
+    for index, title in enumerate(title_objects[:max_results], start=1):
+        print(f"{index}. {title.title} ({title.release_date})")
+        print(f"   Type: {title.media_type} | Popularity: {title.popularity}")
+        print(f"   Overview: {title.overview}\n")
+    return title_objects[:max_results]
+
 
 def select_item_from_results(formatted_entries):
     """
@@ -355,31 +355,33 @@ def main():
         # 5. Sort results by custom weighted popularity
         sorted_results = sort_items_by_popularity(filtered_results)
         # 6. Display top results
-        formatted_results = display_search_results(sorted_results)
-        # 7. Let user select result or go back to search
-        selected_item = select_item_from_results(formatted_results)
-        # 8. If user types 'n', goes back to search (1)
-        if selected_item is None:
-            print("\nStarting a new search\n")
-            continue # Go back to search (1)
-        # 9. Valid item (int) is selected
-        print(
-            f"You've selected {selected_item['Title']} "
-            f"({selected_item['Release Date']})\n"
-            )
-        # 10. Check if item is already in the list
-        google_sheet = initialize_google_sheets('reeltracker_cli')
-        already_in_list = check_for_duplicate(selected_item, google_sheet)
-        if already_in_list is False:
-            # 11. Check if item is watched
-            watched_status = get_watch_status(selected_item)
-            # 12. If item is watched, get user rating
-            title_rating = "N/A"
-            if watched_status is True:
-                title_rating = get_title_rating(selected_item)
-            # print_json(data=selected_item)
-            # 13. Save item
-            save_item_to_list(google_sheet, selected_item, watched_status, title_rating)
+        title_objects = [Title(result) for result in sorted_results]
+        display_search_results(title_objects)
+
+        # # 7. Let user select result or go back to search
+        # selected_item = select_item_from_results(formatted_results)
+        # # 8. If user types 'n', goes back to search (1)
+        # if selected_item is None:
+        #     print("\nStarting a new search\n")
+        #     continue # Go back to search (1)
+        # # 9. Valid item (int) is selected
+        # print(
+        #     f"You've selected {selected_item['Title']} "
+        #     f"({selected_item['Release Date']})\n"
+        #     )
+        # # 10. Check if item is already in the list
+        # google_sheet = initialize_google_sheets('reeltracker_cli')
+        # already_in_list = check_for_duplicate(selected_item, google_sheet)
+        # if already_in_list is False:
+        #     # 11. Check if item is watched
+        #     watched_status = get_watch_status(selected_item)
+        #     # 12. If item is watched, get user rating
+        #     title_rating = "N/A"
+        #     if watched_status is True:
+        #         title_rating = get_title_rating(selected_item)
+        #     # print_json(data=selected_item)
+        #     # 13. Save item
+        #     save_item_to_list(google_sheet, selected_item, watched_status, title_rating)
             
         break # Exit the loop
 
