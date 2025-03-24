@@ -4,6 +4,7 @@ CLI Movie tracker
 import os
 import math
 import json
+from datetime import datetime
 import requests
 import gspread
 from google.oauth2.service_account import Credentials
@@ -255,7 +256,7 @@ def save_item_to_list(sheet, item, is_watched):
 
     Args:
         item (dict): dictionary with title information
-        isWatched (boolean): watch status of the item
+        isWatched (bool): watch status of the item
     """
     print_json(data=item)
 
@@ -263,8 +264,16 @@ def save_item_to_list(sheet, item, is_watched):
         worksheet = sheet.worksheet('My_List')
     except gspread.exceptions.WorksheetNotFound:
         worksheet = sheet.add_worksheet(title='My_List', rows='100', cols='20')
+        # Create headers if worksheet is new
+        # https://stackoverflow.com/questions/36315309/how-does-python-throw-away-variable-work
+        headers, _ = convert_dict_to_list(item)
+        headers.extend(['Watched', 'Timestamp'])
+        worksheet.append_row(headers)
     
-    # worksheet.append_row(item)
+    # Prepare row
+    _, values = convert_dict_to_list(item)
+    values.extend([is_watched, datetime.timestamp(datetime.now())])
+    worksheet.append_row(values)
     print("Data successfully written to the sheet.")
 
 def main():
@@ -299,8 +308,7 @@ def main():
             )
         # print_json(data=selected_item)
         google_sheet = initialize_google_sheets('reeltracker_cli')
-        item_list = convert_dict_to_list(selected_item)
-        save_item_to_list(google_sheet, item_list, False)
+        save_item_to_list(google_sheet, selected_item, False)
         break # Exit the loop
 
 if __name__ == "__main__":
