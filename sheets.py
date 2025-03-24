@@ -78,3 +78,25 @@ def check_for_duplicate(title_obj, sheet):
         return False
     except gspread.exceptions.WorksheetNotFound:
         return False
+
+def get_titles_by_watch_status(sheet, watched):
+    """
+    Returns a list of rows filtered by watched status
+
+    Args:
+        sheet (str): Google Sheet
+        watched (bool): filter for watched titles or not
+    Returns:
+        list[dict]: filtered title rows as dict
+    """
+    try:
+        worksheet = sheet.worksheet('My_List')
+        all_values = worksheet.get_all_records()
+
+        filtered = [row for row in all_values
+                    if str(row.get("Watched", "")).lower() == str(watched).lower()
+                    ]
+        return filtered
+    except gspread.exceptions.WorksheetNotFound:
+        print("No data found yet. You haven't added any titles.")
+        return []

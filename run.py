@@ -5,7 +5,12 @@ CLI Reel tracker orchestration
 
 from title import Title
 from tmdb import fetch_tmdb_results, TMDB_API_KEY
-from sheets import initialize_google_sheets, save_item_to_list, check_for_duplicate
+from sheets import (
+    initialize_google_sheets,
+    save_item_to_list,
+    check_for_duplicate,
+    get_titles_by_watch_status
+    )
 from utils import filter_results_by_media_type, sort_items_by_popularity
 
 def display_main_menu():
@@ -20,9 +25,8 @@ def display_main_menu():
     print("2. See watchlist titles")
     print("3. See watched titles")
     print("4. Exit")
-    
     while True:
-        choice = input("Choose an option (1-4). ").strip()
+        choice = input("\nChoose an option (1-4). ").strip()
         if choice == '1':
             return 'search'
         elif choice == '2':
@@ -33,7 +37,7 @@ def display_main_menu():
             return 'exit'
         else:
             print('Invalid choice. Please select 1, 2, 3 or 4.')
-            
+
 def get_user_search_input(prompt="Search a title to get started: "):
     """
     Prompts user input for searching a title. Ensures non-empty input
@@ -182,8 +186,14 @@ def main():
                 save_item_to_list(google_sheet, selected_item)
                 break
         elif user_choice in ['watched', 'watchlist']:
-            watched_flag = user_choice
-            print(f'You chose {watched_flag}')
+            watched_flag = user_choice == 'watched'
+            titles = get_titles_by_watch_status(google_sheet, watched_flag)
+            if not titles:
+                print("\nNo titles found.")
+            else:
+                print("\nYour Titles:\n" + "-"*60)
+                for i, row in enumerate(titles, 1):
+                    print(f'{i}. {row['Title']} ({row['Release Date']}) - Rated: {row['Rating']}')
             break
 
 if __name__ == "__main__":
