@@ -8,6 +8,32 @@ from tmdb import fetch_tmdb_results, TMDB_API_KEY
 from sheets import initialize_google_sheets, save_item_to_list, check_for_duplicate
 from utils import filter_results_by_media_type, sort_items_by_popularity
 
+def display_main_menu():
+    """
+    Display the main menu and prompt the user to choose an option
+
+    Returns:
+        str: The user's choice ('search', 'watchlist', 'watched', or 'exit')
+    """
+    print("\n🎬 ReelTracker Menu")
+    print("1. Search a new title")
+    print("2. See watchlist titles")
+    print("3. See watched titles")
+    print("4. Exit")
+    
+    while True:
+        choice = input("Choose an option (1-4). ").strip()
+        if choice == '1':
+            return 'search'
+        elif choice == '2':
+            return 'watchlist'
+        elif choice == '3':
+            return "watched"
+        elif choice == '4':
+            return 'exit'
+        else:
+            print('Invalid choice. Please select 1, 2, 3 or 4.')
+            
 def get_user_search_input(prompt="Search a title to get started: "):
     """
     Prompts user input for searching a title. Ensures non-empty input
@@ -116,40 +142,49 @@ def main():
     """
     Main execution function for the CLI Reel Tracker.
     """
+    google_sheet = initialize_google_sheets('reeltracker_cli')
     while True:
-        # 1. Prompt user to enter a search query
-        search_query = get_user_search_input()
-        # 2. Use the query to fetch API results
-        search_results = fetch_tmdb_results(search_query, TMDB_API_KEY)
-        # 3. Filter out non-movie/TV results
-        filtered_results = filter_results_by_media_type(search_results)
-        # 4. Handle case where no valid results are found
-        if not filtered_results:
-            print("No results found. Try another search.\n")
-            continue # Go back to search (1)
-        # 5. Sort results by custom weighted popularity
-        sorted_results = sort_items_by_popularity(filtered_results)
-        # 6. Display top results
-        title_objects = [Title(result) for result in sorted_results]
-        displayed_titles = display_search_results(title_objects)
-        # 7. Let user select result or go back to search
-        selected_item = select_item_from_results(displayed_titles)
-        # 8. If user types 'n', goes back to search (1)
-        if selected_item is None:
-            print("\nStarting a new search\n")
-            continue # Go back to search (1)
-        # 9. Valid item (int) is selected
-        print(f"You've selected {selected_item.title} ({selected_item.release_date})\n")
-        # 10. Check if item is already in the list
-        google_sheet = initialize_google_sheets('reeltracker_cli')
-        if not check_for_duplicate(selected_item, google_sheet):
-            if get_watch_status(selected_item):
-                get_title_rating(selected_item)
-                selected_item.mark_watched()
-            else:
-                selected_item.watched = False
-            save_item_to_list(google_sheet, selected_item)
-        break
+        user_choice = display_main_menu()
+        if user_choice == 'exit':
+            print('Goodbye!')
+            break
+        elif user_choice == 'search':
+            # 1. Prompt user to enter a search query
+            search_query = get_user_search_input()
+            # 2. Use the query to fetch API results
+            search_results = fetch_tmdb_results(search_query, TMDB_API_KEY)
+            # 3. Filter out non-movie/TV results
+            filtered_results = filter_results_by_media_type(search_results)
+            # 4. Handle case where no valid results are found
+            if not filtered_results:
+                print("No results found. Try another search.\n")
+                continue # Go back to search (1)
+            # 5. Sort results by custom weighted popularity
+            sorted_results = sort_items_by_popularity(filtered_results)
+            # 6. Display top results
+            title_objects = [Title(result) for result in sorted_results]
+            displayed_titles = display_search_results(title_objects)
+            # 7. Let user select result or go back to search
+            selected_item = select_item_from_results(displayed_titles)
+            # 8. If user types 'n', goes back to search (1)
+            if selected_item is None:
+                print("\nStarting a new search\n")
+                continue # Go back to search (1)
+            # 9. Valid item (int) is selected
+            print(f"You've selected {selected_item.title} ({selected_item.release_date})\n")
+            # 10. Check if item is already in the list
+            if not check_for_duplicate(selected_item, google_sheet):
+                if get_watch_status(selected_item):
+                    get_title_rating(selected_item)
+                    selected_item.mark_watched()
+                else:
+                    selected_item.watched = False
+                save_item_to_list(google_sheet, selected_item)
+                break
+        elif user_choice in ['watched', 'watchlist']:
+            watched_flag = user_choice
+            print(f'You chose {watched_flag}')
+            break
 
 if __name__ == "__main__":
     main()
