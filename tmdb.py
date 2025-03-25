@@ -82,7 +82,6 @@ def get_genre_names_from_ids(genre_ids, media_type):
     """
     genre_list = get_genre_mapping(media_type, TMDB_API_KEY)
     genre_dict = {genre['id']: genre['name'] for genre in genre_list}
-    print(genre_dict)
     matched_genres = [genre_dict.get(genre_id) for genre_id in genre_ids if genre_id in genre_dict]
     return matched_genres
 

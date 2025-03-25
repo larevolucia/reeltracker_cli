@@ -20,7 +20,7 @@ def display_main_menu():
     Returns:
         str: The user's choice ('search', 'watchlist', 'watched', or 'exit')
     """
-    print("\n🎬 ReelTracker Menu")
+    print("\n🎬 ReelTracker Menu\n")
     print("1. Search a new title")
     print("2. See watchlist titles")
     print("3. See watched titles")
@@ -38,7 +38,7 @@ def display_main_menu():
         else:
             print('Invalid choice. Please select 1, 2, 3 or 4.')
 
-def get_user_search_input(prompt="Search a title to get started: "):
+def get_user_search_input(prompt="\nSearch a title to get started: "):
     """
     Prompts user input for searching a title. Ensures non-empty input
     
@@ -52,7 +52,7 @@ def get_user_search_input(prompt="Search a title to get started: "):
         user_query = input(prompt)
         if user_query:
             return user_query
-        print('Search query cannot be emtpy. Please try again.\n')
+        print('\nSearch query cannot be emtpy. Please try again.\n')
 
 def display_search_results(title_objects, max_results=5):
     """
@@ -115,13 +115,13 @@ def get_watch_status(title_obj):
         bool: True (watched), False (not watched)
     """
     while True:
-        choice = input(f'Have you already watched {title_obj.title}? (y/n): ').strip().lower()
+        choice = input(f'\nHave you already watched {title_obj.title}? (y/n): ').strip().lower()
         if choice == 'y':
             title_obj.mark_watched()
             return True
         elif choice == 'n':
             return False
-        print("Invalid input. Please type 'y' for yes or 'n' for no.")
+        print("\nInvalid input. Please type 'y' for yes or 'n' for no.")
 
 def get_title_rating(title_obj):
     """
@@ -132,7 +132,7 @@ def get_title_rating(title_obj):
     """
     while True:
         user_input = input(
-            f'How would you rate {title_obj.title}? '
+            f'\nHow would you rate {title_obj.title}? '
             f'Select a number from 1-10: ').strip()
         if not user_input.isdigit():
             print("Invalid input: Please enter a number.")
@@ -153,7 +153,7 @@ def main():
     while True:
         user_choice = display_main_menu()
         if user_choice == 'exit':
-            print('Goodbye!')
+            print('\nGoodbye!')
             break
         elif user_choice == 'search':
             while True:
@@ -176,24 +176,27 @@ def main():
                 selected_item = select_item_from_results(displayed_titles)
                 # 8. If user types 'n', goes back to search (1)
                 if selected_item is None:
-                    print("\nStarting a new search\n")
+                    print("\nStarting a new search...\n")
                     continue # Go back to search (1)
                 # 9. Valid item (int) is selected
-                print(f"You've selected {selected_item.title} ({selected_item.release_date})\n")
+                print(f"\nYou've selected {selected_item.title} ({selected_item.release_date})")
                 # 10. Check for item duplicate before saving
                 if not check_for_duplicate(selected_item, google_sheet):
                     if get_watch_status(selected_item):
                         get_title_rating(selected_item)
                     else:
                         selected_item.watched = False
+                    print("\nWriting {selected_item.title} to your list...")
                     save_item_to_list(google_sheet, selected_item)
                     break
+                break
         elif user_choice in ['watched', 'watchlist']:
             # Set watch_flag to True is choice is watched
             watched_flag = user_choice == 'watched'
             titles = get_titles_by_watch_status(google_sheet, watched_flag)
             if not titles:
-                print("\nNo titles found.")
+                print(f"\nNo {user_choice} title found in list.")
+                continue
             else:
                 print(f"\nYour {user_choice} titles:\n" + "-"*60)
                 for i, row in enumerate(titles, 1):

@@ -3,7 +3,7 @@ Handles Google sheets CRUD
 """
 import gspread
 from google.oauth2.service_account import Credentials
-from rich import print_json
+# from rich import print_json
 
 # Google API authentication
 GOOGLE_SHEETS_SCOPE = [
@@ -35,7 +35,7 @@ def save_item_to_list(sheet, title_obj):
         sheet (str): Google sheet name 
         title_obj (Title): The Title object to save
     """
-    print_json(data=title_obj.to_dict())
+    # print_json(data=title_obj.to_dict())
 
     try:
         worksheet = sheet.worksheet('My_List')
@@ -50,7 +50,7 @@ def save_item_to_list(sheet, title_obj):
         worksheet.append_row(headers)
     # Prepare row
     worksheet.append_row(title_obj.to_sheet_row())
-    print("Title successfully written to the sheet.")
+    print("\nTitle successfully written to the sheet.")
 
 def check_for_duplicate(title_obj, sheet):
     """
@@ -74,7 +74,7 @@ def check_for_duplicate(title_obj, sheet):
         for row in all_values[1:]:
             if len(row) > max(id_index, type_index):
                 if row[id_index] == str(title_obj.id) and row[type_index] == title_obj.media_type:
-                    print("Item already in List.")
+                    print("\nItem already in List.")
                     return True
 
         return False
@@ -100,5 +100,5 @@ def get_titles_by_watch_status(sheet, watched):
                     ]
         return filtered
     except gspread.exceptions.WorksheetNotFound:
-        print("No data found yet. You haven't added any titles.")
+        print("\nNo data found. Select 'search' to add your first title.")
         return []
