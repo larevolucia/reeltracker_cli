@@ -70,12 +70,14 @@ def check_for_duplicate(title_obj, sheet):
         headers = all_values[0]
         id_index = headers.index("id")
         type_index = headers.index("media_type")
+        watched_index = headers.index("is_watched")
 
         for row in all_values[1:]:
             if len(row) > max(id_index, type_index):
                 if row[id_index] == str(title_obj.id) and row[type_index] == title_obj.media_type:
-                    print("\nItem already in List.")
-                    return True
+                    watch_status = 'watched' if row[watched_index] == "True" else 'watchlist'
+                    print(f"\n{title_obj.title} already in list, marked as {watch_status}.")
+                    return True, watch_status
 
         return False
     except gspread.exceptions.WorksheetNotFound:

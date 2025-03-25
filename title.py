@@ -33,7 +33,8 @@ class Title:
             else genres_ids
             )
         self.popularity = round(data.get('weighted_popularity', 0), 2)
-        self.overview = data.get('overview', 'No overview available')
+        overview = data.get('overview', 'No overview available').replace('\n', '')
+        self.overview = overview
         self.watched = False
         self.added_date = date_time_str
         self.watched_date = None

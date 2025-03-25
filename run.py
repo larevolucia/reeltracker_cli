@@ -66,9 +66,9 @@ def display_search_results(title_objects, max_results=5):
     """
     print("\nSearch Results:\n" + "-"*60)
     for index, title in enumerate(title_objects[:max_results], start=1):
-        print(f"{index}. {title.title} ({title.release_date})")
+        print(f"\n{index}. {title.title} ({title.release_date})")
         print(f"   Type: {title.media_type} | Popularity: {title.popularity}")
-        print(f"   Overview: {title.overview}\n")
+        print(f"   Overview: {title.overview}")
     return title_objects[:max_results]
 
 def select_item_from_results(title_list):
@@ -82,13 +82,15 @@ def select_item_from_results(title_list):
     """
     while True:
         user_input = input(
-            f"Select an item (1-{len(title_list)}) to save it "
-            f"or type 'n' for a new search: "
+            f"\nSelect an item (1-{len(title_list)}) to save it, "
+            f"type 'n' for a new search or 'm' to return to main menu: "
         ).strip().lower()
 
         if user_input == 'n':
-            return None  # Indicates the user wants to perform a new search
+            return None  # New search
 
+        elif user_input == 'm':
+            return 'main'  # Go back to main menu
         try:
             selection = int(user_input)
             if not 1 <= selection <= len(title_list):
@@ -102,7 +104,7 @@ def select_item_from_results(title_list):
             return chosen_item
 
         except ValueError as e:
-            print(f"Invalid input: {e}. Please enter a number or 'n'.")
+            print(f"\nInvalid input: {e}. Please enter a number or 'n'.")
 
 def get_watch_status(title_obj):
     """
@@ -135,7 +137,7 @@ def get_title_rating(title_obj):
             f'\nHow would you rate {title_obj.title}? '
             f'Select a number from 1-10: ').strip()
         if not user_input.isdigit():
-            print("Invalid input: Please enter a number.")
+            print("\nInvalid input: Please enter a whole number.")
             continue
 
         rating = int(user_input)
@@ -143,7 +145,7 @@ def get_title_rating(title_obj):
             title_obj.set_rating(rating)
             return
         except ValueError as e:
-            print(f"Invalid input: {e}")
+            print(f"\nInvalid input: {e}")
 
 def main():
     """
@@ -153,40 +155,43 @@ def main():
     while True:
         user_choice = display_main_menu()
         if user_choice == 'exit':
-            print('\nGoodbye!')
+            print('\nGoodbye!\n')
             break
         elif user_choice == 'search':
             while True:
                 # 1. Prompt user to enter a search query
                 search_query = get_user_search_input()
+                print(f'\nSearching for {search_query}...')
                 # 2. Use the query to fetch API results
                 search_results = fetch_tmdb_results(search_query, TMDB_API_KEY)
                 # 3. Filter out non-movie/TV results
                 filtered_results = filter_results_by_media_type(search_results)
                 # 4. Handle case where no valid results are found
                 if not filtered_results:
-                    print("No results found. Try another search.\n")
+                    print("\nNo results found. Try another search.")
                     continue # Go back to search (1)
                 # 5. Sort results by custom weighted popularity
                 sorted_results = sort_items_by_popularity(filtered_results)
                 # 6. Display top results as Title objects
                 title_objects = [Title(result) for result in sorted_results]
                 displayed_titles = display_search_results(title_objects)
-                # 7. Let user select result or go back to search
+                # 7. Select result, back to main menu or new search
                 selected_item = select_item_from_results(displayed_titles)
-                # 8. If user types 'n', goes back to search (1)
+                if selected_item == 'main':
+                    print("\nReturning to main menu...")
+                    break # Go back to main menu
                 if selected_item is None:
-                    print("\nStarting a new search...\n")
+                    print("\nStarting a new search...")
                     continue # Go back to search (1)
-                # 9. Valid item (int) is selected
+                # 8. Valid item (int) is selected
                 print(f"\nYou've selected {selected_item.title} ({selected_item.release_date})")
-                # 10. Check for item duplicate before saving
+                # 9. Check for item duplicate before saving
                 if not check_for_duplicate(selected_item, google_sheet):
                     if get_watch_status(selected_item):
                         get_title_rating(selected_item)
                     else:
                         selected_item.watched = False
-                    print("\nWriting {selected_item.title} to your list...")
+                    print(f"\nAdding {selected_item.title} to your list...")
                     save_item_to_list(google_sheet, selected_item)
                     break
                 break
