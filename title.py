@@ -2,6 +2,11 @@
 Title class module
 """
 from datetime import datetime
+# current dateTime
+now = datetime.now()
+
+# convert to string
+date_time_str = now.strftime("%Y-%m-%d %H:%M:%S")
 
 class Title:
     """
@@ -16,7 +21,9 @@ class Title:
         self.popularity = round(data.get('weighted_popularity', 0), 2)
         self.overview = data.get('overview', 'No overview available')
         self.watched = False
-        self.rating = 'N/A'
+        self.added_date = date_time_str
+        self.watched_date = None
+        self.rating = None
     def mark_watched(self, rating=None):
         """Allow user to mark title as watched
 
@@ -24,6 +31,7 @@ class Title:
             rating (int, optional): User rating. Defaults to None
         """
         self.watched = True
+        self.watched_date = date_time_str
         if rating:
             self.set_rating(rating)
     def set_rating(self, rating):
@@ -46,12 +54,16 @@ class Title:
         """
         return {
             "id": self.id,
-            "Title": self.title,
-            "Media Type": self.media_type,
-            "Release Date": self.release_date,
-            "Genres": self.genres,
-            "Weighted Popularity": self.popularity,
-            "Overview": self.overview,
+            "title": self.title,
+            "media_type": self.media_type,
+            "release_date": self.release_date,
+            "genres": self.genres,
+            "weighted_popularity": self.popularity,
+            "overview": self.overview,
+            "is_watched": self.watched,
+            "added_date": self.added_date,
+            "watched_date":self.watched_date,
+            "rating": self.rating
         }
 
     def to_sheet_row(self):
@@ -69,7 +81,8 @@ class Title:
             str(self.popularity),
             self.overview,
             str(self.watched),
-            str(datetime.timestamp(datetime.now())),
+            self.added_date,
+            self.watched_date,
             str(self.rating)
         ]
         return values

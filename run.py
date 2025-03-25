@@ -56,11 +56,13 @@ def get_user_search_input(prompt="Search a title to get started: "):
 
 def display_search_results(title_objects, max_results=5):
     """
-    Display formatted TMDB search results
+    Display TMDB search filtered and sorted results as Title objects
     
-    Arg:
-        results (list): Filtered list of results
+    Args:
+        results (list): Filtered and sorted results list of Title objects
         max_results (int): Maximum number of results to display
+    Returns:
+        (list[Title]): Title objects list slice [:max_results]
     """
     print("\nSearch Results:\n" + "-"*60)
     for index, title in enumerate(title_objects[:max_results], start=1):
@@ -73,10 +75,10 @@ def select_item_from_results(title_list):
     """
     Allows user to select an item from previously displayed results
     
-    Arg:
+    Args:
         title_list (list[Title]): List of Title objects
-    Return:
-        dictionary object: selected item from list
+    Returns:
+        Title object: selected item from list
     """
     while True:
         user_input = input(
@@ -105,15 +107,17 @@ def select_item_from_results(title_list):
 def get_watch_status(title_obj):
     """
     Promps user to inform if item has already been watched
+    and updates object using mark_watched method
     
     Args:
         title_obj (Title): The Title object to save
     Returns:
-        bool: True, False
+        bool: True (watched), False (not watched)
     """
     while True:
         choice = input(f'Have you already watched {title_obj.title}? (y/n): ').strip().lower()
         if choice == 'y':
+            title_obj.mark_watched()
             return True
         elif choice == 'n':
             return False
@@ -122,10 +126,9 @@ def get_watch_status(title_obj):
 def get_title_rating(title_obj):
     """
     Prompts user to provide movie rating 1-10
-
+    updates object using set_rating method
     Args:
         title_obj(Title): The Title object to save
-
     """
     while True:
         user_input = input(
@@ -165,7 +168,7 @@ def main():
                 continue # Go back to search (1)
             # 5. Sort results by custom weighted popularity
             sorted_results = sort_items_by_popularity(filtered_results)
-            # 6. Display top results
+            # 6. Display top results as Title objects
             title_objects = [Title(result) for result in sorted_results]
             displayed_titles = display_search_results(title_objects)
             # 7. Let user select result or go back to search
@@ -176,16 +179,16 @@ def main():
                 continue # Go back to search (1)
             # 9. Valid item (int) is selected
             print(f"You've selected {selected_item.title} ({selected_item.release_date})\n")
-            # 10. Check if item is already in the list
+            # 10. Check for item duplicate before saving
             if not check_for_duplicate(selected_item, google_sheet):
                 if get_watch_status(selected_item):
                     get_title_rating(selected_item)
-                    selected_item.mark_watched()
                 else:
                     selected_item.watched = False
                 save_item_to_list(google_sheet, selected_item)
                 break
         elif user_choice in ['watched', 'watchlist']:
+            # Set watch_flag to True is choice is watched
             watched_flag = user_choice == 'watched'
             titles = get_titles_by_watch_status(google_sheet, watched_flag)
             if not titles:
@@ -193,7 +196,7 @@ def main():
             else:
                 print("\nYour Titles:\n" + "-"*60)
                 for i, row in enumerate(titles, 1):
-                    print(f'{i}. {row['Title']} ({row['Release Date']}) - Rated: {row['Rating']}')
+                    print(f'{i}. {row['title']} ({row['release_date']}) - Rated: {row['rating']}')
             break
 
 if __name__ == "__main__":

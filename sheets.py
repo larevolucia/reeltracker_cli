@@ -43,9 +43,9 @@ def save_item_to_list(sheet, title_obj):
         worksheet = sheet.add_worksheet(title='My_List', rows='100', cols='20')
         # Create headers if worksheet is new
         headers = [
-            "id", "Title", "Media Type", "Release Date",
-            "Genres", "Weighted Popularity", "Overview",
-            "Watched", "Timestamp", "Rating"
+            "id", "title", "media_type", "release_date",
+            "genres", "weighted_popularity", "overview",
+            "is_watched", "added_date", "watched_date", "rating"
         ]
         worksheet.append_row(headers)
     # Prepare row
@@ -54,12 +54,14 @@ def save_item_to_list(sheet, title_obj):
 
 def check_for_duplicate(title_obj, sheet):
     """
-    Checks if the given Title object is already in the Google Sheet.
-
+    Checks if the given Title object is already in the Google Sheet
+    by searching combination of id and media_type match
 
     Args:
         title_obj (Title): The Title instance to check
         sheet (str): initialized google sheet
+    Returns: 
+        (bool): True (already in list) / False (new item)
     """
     try:
         worksheet = sheet.worksheet('My_List')
@@ -67,7 +69,7 @@ def check_for_duplicate(title_obj, sheet):
         # Get headers and indexes
         headers = all_values[0]
         id_index = headers.index("id")
-        type_index = headers.index("Media Type")
+        type_index = headers.index("media_type")
 
         for row in all_values[1:]:
             if len(row) > max(id_index, type_index):
@@ -94,7 +96,7 @@ def get_titles_by_watch_status(sheet, watched):
         all_values = worksheet.get_all_records()
 
         filtered = [row for row in all_values
-                    if str(row.get("Watched", "")).lower() == str(watched).lower()
+                    if str(row.get("is_watched", "")).lower() == str(watched).lower()
                     ]
         return filtered
     except gspread.exceptions.WorksheetNotFound:
