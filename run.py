@@ -22,8 +22,8 @@ def display_main_menu():
     """
     print("\n🎬 ReelTracker Menu\n")
     print("1. Search a new title")
-    print("2. See watchlist titles")
-    print("3. See watched titles")
+    print("2. Manage watchlist titles")
+    print("3. Manage watched titles")
     print("4. Exit")
     while True:
         choice = input("\nChoose an option (1-4). ").strip()
@@ -155,6 +155,48 @@ def get_title_rating(title_obj):
         except ValueError as e:
             print(f"\nInvalid input: {e}")
 
+def handle_list_interaction(title_list, list_type):
+    """
+     Display the menu with CRUD actions for 
+    """
+    valid_actions = {'r', 'd', 'w'}
+    while True:
+        print("\nAvailable commands:")
+        print("r <num> → rate title")
+        if list_type == "watchlist":
+            print("w <num> → mark as watched")
+        print("d <num> → delete title")
+        print("m → return to main menu")
+        command = input("\n> ").strip().lower()
+        if command == 'm':
+            break
+
+        try:
+            # split command into action and title index
+            action, idx_str = command.split(maxsplit=1)
+        except ValueError:
+            print("Invalid command format. Try something like 'r 1' or 'd 2'.")
+            continue
+        if action not in valid_actions:
+            print(f'Invalid action: {action}. Valid actions are:{','.join(valid_actions)}')
+            continue
+        if not idx_str.isdigit():
+            print(f'Invalid index: {idx_str}. Please provide a valid number.')
+            continue
+        index = int(idx_str) - 1
+        if index < 0 or index >= len(title_list):
+            print(f'Invalid title {index}. Select a number between 1 and {len(title_list)}')
+            continue  
+        title = title_list[index]
+        
+        #call applicable function
+        if action == 'r':
+            print(f'You want to change the rating of {title.title}')
+        elif action == 'd':
+            print(f'You want to delete {title.title}')
+        elif action == 'w':
+            print(f'You want to mark {title.title} as watched')
+            
 def main():
     """
     Main execution function for the CLI Reel Tracker.
@@ -213,7 +255,7 @@ def main():
                 continue
             your_titles_obj = [Title.from_sheet_row(row) for row in your_titles]
             display_title_entries(your_titles_obj, user_choice)
-
+            handle_list_interaction(your_titles_obj, user_choice)
             continue
 
 if __name__ == "__main__":
