@@ -45,6 +45,13 @@ More details at [#1](https://github.com/larevolucia/reeltracker_cli/issues/1)
 
 ## Features
 
+### Data Transformation
+The `Title` class includes methods that transform its data into different formats depending on where it’s being used. For example, `to_dict()` converts the object into a dictionary suitable for programmatic use or storage, while `to_sheet_row()` formats the data as a list tailored for writing to a spreadsheet. The `from_sheet_row` class method allows you to reconstruct a `Title` object from a saved spreadsheet entry, making it easy to load and work with previously stored data across session.
+
+Consulted references:
+- [PyNative](https://pynative.com/python-class-method-vs-static-method-vs-instance-method)
+- [BuiltIn](https://builtin.com/software-engineering-perspectives/python-cls)
+- [GeeksForGeeks](https://www.geeksforgeeks.org/classmethod-in-python/)
 
 ### Popularity Sorting
 Initially, I intended to use API provided popularity to sort the items. Upon testing with a few queries, I noticed that titles with very few high ratings would dominate over more mainstream titles. This would lead to very niche titles with limited user feedback to peear as more popular than well established ones, reducing reliability of the popularity data.
@@ -65,7 +72,7 @@ Why use logarithms? Using multiplication would result on the opposite problem. I
 
 Consulted references:
 - [Python Math](https://docs.python.org/3/library/math.html)
-- [W3School sorted()](https://www.w3schools.com/python/ref_func_sorted.asp)
+- [W3School sorted( )](https://www.w3schools.com/python/ref_func_sorted.asp)
 - [FreeCodeCamp lambda sort list in Python](https://www.freecodecamp.org/news/lambda-sort-list-in-python/)
 
 ## Requirements

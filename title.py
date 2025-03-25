@@ -101,3 +101,26 @@ class Title:
             str(self.rating)
         ]
         return values
+    @classmethod
+    def from_sheet_row(cls, row):
+        """creates a Title object from Google Sheet row
+
+        Args:
+            row (dict): each row is a dictionary 
+        Returns:
+            obj: Title object
+        """
+        obj = cls({
+            "id": row.get('id'),
+            "title": row.get('title'),
+            "media_type": row.get('media_type'),
+            "overview": row.get('overview'),
+            'weighted_popularity': float(row.get('weighted_popularity', 0))
+        })
+        obj.release_date = row.get('release_date')
+        obj.genres = row.get('genres', [])
+        obj.watched = str(row.get('is_watched', 'False')).lower() == 'true'
+        obj.added_date = row.get('added_date')
+        obj.watched_date = row.get('watched_date')
+        obj.rating = row.get('rating')
+        return obj

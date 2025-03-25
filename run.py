@@ -104,7 +104,7 @@ def select_item_from_results(title_list):
             return chosen_item
 
         except ValueError as e:
-            print(f"\nInvalid input: {e}. Please enter a number or 'n'.")
+            print(f"\nInvalid input: {e}. Please enter a number, 'm' or 'n'.")
 
 def get_watch_status(title_obj):
     """
@@ -151,13 +151,14 @@ def main():
     """
     Main execution function for the CLI Reel Tracker.
     """
+    print("\nInitiating ReelTracker...")
     google_sheet = initialize_google_sheets('reeltracker_cli')
     while True:
         user_choice = display_main_menu()
         if user_choice == 'exit':
             print('\nGoodbye!\n')
             break
-        elif user_choice == 'search':
+        if user_choice == 'search':
             while True:
                 # 1. Prompt user to enter a search query
                 search_query = get_user_search_input()
@@ -195,18 +196,19 @@ def main():
                     save_item_to_list(google_sheet, selected_item)
                     break
                 break
-        elif user_choice in ['watched', 'watchlist']:
+        if user_choice in ['watched', 'watchlist']:
             # Set watch_flag to True is choice is watched
             watched_flag = user_choice == 'watched'
-            titles = get_titles_by_watch_status(google_sheet, watched_flag)
-            if not titles:
-                print(f"\nNo {user_choice} title found in list.")
+            your_titles = get_titles_by_watch_status(google_sheet, watched_flag)
+            if not your_titles:
+                print(f"\nNo {user_choice} title found.")
                 continue
-            else:
-                print(f"\nYour {user_choice} titles:\n" + "-"*60)
-                for i, row in enumerate(titles, 1):
-                    print(f'{i}. {row['title']} ({row['release_date']}) - Rated: {row['rating']}')
-            break
+            your_titles_obj = [Title.from_sheet_row(row) for row in your_titles]
+            print(f"\nYour {user_choice} titles:\n" + "-"*60)
+            for i, obj in enumerate(your_titles_obj, 1):
+                print(f"{i}. {obj.title} ({obj.release_date}) - Rated: {obj.rating}")
+
+            continue
 
 if __name__ == "__main__":
     main()
