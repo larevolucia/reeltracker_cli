@@ -54,17 +54,23 @@ def get_user_search_input(prompt="\nSearch a title to get started: "):
             return user_query
         print('\nSearch query cannot be emtpy. Please try again.\n')
 
-def display_search_results(title_objects, max_results=5):
+def display_title_entries(title_objects, mode, max_results=None):
     """
-    Display TMDB search filtered and sorted results as Title objects
+    Display a list of Title objects with formatting base on context 
     
     Args:
-        results (list): Filtered and sorted results list of Title objects
+        title_objects (list): list of Title objects
         max_results (int): Maximum number of results to display
+        mode (str): context hint
     Returns:
         (list[Title]): Title objects list slice [:max_results]
     """
-    print("\nSearch Results:\n" + "-"*60)
+    headers = {
+        'search' : 'Search results',
+        'watchlist': 'Your watchlist',
+        'watched': 'Your watched titles'
+    }
+    print(f"\n{headers.get(mode, 'Titles')}:\n" + "-"*60)
     for index, title in enumerate(title_objects[:max_results], start=1):
         print(f"\n{index}. {title.title} ({title.release_date})")
         print(f"   Type: {title.media_type} | Popularity: {title.popularity}")
@@ -175,7 +181,7 @@ def main():
                 sorted_results = sort_items_by_popularity(filtered_results)
                 # 6. Display top results as Title objects
                 title_objects = [Title(result) for result in sorted_results]
-                displayed_titles = display_search_results(title_objects)
+                displayed_titles = display_title_entries(title_objects, 'search', 5)
                 # 7. Select result, back to main menu or new search
                 selected_item = select_item_from_results(displayed_titles)
                 if selected_item == 'main':
@@ -204,9 +210,7 @@ def main():
                 print(f"\nNo {user_choice} title found.")
                 continue
             your_titles_obj = [Title.from_sheet_row(row) for row in your_titles]
-            print(f"\nYour {user_choice} titles:\n" + "-"*60)
-            for i, obj in enumerate(your_titles_obj, 1):
-                print(f"{i}. {obj.title} ({obj.release_date}) - Rated: {obj.rating}")
+            display_title_entries(your_titles_obj, user_choice)
 
             continue
 

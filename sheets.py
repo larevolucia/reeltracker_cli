@@ -35,7 +35,7 @@ def save_item_to_list(sheet, title_obj):
         sheet (str): Google sheet name 
         title_obj (Title): The Title object to save
     """
-    # print_json(data=title_obj.to_dict())
+    # print_json(data=title_obj.to_sheet_row())
 
     try:
         worksheet = sheet.worksheet('My_List')

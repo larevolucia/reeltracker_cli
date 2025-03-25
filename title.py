@@ -110,6 +110,7 @@ class Title:
         Returns:
             obj: Title object
         """
+        # create Title instance from __init__
         obj = cls({
             "id": row.get('id'),
             "title": row.get('title'),
@@ -117,6 +118,7 @@ class Title:
             "overview": row.get('overview'),
             'weighted_popularity': float(row.get('weighted_popularity', 0))
         })
+        # adds data that went through customization
         obj.release_date = row.get('release_date')
         obj.genres = row.get('genres', [])
         obj.watched = str(row.get('is_watched', 'False')).lower() == 'true'
