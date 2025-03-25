@@ -3,7 +3,7 @@ Title class module
 """
 from datetime import datetime
 from utils import extract_year
-
+from tmdb import get_genre_names_from_ids
 # current dateTime
 now = datetime.now()
 
@@ -21,9 +21,17 @@ class Title:
         self.title = data.get('title') or data.get('name') or 'No title available'
         self.media_type = data.get('media_type', 'Unknown')
         release_date = data.get('release_date') or data.get('first_air_date') or 'Unknown'
-        if release_date != 'Unknown':
-            self.release_date = extract_year(release_date)
-        self.genres = data.get('genre_ids', [])
+        self.release_date = (
+            extract_year(release_date)
+            if release_date != 'Unknown'
+            else release_date
+            )
+        genres_ids = data.get('genre_ids', [])
+        self.genres = (
+            get_genre_names_from_ids(genres_ids, self.media_type)
+            if genres_ids
+            else genres_ids
+            )
         self.popularity = round(data.get('weighted_popularity', 0), 2)
         self.overview = data.get('overview', 'No overview available')
         self.watched = False
