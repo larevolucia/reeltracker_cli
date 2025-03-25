@@ -2,6 +2,7 @@
     Utility functions for filtering, formatting and sorting data
 """
 import math
+from datetime import datetime
 
 def filter_results_by_media_type(result_list, allowed_media_types=('movie', 'tv')):
     """
@@ -50,3 +51,14 @@ def sort_items_by_popularity(items):
 
     # for each x(item) in my list, sort by weighted_popularity
     return sorted(items, key=lambda x: x['weighted_popularity'], reverse=True)
+
+def extract_year(date):
+    """
+    Use datetime to extract year from string
+
+    Args:
+        date (str): YYYY-MM-DD format
+    """
+    d = datetime.strptime(date, '%Y-%m-%d')
+    year_string = d.strftime("%Y")
+    return year_string

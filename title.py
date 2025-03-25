@@ -2,21 +2,27 @@
 Title class module
 """
 from datetime import datetime
+from utils import extract_year
+
 # current dateTime
 now = datetime.now()
 
 # convert to string
 date_time_str = now.strftime("%Y-%m-%d %H:%M:%S")
 
+
 class Title:
     """
     Class to contain Title information and methods
     """
     def __init__(self, data):
+        # print("Incoming data:", data)
         self.id = data.get('id')
         self.title = data.get('title') or data.get('name') or 'No title available'
         self.media_type = data.get('media_type', 'Unknown')
-        self.release_date = data.get('release_date') or data.get('first_air_date') or 'Unknown'
+        release_date = data.get('release_date') or data.get('first_air_date') or 'Unknown'
+        if release_date != 'Unknown':
+            self.release_date = extract_year(release_date)
         self.genres = data.get('genre_ids', [])
         self.popularity = round(data.get('weighted_popularity', 0), 2)
         self.overview = data.get('overview', 'No overview available')
