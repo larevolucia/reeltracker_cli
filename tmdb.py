@@ -7,7 +7,7 @@ import requests
 
 # Constants
 TMDB_URL ='https://api.themoviedb.org/3'
-DEFAULT_LANGUAGE ='language=en-US'
+DEFAULT_LANGUAGE ='en-US'
 
 # Load environment variables from .env file
 load_dotenv()
@@ -24,8 +24,8 @@ def fetch_tmdb_results(search_key, api_key, page=1, language=DEFAULT_LANGUAGE):
     Args:
         search_key (str): User search query
         api_key (str): TMDb API authentication key
-        page(int): Page number of results
-        language(str): language code for results
+        page(int): Page number of results (default 1)
+        language(str): language code for results (default en-US)
     Returns:
         list: A list of dictionaries with results data
     """

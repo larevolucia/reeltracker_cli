@@ -8,9 +8,9 @@ def filter_results_by_media_type(result_list, allowed_media_types=('movie', 'tv'
     Filters the TMDB results by media_type
     Args:
         result_list (list): list of dictionaries from API
-        allowed_media_types(tuple): Types used for filtering
-        
-    Return: Filtered list limited to allowed media types
+        allowed_media_types(tuple): Types used for filtering   
+    Returns: 
+        list: Filtered list limited to allowed media types
     """
     return [
         result for result in result_list
@@ -19,7 +19,7 @@ def filter_results_by_media_type(result_list, allowed_media_types=('movie', 'tv'
 
 def calculate_weighted_popularity(item):
     """
-    Calculates weighted popularity based on popularity and vote_count
+    Calculates weighted popularity based on popularity * log10 vote_count
 
     Args:
         item (dict): TMDb item dictionary
@@ -36,7 +36,7 @@ def calculate_weighted_popularity(item):
 
 def sort_items_by_popularity(items):
     """
-    Sorts a list of TMDb items by popularity
+    Sorts a list of TMDb items by weighted popularity
 
     Args:
         items (list): List of TMDb items dictionaries
