@@ -156,37 +156,38 @@ def main():
             print('Goodbye!')
             break
         elif user_choice == 'search':
-            # 1. Prompt user to enter a search query
-            search_query = get_user_search_input()
-            # 2. Use the query to fetch API results
-            search_results = fetch_tmdb_results(search_query, TMDB_API_KEY)
-            # 3. Filter out non-movie/TV results
-            filtered_results = filter_results_by_media_type(search_results)
-            # 4. Handle case where no valid results are found
-            if not filtered_results:
-                print("No results found. Try another search.\n")
-                continue # Go back to search (1)
-            # 5. Sort results by custom weighted popularity
-            sorted_results = sort_items_by_popularity(filtered_results)
-            # 6. Display top results as Title objects
-            title_objects = [Title(result) for result in sorted_results]
-            displayed_titles = display_search_results(title_objects)
-            # 7. Let user select result or go back to search
-            selected_item = select_item_from_results(displayed_titles)
-            # 8. If user types 'n', goes back to search (1)
-            if selected_item is None:
-                print("\nStarting a new search\n")
-                continue # Go back to search (1)
-            # 9. Valid item (int) is selected
-            print(f"You've selected {selected_item.title} ({selected_item.release_date})\n")
-            # 10. Check for item duplicate before saving
-            if not check_for_duplicate(selected_item, google_sheet):
-                if get_watch_status(selected_item):
-                    get_title_rating(selected_item)
-                else:
-                    selected_item.watched = False
-                save_item_to_list(google_sheet, selected_item)
-                break
+            while True:
+                # 1. Prompt user to enter a search query
+                search_query = get_user_search_input()
+                # 2. Use the query to fetch API results
+                search_results = fetch_tmdb_results(search_query, TMDB_API_KEY)
+                # 3. Filter out non-movie/TV results
+                filtered_results = filter_results_by_media_type(search_results)
+                # 4. Handle case where no valid results are found
+                if not filtered_results:
+                    print("No results found. Try another search.\n")
+                    continue # Go back to search (1)
+                # 5. Sort results by custom weighted popularity
+                sorted_results = sort_items_by_popularity(filtered_results)
+                # 6. Display top results as Title objects
+                title_objects = [Title(result) for result in sorted_results]
+                displayed_titles = display_search_results(title_objects)
+                # 7. Let user select result or go back to search
+                selected_item = select_item_from_results(displayed_titles)
+                # 8. If user types 'n', goes back to search (1)
+                if selected_item is None:
+                    print("\nStarting a new search\n")
+                    continue # Go back to search (1)
+                # 9. Valid item (int) is selected
+                print(f"You've selected {selected_item.title} ({selected_item.release_date})\n")
+                # 10. Check for item duplicate before saving
+                if not check_for_duplicate(selected_item, google_sheet):
+                    if get_watch_status(selected_item):
+                        get_title_rating(selected_item)
+                    else:
+                        selected_item.watched = False
+                    save_item_to_list(google_sheet, selected_item)
+                    break
         elif user_choice in ['watched', 'watchlist']:
             # Set watch_flag to True is choice is watched
             watched_flag = user_choice == 'watched'
@@ -194,7 +195,7 @@ def main():
             if not titles:
                 print("\nNo titles found.")
             else:
-                print("\nYour Titles:\n" + "-"*60)
+                print(f"\nYour {user_choice} titles:\n" + "-"*60)
                 for i, row in enumerate(titles, 1):
                     print(f'{i}. {row['title']} ({row['release_date']}) - Rated: {row['rating']}')
             break
