@@ -72,9 +72,11 @@ def display_title_entries(title_objects, mode, max_results=None):
     }
     print(f"\n{headers.get(mode, 'Titles')}:\n" + "-"*60)
     for index, title in enumerate(title_objects[:max_results], start=1):
-        print(f"\n{index}. {title.title} ({title.release_date})")
-        print(f"   Type: {title.media_type} | Popularity: {title.popularity}")
-        print(f"   Overview: {title.overview}")
+        print(f"\n{index}. {title.title} ({title.release_date}) - {title.media_type}")
+        print(f'\nPopularity Score: {title.popularity}')
+        if mode == 'watched':
+            print(f'Your rating: {title.rating}')
+        print(f"\nSynopsis: {title.overview}")
     return title_objects[:max_results]
 
 def select_item_from_results(title_list):
