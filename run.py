@@ -159,26 +159,34 @@ def handle_list_interaction(title_list, list_type):
     """
      Display the menu with CRUD actions for 
     """
-    valid_actions = {'r', 'd', 'w'}
+    watched_valid_actions = {'r', 'd', 'w'}
+    watchlist_valid_actions = {'d', 'w'}
     while True:
-        print("\nAvailable commands:")
-        print("r <num> → rate title")
+        print("\nAvailable title commands:")
+        if list_type == "watched":
+            print("r <num> → change rating")
+            print("w <num> → move to watchlist")
         if list_type == "watchlist":
-            print("w <num> → mark as watched")
+            print("w <num> → mark as watched and rate")
         print("d <num> → delete title")
         print("m → return to main menu")
         command = input("\n> ").strip().lower()
+
         if command == 'm':
             break
-
         try:
             # split command into action and title index
             action, idx_str = command.split(maxsplit=1)
         except ValueError:
             print("Invalid command format. Try something like 'r 1' or 'd 2'.")
             continue
-        if action not in valid_actions:
-            print(f'Invalid action: {action}. Valid actions are:{','.join(valid_actions)}')
+        if list_type == 'watched' and action not in watched_valid_actions:
+            print(f"Invalid action: {action}."
+                  f"Valid actions are: {', '.join(watched_valid_actions)} and m.")
+            continue
+        if list_type == 'watchlist' and action not in watchlist_valid_actions:
+            print(f"Invalid action: {action}."
+                  f"Valid actions are: {', '.join(watchlist_valid_actions)} and m.")
             continue
         if not idx_str.isdigit():
             print(f'Invalid index: {idx_str}. Please provide a valid number.')
@@ -186,16 +194,22 @@ def handle_list_interaction(title_list, list_type):
         index = int(idx_str) - 1
         if index < 0 or index >= len(title_list):
             print(f'Invalid title {index}. Select a number between 1 and {len(title_list)}')
-            continue  
+            continue
         title = title_list[index]
         
         #call applicable function
         if action == 'r':
             print(f'You want to change the rating of {title.title}')
+            break
         elif action == 'd':
             print(f'You want to delete {title.title}')
-        elif action == 'w':
+            break
+        elif action == 'w' and list_type == "watchlist":
             print(f'You want to mark {title.title} as watched')
+            break
+        elif action == 'w' and list_type == "watched":
+            print(f'You want to move {title.title} to watchlist')
+            break
             
 def main():
     """
@@ -210,6 +224,7 @@ def main():
             break
         if user_choice == 'search':
             while True:
+                print('\nnOpening search...')
                 # 1. Prompt user to enter a search query
                 search_query = get_user_search_input()
                 print(f'\nSearching for {search_query}...')
@@ -247,6 +262,7 @@ def main():
                     break
                 break
         if user_choice in ['watched', 'watchlist']:
+            print(f'\nLoading {user_choice} options...')
             # Set watch_flag to True is choice is watched
             watched_flag = user_choice == 'watched'
             your_titles = get_titles_by_watch_status(google_sheet, watched_flag)
