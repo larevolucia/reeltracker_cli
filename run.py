@@ -164,8 +164,11 @@ def handle_list_interaction(title_list, list_type):
     """
      Display the menu with CRUD actions for 
     """
-    watched_valid_actions = {'r', 'd', 'w'}
-    watchlist_valid_actions = {'d', 'w'}
+    valid_actions = {
+        'watched': {'r', 'd', 'w'},
+        'watchlist': {'d', 'w'}
+    }
+
     while True:
         print("\nAvailable title commands:")
         if list_type == "watched":
@@ -185,13 +188,9 @@ def handle_list_interaction(title_list, list_type):
         except ValueError:
             print("Invalid command format. Try something like 'r 1' or 'd 2'.")
             continue
-        if list_type == 'watched' and action not in watched_valid_actions:
+        if action not in valid_actions[list_type]:
             print(f"Invalid action: {action}."
-                  f"Valid actions are: {', '.join(watched_valid_actions)} and m.")
-            continue
-        if list_type == 'watchlist' and action not in watchlist_valid_actions:
-            print(f"Invalid action: {action}."
-                  f"Valid actions are: {', '.join(watchlist_valid_actions)} and m.")
+                  f"Valid actions are: {', '.join(valid_actions[list_type])} and m.")
             continue
         if not idx_str.isdigit():
             print(f'Invalid index: {idx_str}. Please provide a valid number.')
@@ -206,14 +205,14 @@ def handle_list_interaction(title_list, list_type):
         if action == 'r':
             print(f'You want to change the rating of {title.title}')
             break
-        elif action == 'd':
+        if action == 'd':
             print(f'You want to delete {title.title}')
             break
-        elif action == 'w' and list_type == "watchlist":
-            print(f'You want to mark {title.title} as watched')
-            break
-        elif action == 'w' and list_type == "watched":
-            print(f'You want to move {title.title} to watchlist')
+        if action == 'w':
+            if list_type == "watchlist":
+                print(f'You want to mark {title.title} as watched')
+            else:
+                print(f'You want to move {title.title} to watchlist')
             break
             
 def main():
