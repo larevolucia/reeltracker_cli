@@ -50,7 +50,7 @@ def save_item_to_list(sheet, title_obj):
         worksheet.append_row(headers)
     # Prepare row
     worksheet.append_row(title_obj.to_sheet_row())
-    print("\nTitle successfully written to the sheet.")
+    print(f"\n{title_obj.title} successfully written to the sheet.")
 
 def check_for_duplicate(title_obj, sheet):
     """

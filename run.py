@@ -26,17 +26,18 @@ def display_main_menu():
     print("3. Manage watched titles")
     print("4. Exit")
     while True:
-        choice = input("\nChoose an option (1-4). ").strip()
-        if choice == '1':
+        print("\nSelect an option (1-4).")
+        command = input("> ").strip().lower()
+        if command == '1':
             return 'search'
-        elif choice == '2':
+        elif command == '2':
             return 'watchlist'
-        elif choice == '3':
+        elif command == '3':
             return "watched"
-        elif choice == '4':
+        elif command == '4':
             return 'exit'
         else:
-            print('Invalid choice. Please select 1, 2, 3 or 4.')
+            print('Invalid option. Please select 1, 2, 3 or 4.')
 
 def get_user_search_input(prompt="\nSearch a title to get started: "):
     """
@@ -49,10 +50,11 @@ def get_user_search_input(prompt="\nSearch a title to get started: "):
         str: User input string
     """
     while True:
-        user_query = input(prompt)
+        print(prompt)
+        user_query = input("> ").strip()
         if user_query:
             return user_query
-        print('\nSearch query cannot be emtpy. Please try again.\n')
+        print('\nSearch cannot be emtpy. Please try again.\n')
 
 def display_title_entries(title_objects, mode, max_results=None):
     """
@@ -89,18 +91,19 @@ def select_item_from_results(title_list):
         Title object: selected item from list
     """
     while True:
-        user_input = input(
+        print(
             f"\nSelect an item (1-{len(title_list)}) to save it, "
             f"type 'n' for a new search or 'm' to return to main menu: "
-        ).strip().lower()
+        )
+        command = input("> ").strip().lower()
 
-        if user_input == 'n':
+        if command == 'n':
             return None  # New search
 
-        elif user_input == 'm':
+        if command == 'm':
             return 'main'  # Go back to main menu
         try:
-            selection = int(user_input)
+            selection = int(command)
             if not 1 <= selection <= len(title_list):
                 raise ValueError(
                     f'Number out of range. You must choose between 1 and '
@@ -125,11 +128,12 @@ def get_watch_status(title_obj):
         bool: True (watched), False (not watched)
     """
     while True:
-        choice = input(f'\nHave you already watched {title_obj.title}? (y/n): ').strip().lower()
-        if choice == 'y':
+        print(f'\nHave you already watched {title_obj.title}? (y/n):')
+        command = input("> ").strip().lower()
+        if command == 'y':
             title_obj.mark_watched()
             return True
-        elif choice == 'n':
+        if command == 'n':
             return False
         print("\nInvalid input. Please type 'y' for yes or 'n' for no.")
 
@@ -141,14 +145,15 @@ def get_title_rating(title_obj):
         title_obj(Title): The Title object to save
     """
     while True:
-        user_input = input(
+        print(
             f'\nHow would you rate {title_obj.title}? '
-            f'Select a number from 1-10: ').strip()
-        if not user_input.isdigit():
+            f'Select a number from 1-10: ')
+        command = input("> ").strip()
+        if not command.isdigit():
             print("\nInvalid input: Please enter a whole number.")
             continue
 
-        rating = int(user_input)
+        rating = int(command)
         try:
             title_obj.set_rating(rating)
             return
@@ -224,7 +229,7 @@ def main():
             break
         if user_choice == 'search':
             while True:
-                print('\nnOpening search...')
+                print('\nStarting a new search...')
                 # 1. Prompt user to enter a search query
                 search_query = get_user_search_input()
                 print(f'\nSearching for {search_query}...')
@@ -247,7 +252,6 @@ def main():
                     print("\nReturning to main menu...")
                     break # Go back to main menu
                 if selected_item is None:
-                    print("\nStarting a new search...")
                     continue # Go back to search (1)
                 # 8. Valid item (int) is selected
                 print(f"\nYou've selected {selected_item.title} ({selected_item.release_date})")
@@ -255,6 +259,7 @@ def main():
                 if not check_for_duplicate(selected_item, google_sheet):
                     if get_watch_status(selected_item):
                         get_title_rating(selected_item)
+                        print('\nSaving rating...')
                     else:
                         selected_item.watched = False
                     print(f"\nAdding {selected_item.title} to your list...")
