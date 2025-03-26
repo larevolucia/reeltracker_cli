@@ -1,3 +1,6 @@
+"""
+Menus dictionary to be used on run.py functions
+"""
 menus = {
     "main": {
         "title": "🎬 ReelTracker Menu",
