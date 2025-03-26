@@ -22,7 +22,7 @@ def display_menu(menu_key):
     print(f"\n{menu['title']}")
     for key, label in menu["options"].items():
         print(f"{key} → {label}")
-        
+
 def get_menu_choice(menu_key):
     """
     Request user command and returns it
@@ -38,10 +38,10 @@ def get_menu_choice(menu_key):
         print("\nSelect an option:")
         command = input("> ").strip().lower()
         if command in valid:
-            # return command value for main menu 
+            # return command value for main menu
             return valid[command] if menu_key == "main" else command
         print("Invalid option. Please try again.")
-        
+
 def display_main_menu():
     """
     Display the main menu and prompt the user to choose an option
@@ -170,61 +170,70 @@ def get_title_rating(title_obj):
         except ValueError as e:
             print(f"\nInvalid input: {e}")
 
-def handle_list_interaction(title_list, list_type):
+def handle_action_with_index(command, valid_actions, list_length):
     """
-     Display the menu with CRUD actions for 
+    Split command and index from user input
+    Validates the user's command
+
+    Args:
+        command (str): user input
+        valid_action (dict): data extracted from menus.py dict
+        list_lenght (int): length of options list
+    Returns:
+        action (str): valid selected action
+        index (str): index of selected title
+        error (str): error message / None if action + index is valid
     """
-    valid_actions = {
-        'watched': {'r', 'd', 'w'},
-        'watchlist': {'d', 'w'}
-    }
+    try:
+        action, idx_str = command.split(maxsplit=1)
+    except ValueError:
+        return None, None, ("Invalid command format. Try something like 'r 1' or 'd 2'.")
+    if action not in valid_actions:
+        return None, None, f"Invalid action '{action}'."
+    if not idx_str.isdigit():
+        return None, None, f"Invalid index '{idx_str}'. Use a number."
+    index = int(idx_str) - 1
+    if index < 0 or index >= list_length:
+        return None, None, f"Index out of range. Choose between 1 and {list_length}."
+    return action, index, None
+
+def handle_list_menu(title_list, list_type):
+    """
+     Display the menu with CRUD actions for watched / watchlist
+     Args:
+        title_list (list): list with title objects from Sheets
+        list_type (str): identifier of list (watched/watchlist)
+     Returns:
+        (dict) with action + selected title, or None if user exits.
+    """
+    valid_actions = set(menus[list_type]['options'].keys()) - {'m'}
 
     while True:
-        print("\nAvailable title commands:")
-        if list_type == "watched":
-            print("r <num> → change rating")
-            print("w <num> → move to watchlist")
-        if list_type == "watchlist":
-            print("w <num> → mark as watched and rate")
-        print("d <num> → delete title")
-        print("m → return to main menu")
+        display_menu(list_type)
+        print("\nEnter a command like 'd 2' or 'w 1':")
         command = input("\n> ").strip().lower()
 
         if command == 'm':
             break
-        try:
-            # split command into action and title index
-            action, idx_str = command.split(maxsplit=1)
-        except ValueError:
-            print("Invalid command format. Try something like 'r 1' or 'd 2'.")
-            continue
-        if action not in valid_actions[list_type]:
-            print(f"Invalid action: {action}."
-                  f"Valid actions are: {', '.join(valid_actions[list_type])} and m.")
-            continue
-        if not idx_str.isdigit():
-            print(f'Invalid index: {idx_str}. Please provide a valid number.')
-            continue
-        index = int(idx_str) - 1
-        if index < 0 or index >= len(title_list):
-            print(f'Invalid title {index}. Select a number between 1 and {len(title_list)}')
+        action, index, error = handle_action_with_index(command, valid_actions, len(title_list))
+        if error:
+            print("X", error)
             continue
         title = title_list[index]
-        
         #call applicable function
         if action == 'r':
-            print(f'You want to change the rating of {title.title}')
+            print(f'\nYou want to change the rating of {title.title}')
             break
         if action == 'd':
-            print(f'You want to delete {title.title}')
+            print(f'\nYou want to delete {title.title}')
             break
         if action == 'w':
             if list_type == "watchlist":
-                print(f'You want to mark {title.title} as watched')
+                print(f'\nYou want to mark {title.title} as watched')
             else:
-                print(f'You want to move {title.title} to watchlist')
+                print(f'\nYou want to move {title.title} to watchlist')
             break
-            
+
 def main():
     """
     Main execution function for the CLI Reel Tracker.
@@ -285,7 +294,7 @@ def main():
                 continue
             your_titles_obj = [Title.from_sheet_row(row) for row in your_titles]
             display_title_entries(your_titles_obj, user_choice)
-            handle_list_interaction(your_titles_obj, user_choice)
+            handle_list_menu(your_titles_obj, user_choice)
             continue
 
 if __name__ == "__main__":
