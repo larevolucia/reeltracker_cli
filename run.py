@@ -12,32 +12,42 @@ from sheets import (
     get_titles_by_watch_status
     )
 from utils import filter_results_by_media_type, sort_items_by_popularity
+from menus import menus
 
+def display_menu(menu_key):
+    """
+    Dynamically display menu data from menu.py based on given menu_key
+    """
+    menu = menus[menu_key]
+    print(f"\n{menu['title']}")
+    for key, label in menu["options"].items():
+        print(f"{key} → {label}")
+        
+def get_menu_choice(menu_key):
+    """
+    Request user command and returns it
+    Args:
+        menu_key (str): menu identifier
+
+    Returns:
+        command value (main menu) or command
+    """
+    menu = menus[menu_key]
+    valid = menu.get("valid_choices", menu["options"])
+    while True:
+        print("\nSelect an option:")
+        command = input("> ").strip().lower()
+        if command in valid:
+            # return command value for main menu 
+            return valid[command] if menu_key == "main" else command
+        print("Invalid option. Please try again.")
+        
 def display_main_menu():
     """
     Display the main menu and prompt the user to choose an option
-
-    Returns:
-        str: The user's choice ('search', 'watchlist', 'watched', or 'exit')
     """
-    print("\n🎬 ReelTracker Menu\n")
-    print("1. Search a new title")
-    print("2. Manage watchlist titles")
-    print("3. Manage watched titles")
-    print("4. Exit")
-    while True:
-        print("\nSelect an option (1-4).")
-        command = input("> ").strip().lower()
-        if command == '1':
-            return 'search'
-        elif command == '2':
-            return 'watchlist'
-        elif command == '3':
-            return "watched"
-        elif command == '4':
-            return 'exit'
-        else:
-            print('Invalid option. Please select 1, 2, 3 or 4.')
+    display_menu("main")
+    return get_menu_choice("main")
 
 def get_user_search_input(prompt="\nSearch a title to get started: "):
     """
