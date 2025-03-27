@@ -104,3 +104,54 @@ def get_titles_by_watch_status(sheet, watched):
     except gspread.exceptions.WorksheetNotFound:
         print("\nNo data found. Select 'search' to add your first title.")
         return []
+
+def save_or_update(sheet, title_obj):
+    """_summary_
+
+    Args:
+        sheet (_type_): _description_
+        title_obj (_type_): _description_
+    """
+    found, row_index, existing_row = find_existing_row_info(title_obj, sheet)
+    new_row = title_obj.to_sheet_row()
+
+    if found:
+        # Pad shorter row if needed
+        existing_row = existing_row + [""] * (len(new_row) - len(existing_row))
+        if existing_row[:len(new_row)] == new_row:
+            print(f"\nNo changes detected for {title_obj.title}. Skipping update.")
+            return 'skipped'
+        worksheet = sheet.worksheet('My_List')
+        worksheet.update(f"A{row_index}", [new_row])
+        print(f"\n{title_obj.title} updated successfully.")
+        return 'updated'
+    else:
+        save_item_to_list(sheet, title_obj)
+        return 'added'
+
+
+def find_existing_row_info(title_obj, sheet):
+    """
+    Finds an existing row in the sheet matching the Title by id and media_type.
+
+    Args:
+        title_obj (Title): The Title instance to search for
+        sheet (gspread.Spreadsheet): The initialized Google Sheet
+
+    Returns:
+    """
+    try:
+        worksheet = sheet.worksheet('My_List')
+        all_values = worksheet.get_all_values()
+        # Get headers and indexes
+        headers = all_values[0]
+        id_index = headers.index("id")
+        type_index = headers.index("media_type")
+
+        for i, row in enumerate(all_values[1:], start=1):
+            if len(row) > max(id_index, type_index):
+                if row[id_index] == str(title_obj.id) and row[type_index] == title_obj.media_type:
+                    return True, i, row
+        return False, None, None
+    except gspread.exceptions.WorksheetNotFound:
+        return False, None, None

@@ -8,7 +8,7 @@ from tmdb import fetch_tmdb_results, TMDB_API_KEY
 from sheets import (
     initialize_google_sheets,
     save_item_to_list,
-    check_for_duplicate,
+    save_or_update,
     get_titles_by_watch_status
     )
 from utils import filter_results_by_media_type, sort_items_by_popularity
@@ -192,7 +192,7 @@ def get_title_rating(title_obj):
         rating = int(command)
         try:
             title_obj.set_rating(rating)
-            return rating
+            return title_obj
         except ValueError as e:
             print(f"\nInvalid input: {e}")
 
@@ -276,26 +276,29 @@ def main():
                 # 5. Sort results by custom weighted popularity
                 sorted_results = sort_items_by_popularity(filtered_results)
                 # 6. Display top results as Title objects
-                title_objects = [Title(result) for result in sorted_results]
-                displayed_titles = display_title_entries(title_objects, 'search')
+                results_title_objects = [Title(result) for result in sorted_results]
+                displayed_titles = display_title_entries(results_title_objects, 'search')
                 # 7. Select result, back to main menu or new search
-                selected_item = select_item_from_results(displayed_titles)
-                if selected_item == 'main':
+                results_selected_title = select_item_from_results(displayed_titles)
+                if results_selected_title == 'main':
                     print("\nReturning to main menu...")
                     break # Go back to main menu
-                if selected_item is None:
+                if results_selected_title is None:
                     continue # Go back to search (1)
                 # 8. Valid item (int) is selected
-                print(f"\nYou've selected {selected_item.title} ({selected_item.release_date})")
+                print(f"\nYou've selected {results_selected_title.title}"
+                      f"({results_selected_title.release_date})")
+                save_action = save_or_update(google_sheet, results_selected_title)
                 # 9. Check for item duplicate before saving
-                if not check_for_duplicate(selected_item, google_sheet):
-                    if get_watch_status(selected_item):
-                        get_title_rating(selected_item)
+                if save_action == 'added':
+                    if get_watch_status(results_selected_title):
+                        get_title_rating(results_selected_title)
                         print('\nSaving rating...')
                     else:
-                        selected_item.watched = False
-                    print(f"\nAdding {selected_item.title} to your list...")
-                    save_item_to_list(google_sheet, selected_item)
+                        results_selected_title.watched = False
+                    print(f"\nAdding {results_selected_title.title} to your list...")
+                elif save_action == 'skipped':
+                    print(f"\nNo changes detected for {results_selected_title.title}.")
                     break
                 break
         if user_choice in ['watched', 'watchlist']:
@@ -324,7 +327,8 @@ def main():
             if user_choice == 'watched' and action == 'w':
                 print(f'\nYou moved {selected_title_obj.title} to watchlist')
             if action == 'r':
-                title_rating = get_title_rating(selected_title_obj)
+                updated_title_obj = get_title_rating(selected_title_obj)
+                save_item_to_list(google_sheet, updated_title_obj)
                 print(f'\nYou changed {selected_title_obj.title} rating to {title_rating}')
             if action == 'd':
                 print(f'\nYou removed {selected_title_obj.title} from your list.')
