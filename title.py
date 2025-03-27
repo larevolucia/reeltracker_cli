@@ -61,25 +61,6 @@ class Title:
         if not 1 <= rating <= 10:
             raise ValueError("Rating must be between 1 and 10.")
         self.rating = rating
-    def to_dict(self):
-        """Converts metadata to dictionary format
-
-        Returns:
-            dict: title metadata as dictionary
-        """
-        return {
-            "id": self.id,
-            "title": self.title,
-            "media_type": self.media_type,
-            "release_date": self.release_date,
-            "genres": self.genres,
-            "weighted_popularity": self.popularity,
-            "overview": self.overview,
-            "is_watched": self.watched,
-            "added_date": self.added_date,
-            "watched_date":self.watched_date,
-            "rating": self.rating
-        }
 
     def to_sheet_row(self):
         """Converts metadata to list format
@@ -101,6 +82,7 @@ class Title:
             str(self.rating)
         ]
         return values
+
     @classmethod
     def from_sheet_row(cls, row):
         """creates a Title object from Google Sheet row

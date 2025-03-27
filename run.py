@@ -66,30 +66,6 @@ def get_user_search_input(prompt="\nSearch a title to get started: "):
             return user_query
         print('\nSearch cannot be emtpy. Please try again.\n')
 
-# def display_title_entries(title_objects, mode, max_results=None):
-#     """
-#     Display a list of Title objects with formatting base on context
-#     Args:
-#         title_objects (list): list of Title objects
-#         max_results (int): Maximum number of results to display
-#         mode (str): context hint
-#     Returns:
-#         (list[Title]): Title objects list slice [:max_results]
-#     """
-#     headers = {
-#         'search' : 'Search results',
-#         'watchlist': 'Your watchlist',
-#         'watched': 'Your watched titles'
-#     }
-#     print(f"\n{headers.get(mode, 'Titles')}:\n" + "-"*60)
-#     for index, title in enumerate(title_objects[:max_results], start=1):
-#         print(f"\n{index}. {title.title} ({title.release_date}) - {title.media_type}")
-#         print(f'\nPopularity Score: {title.popularity}')
-#         if mode == 'watched':
-#             print(f'Your rating: {title.rating}')
-#         print(f"\nSynopsis: {title.overview}")
-#     return title_objects[:max_results]
-
 def display_title_entries(title_objects, mode, max_results=None):
     """
     Display a list of Title objects in a table format based on context.
@@ -98,6 +74,8 @@ def display_title_entries(title_objects, mode, max_results=None):
         title_objects (list): _description_
         mode (str): _description_
         max_results (int, optional): _description_. Defaults to None.
+    Returns:
+        (list[Title]): Title objects list slice [:max_results]
     """
     headers = {
         'search': 'Search results',
@@ -115,8 +93,8 @@ def display_title_entries(title_objects, mode, max_results=None):
     table_data = []
     for index, title in enumerate(title_objects[:max_results], start=1):
         title_str = title.title
-        if len(title_str) > 40:
-            title_str = title_str[:40].rstrip() + "..."
+        if len(title_str) > 34:
+            title_str = title_str[:34].rstrip() + "..."
         row = [
             index,
             title_str,
@@ -214,7 +192,7 @@ def get_title_rating(title_obj):
         rating = int(command)
         try:
             title_obj.set_rating(rating)
-            return
+            return rating
         except ValueError as e:
             print(f"\nInvalid input: {e}")
 
@@ -263,25 +241,12 @@ def handle_list_menu(title_list, list_type):
         command = input("\n> ").strip().lower()
 
         if command == 'm':
-            break
+            return None, None
         action, index, error = handle_action_with_index(command, valid_actions, len(title_list))
         if error:
-            print("X", error)
+            print(error)
             continue
-        title = title_list[index]
-        #call applicable function
-        if action == 'r':
-            print(f'\nYou want to change the rating of {title.title}')
-            break
-        if action == 'd':
-            print(f'\nYou want to delete {title.title}')
-            break
-        if action == 'w':
-            if list_type == "watchlist":
-                print(f'\nYou want to mark {title.title} as watched')
-            else:
-                print(f'\nYou want to move {title.title} to watchlist')
-            break
+        return action, index
 
 def main():
     """
@@ -337,14 +302,33 @@ def main():
             print(f'\nLoading {user_choice} options...')
             # Set watch_flag to True if choice is watched
             watched_flag = user_choice == 'watched'
+            # Get titles from Google Sheets
             your_titles = get_titles_by_watch_status(google_sheet, watched_flag)
             if not your_titles:
                 print(f"\nNo {user_choice} title found.")
                 continue
+            # Transform list of rows into list of objects
             your_titles_obj = [Title.from_sheet_row(row) for row in your_titles]
             display_title_entries(your_titles_obj, user_choice)
-            handle_list_menu(your_titles_obj, user_choice)
-            continue
+            # Unpack command and Title object
+            action, index = handle_list_menu(your_titles_obj, user_choice)
+            if action is None:
+                continue
+            selected_title_obj = your_titles_obj[index]
+            if user_choice == 'watchlist' and action == 'w':
+                selected_title_obj.mark_watched()
+                title_rating = get_title_rating(selected_title_obj)
+                print(f'\nYou marked {selected_title_obj.title} as watched '
+                      f'and rated it {title_rating}')
+                continue
+            if user_choice == 'watched' and action == 'w':
+                print(f'\nYou moved {selected_title_obj.title} to watchlist')
+            if action == 'r':
+                title_rating = get_title_rating(selected_title_obj)
+                print(f'\nYou changed {selected_title_obj.title} rating to {title_rating}')
+            if action == 'd':
+                print(f'\nYou removed {selected_title_obj.title} from your list.')
+                continue
 
 if __name__ == "__main__":
     main()
