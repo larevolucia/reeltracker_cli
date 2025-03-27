@@ -2,7 +2,7 @@
 CLI Reel tracker orchestration
 """
 # import json
-
+from tabulate import tabulate
 from title import Title
 from tmdb import fetch_tmdb_results, TMDB_API_KEY
 from sheets import (
@@ -66,29 +66,77 @@ def get_user_search_input(prompt="\nSearch a title to get started: "):
             return user_query
         print('\nSearch cannot be emtpy. Please try again.\n')
 
+# def display_title_entries(title_objects, mode, max_results=None):
+#     """
+#     Display a list of Title objects with formatting base on context
+#     Args:
+#         title_objects (list): list of Title objects
+#         max_results (int): Maximum number of results to display
+#         mode (str): context hint
+#     Returns:
+#         (list[Title]): Title objects list slice [:max_results]
+#     """
+#     headers = {
+#         'search' : 'Search results',
+#         'watchlist': 'Your watchlist',
+#         'watched': 'Your watched titles'
+#     }
+#     print(f"\n{headers.get(mode, 'Titles')}:\n" + "-"*60)
+#     for index, title in enumerate(title_objects[:max_results], start=1):
+#         print(f"\n{index}. {title.title} ({title.release_date}) - {title.media_type}")
+#         print(f'\nPopularity Score: {title.popularity}')
+#         if mode == 'watched':
+#             print(f'Your rating: {title.rating}')
+#         print(f"\nSynopsis: {title.overview}")
+#     return title_objects[:max_results]
+
 def display_title_entries(title_objects, mode, max_results=None):
     """
-    Display a list of Title objects with formatting base on context 
+    Display a list of Title objects in a table format based on context.
     
     Args:
-        title_objects (list): list of Title objects
-        max_results (int): Maximum number of results to display
-        mode (str): context hint
-    Returns:
-        (list[Title]): Title objects list slice [:max_results]
+        title_objects (list): _description_
+        mode (str): _description_
+        max_results (int, optional): _description_. Defaults to None.
     """
     headers = {
-        'search' : 'Search results',
+        'search': 'Search results',
         'watchlist': 'Your watchlist',
         'watched': 'Your watched titles'
     }
-    print(f"\n{headers.get(mode, 'Titles')}:\n" + "-"*60)
+
+    print(f"\n{headers.get(mode, 'Titles')}:\n")
+    is_watched = mode == 'watched'
+    col_headers = ["#", "Title", "Type", "Release"]
+    if is_watched:
+        col_headers.append("Rating")
+    else:
+        col_headers.append("Overview")
+    table_data = []
     for index, title in enumerate(title_objects[:max_results], start=1):
-        print(f"\n{index}. {title.title} ({title.release_date}) - {title.media_type}")
-        print(f'\nPopularity Score: {title.popularity}')
-        if mode == 'watched':
-            print(f'Your rating: {title.rating}')
-        print(f"\nSynopsis: {title.overview}")
+        title_str = title.title
+        if len(title_str) > 40:
+            title_str = title_str[:40].rstrip() + "..."
+        row = [
+            index,
+            title_str,
+            title.media_type,
+            title.release_date,
+        ]
+        if is_watched:
+            row.append(title.rating)
+        else:
+            overview = title.overview
+            if len(overview) > 80:
+                overview = overview[:80].rstrip() + "..."
+            row.append(overview)
+        table_data.append(row)
+    print(tabulate(
+        table_data,
+        headers=col_headers,
+        tablefmt="rounded_grid",
+        maxcolwidths=[None]*len(col_headers)
+        ))
     return title_objects[:max_results]
 
 def select_item_from_results(title_list):
@@ -204,7 +252,8 @@ def handle_list_menu(title_list, list_type):
         title_list (list): list with title objects from Sheets
         list_type (str): identifier of list (watched/watchlist)
      Returns:
-        (dict) with action + selected title, or None if user exits.
+        command (str): user action
+        title (obj): selected title, or None if user exits.
     """
     valid_actions = set(menus[list_type]['options'].keys()) - {'m'}
 
@@ -263,7 +312,7 @@ def main():
                 sorted_results = sort_items_by_popularity(filtered_results)
                 # 6. Display top results as Title objects
                 title_objects = [Title(result) for result in sorted_results]
-                displayed_titles = display_title_entries(title_objects, 'search', 5)
+                displayed_titles = display_title_entries(title_objects, 'search')
                 # 7. Select result, back to main menu or new search
                 selected_item = select_item_from_results(displayed_titles)
                 if selected_item == 'main':
@@ -286,7 +335,7 @@ def main():
                 break
         if user_choice in ['watched', 'watchlist']:
             print(f'\nLoading {user_choice} options...')
-            # Set watch_flag to True is choice is watched
+            # Set watch_flag to True if choice is watched
             watched_flag = user_choice == 'watched'
             your_titles = get_titles_by_watch_status(google_sheet, watched_flag)
             if not your_titles:
