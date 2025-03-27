@@ -122,14 +122,27 @@ def update_item_in_list(sheet, title_obj):
 
     if found:
         existing_row = existing_row + [""] * (len(new_row) - len(existing_row))
-        if all(existing_row[i] == new_row[i] for i in compare_indices):
+        updates = []
+        for col_index, header in enumerate(headers):
+            if header in timestamp_fields:
+                continue
+            old_value = existing_row[col_index]
+            new_value = new_row[col_index]
+            if old_value != new_value:
+                cell = gspread.utils.rowcol_to_a1(row_index, col_index + 1)
+                updates.append((cell, new_value))
+        if not updates:
             return 'skipped'
-        worksheet.update(f"A{row_index}", [new_row])
-        print(f"\n{title_obj.title} updated successfully.")
+
+        for cell, value in updates:
+            worksheet.update(cell, [[value]])
+
+        print(f"\n{title_obj.title} updated successfully ({len(updates)} changes).")
         return 'updated'
+
+    # If not found, just add it
     save_item_to_list(sheet, title_obj)
     return 'added'
-
 
 def find_existing_row_info(title_obj, sheet):
     """

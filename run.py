@@ -327,6 +327,7 @@ def main():
                 print(f'\nYou moved {selected_title_obj.title} to watchlist')
             if action == 'r':
                 updated_title_obj = get_title_rating(selected_title_obj)
+                title_rating = updated_title_obj.rating
                 update_item_in_list(google_sheet, updated_title_obj)
                 print(f'\nYou changed {selected_title_obj.title} rating to {title_rating}')
             if action == 'd':

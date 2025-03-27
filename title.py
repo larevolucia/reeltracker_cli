@@ -38,7 +38,7 @@ class Title:
         self.watched = False
         self.added_date = date_time_str
         self.watched_date = None
-        self.rating = None
+        self.rating = 'N/A'
     def mark_watched(self, rating=None):
         """Allow user to mark title as watched
 
@@ -102,7 +102,8 @@ class Title:
         })
         # adds data that went through customization
         obj.release_date = row.get('release_date')
-        obj.genres = row.get('genres', [])
+        genres_str = row.get('genres', '')
+        obj.genres = [g.strip() for g in genres_str.split(',')] if genres_str else []
         obj.watched = str(row.get('is_watched', 'False')).lower() == 'true'
         obj.added_date = row.get('added_date')
         obj.watched_date = row.get('watched_date')
