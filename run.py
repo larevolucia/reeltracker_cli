@@ -8,7 +8,8 @@ from tmdb import fetch_tmdb_results, TMDB_API_KEY
 from sheets import (
     initialize_google_sheets,
     save_item_to_list,
-    save_or_update,
+    check_for_duplicate,
+    update_item_in_list,
     get_titles_by_watch_status
     )
 from utils import filter_results_by_media_type, sort_items_by_popularity
@@ -192,6 +193,7 @@ def get_title_rating(title_obj):
         rating = int(command)
         try:
             title_obj.set_rating(rating)
+            print("\nSaving rating...")
             return title_obj
         except ValueError as e:
             print(f"\nInvalid input: {e}")
@@ -288,18 +290,15 @@ def main():
                 # 8. Valid item (int) is selected
                 print(f"\nYou've selected {results_selected_title.title}"
                       f"({results_selected_title.release_date})")
-                save_action = save_or_update(google_sheet, results_selected_title)
                 # 9. Check for item duplicate before saving
-                if save_action == 'added':
+                is_duplicate, _ = check_for_duplicate(results_selected_title, google_sheet)
+                # 10. Ask watch status
+                if not is_duplicate:
                     if get_watch_status(results_selected_title):
                         get_title_rating(results_selected_title)
-                        print('\nSaving rating...')
                     else:
                         results_selected_title.watched = False
-                    print(f"\nAdding {results_selected_title.title} to your list...")
-                elif save_action == 'skipped':
-                    print(f"\nNo changes detected for {results_selected_title.title}.")
-                    break
+                    save_item_to_list(google_sheet, results_selected_title)
                 break
         if user_choice in ['watched', 'watchlist']:
             print(f'\nLoading {user_choice} options...')
@@ -328,7 +327,7 @@ def main():
                 print(f'\nYou moved {selected_title_obj.title} to watchlist')
             if action == 'r':
                 updated_title_obj = get_title_rating(selected_title_obj)
-                save_item_to_list(google_sheet, updated_title_obj)
+                update_item_in_list(google_sheet, updated_title_obj)
                 print(f'\nYou changed {selected_title_obj.title} rating to {title_rating}')
             if action == 'd':
                 print(f'\nYou removed {selected_title_obj.title} from your list.')

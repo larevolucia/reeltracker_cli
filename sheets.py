@@ -78,10 +78,9 @@ def check_for_duplicate(title_obj, sheet):
                     watch_status = 'watched' if row[watched_index] == "True" else 'watchlist'
                     print(f"\n{title_obj.title} already in list, marked as {watch_status}.")
                     return True, watch_status
-
-        return False
+        return False, False
     except gspread.exceptions.WorksheetNotFound:
-        return False
+        return False, False
 
 def get_titles_by_watch_status(sheet, watched):
     """
@@ -105,7 +104,7 @@ def get_titles_by_watch_status(sheet, watched):
         print("\nNo data found. Select 'search' to add your first title.")
         return []
 
-def save_or_update(sheet, title_obj):
+def update_item_in_list(sheet, title_obj):
     """_summary_
 
     Args:
@@ -114,20 +113,22 @@ def save_or_update(sheet, title_obj):
     """
     found, row_index, existing_row = find_existing_row_info(title_obj, sheet)
     new_row = title_obj.to_sheet_row()
+    worksheet = sheet.worksheet('My_List')
+    headers = worksheet.row_values(1)
+    timestamp_fields = ["added_date", "watched_date"]
+    # Fields to compare (ignore timestamp fields)
+    compare_indices = [i for i, h in enumerate(headers) if h not in timestamp_fields]
+    print(compare_indices)
 
     if found:
-        # Pad shorter row if needed
         existing_row = existing_row + [""] * (len(new_row) - len(existing_row))
-        if existing_row[:len(new_row)] == new_row:
-            print(f"\nNo changes detected for {title_obj.title}. Skipping update.")
+        if all(existing_row[i] == new_row[i] for i in compare_indices):
             return 'skipped'
-        worksheet = sheet.worksheet('My_List')
         worksheet.update(f"A{row_index}", [new_row])
         print(f"\n{title_obj.title} updated successfully.")
         return 'updated'
-    else:
-        save_item_to_list(sheet, title_obj)
-        return 'added'
+    save_item_to_list(sheet, title_obj)
+    return 'added'
 
 
 def find_existing_row_info(title_obj, sheet):
@@ -139,6 +140,9 @@ def find_existing_row_info(title_obj, sheet):
         sheet (gspread.Spreadsheet): The initialized Google Sheet
 
     Returns:
+        found (bol): True/False - item found in list
+        index (int): row index number
+        row (list): row list data
     """
     try:
         worksheet = sheet.worksheet('My_List')
@@ -148,7 +152,7 @@ def find_existing_row_info(title_obj, sheet):
         id_index = headers.index("id")
         type_index = headers.index("media_type")
 
-        for i, row in enumerate(all_values[1:], start=1):
+        for i, row in enumerate(all_values[1:], start=2):
             if len(row) > max(id_index, type_index):
                 if row[id_index] == str(title_obj.id) and row[type_index] == title_obj.media_type:
                     return True, i, row
