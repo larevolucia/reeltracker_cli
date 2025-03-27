@@ -62,3 +62,12 @@ def extract_year(date):
     d = datetime.strptime(date, '%Y-%m-%d')
     year_string = d.strftime("%Y")
     return year_string
+
+def get_current_timestamp():
+    """
+    Give current timestamp
+
+    Returns:
+        _str_: YYYY-MM-DD HH:MM:SS
+    """
+    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')

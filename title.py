@@ -1,14 +1,9 @@
 """
 Title class module
 """
-from datetime import datetime
-from utils import extract_year
+from utils import extract_year, get_current_timestamp
 from tmdb import get_genre_names_from_ids
-# current dateTime
-now = datetime.now()
 
-# convert to string
-date_time_str = now.strftime("%Y-%m-%d %H:%M:%S")
 
 
 class Title:
@@ -36,19 +31,24 @@ class Title:
         overview = data.get('overview', 'No overview available').replace('\n', '')
         self.overview = overview
         self.watched = False
-        self.added_date = date_time_str
+        self.added_date = get_current_timestamp()
         self.watched_date = None
         self.rating = 'N/A'
-    def mark_watched(self, rating=None):
+    def toggle_watched(self, rating=None):
         """Allow user to mark title as watched
 
         Args:
             rating (int, optional): User rating. Defaults to None
         """
-        self.watched = True
-        self.watched_date = date_time_str
-        if rating:
-            self.set_rating(rating)
+        self.watched = not self.watched # toggle value
+        if self.watched:
+            self.watched_date = get_current_timestamp()
+            if rating:
+                self.set_rating(rating)
+        else:
+            # reset on toggle to False
+            self.watched_date = ""
+            self.rating = ""
     def set_rating(self, rating):
         """Allow user to rate watched item
 

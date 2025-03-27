@@ -115,10 +115,7 @@ def update_item_in_list(sheet, title_obj):
     new_row = title_obj.to_sheet_row()
     worksheet = sheet.worksheet('My_List')
     headers = worksheet.row_values(1)
-    timestamp_fields = ["added_date", "watched_date"]
-    # Fields to compare (ignore timestamp fields)
-    compare_indices = [i for i, h in enumerate(headers) if h not in timestamp_fields]
-    print(compare_indices)
+    timestamp_fields = ["added_date"]
 
     if found:
         existing_row = existing_row + [""] * (len(new_row) - len(existing_row))

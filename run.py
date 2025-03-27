@@ -157,7 +157,7 @@ def select_item_from_results(title_list):
 def get_watch_status(title_obj):
     """
     Promps user to inform if item has already been watched
-    and updates object using mark_watched method
+    and updates object using toggle_watched method
     
     Args:
         title_obj (Title): The Title object to save
@@ -168,7 +168,7 @@ def get_watch_status(title_obj):
         print(f'\nHave you already watched {title_obj.title}? (y/n):')
         command = input("> ").strip().lower()
         if command == 'y':
-            title_obj.mark_watched()
+            title_obj.toggle_watched()
             return True
         if command == 'n':
             return False
@@ -317,14 +317,18 @@ def main():
             if action is None:
                 continue
             selected_title_obj = your_titles_obj[index]
-            if user_choice == 'watchlist' and action == 'w':
-                selected_title_obj.mark_watched()
-                title_rating = get_title_rating(selected_title_obj)
-                print(f'\nYou marked {selected_title_obj.title} as watched '
-                      f'and rated it {title_rating}')
+            if action == 'w':
+                selected_title_obj.toggle_watched()
+                if selected_title_obj.watched:
+                    updated_title_obj = get_title_rating(selected_title_obj)
+                    title_rating = updated_title_obj.rating
+                    print(f'\nMarking {selected_title_obj.title} as watched '
+                          f'and rating it {title_rating}')
+                else:
+                    updated_title_obj = selected_title_obj
+                    print(f'\nMoving {selected_title_obj.title} to your watchlist')
+                update_item_in_list(google_sheet, updated_title_obj)
                 continue
-            if user_choice == 'watched' and action == 'w':
-                print(f'\nYou moved {selected_title_obj.title} to watchlist')
             if action == 'r':
                 updated_title_obj = get_title_rating(selected_title_obj)
                 title_rating = updated_title_obj.rating
