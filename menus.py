@@ -5,7 +5,7 @@ menus = {
     "main": {
         "title": "🎬 ReelTracker Menu",
         "options": {
-            "1": "Search a new title",
+            "1": "Search and add new title",
             "2": "Manage watchlist titles",
             "3": "Manage watched titles",
             "4": "Exit"
