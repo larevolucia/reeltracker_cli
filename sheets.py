@@ -131,8 +131,10 @@ def update_item_in_list(sheet, title_obj):
                 cell = gspread.utils.rowcol_to_a1(row_index, col_index + 1)
                 updates.append((cell, new_value))
         if not updates:
+            print(f'\nNo updates found for {title_obj.title}.')
             return 'skipped'
 
+        print(f'\nUpdating {title_obj.title}...')
         for cell, value in updates:
             worksheet.update(cell, [[value]])
 
@@ -156,7 +158,7 @@ def find_existing_row_info(title_obj, sheet):
         index (int): row index number
         row (list): row list data
     """
-    print(f"\nLooking for {title_obj.title} in list...")
+    print(f"\nLooking for {title_obj.title} in sheet...")
     try:
         worksheet = sheet.worksheet('My_List')
         all_values = worksheet.get_all_values()
@@ -169,6 +171,7 @@ def find_existing_row_info(title_obj, sheet):
             if len(row) > max(id_index, type_index):
                 if row[id_index] == str(title_obj.id) and row[type_index] == title_obj.media_type:
                     return True, i, row
+        print(f"\n{title_obj.title} not found in sheet.")
         return False, None, None
     except gspread.exceptions.WorksheetNotFound:
         return False, None, None

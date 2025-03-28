@@ -246,19 +246,7 @@ def handle_watchlist_or_watched(list_type, google_sheet):
         return
     selected_title = titles[index]
     if action == 'w':
-        # Toggle watched flag
-        selected_title.toggle_watched()
-        if selected_title.watched:
-            # get rating if watched True
-            updated_title = get_title_rating(selected_title)
-            title_rating = updated_title.rating
-            print(f'\nMarking {selected_title.title} as watched '
-                  f'and rating it {title_rating}')
-        else:
-            updated_title = selected_title
-            print(f'\nMoving {selected_title.title} to your watchlist')
-        # Update item in list
-        update_item_in_list(google_sheet, updated_title)
+        handle_toggle_watched(selected_title, google_sheet)
     elif action == 'r':
         # get new rating value
         updated_title = get_title_rating(selected_title)
@@ -271,4 +259,25 @@ def handle_watchlist_or_watched(list_type, google_sheet):
         if is_deleted:
             print(f'\nYou removed {selected_title.title} from your list.')
         else:
-            print(f"\nCouldn't find and remove {selected_title.title} from your list.")
+            print(f"\nCouldn't find {selected_title.title} in your list.")
+
+def handle_toggle_watched(title, google_sheet):
+    """_summary_
+
+    Args:
+        title (obj): selected title
+        google_sheet (gspread.Spreadsheet): _description_
+    """
+    # Toggle watched flag
+    title.toggle_watched()
+    if title.watched:
+    # get rating if watched True
+        updated_title = get_title_rating(title)
+        title_rating = updated_title.rating
+        print(f'\nMarking {title.title} as watched '
+              f'and rating it {title_rating}...')
+    else:
+        updated_title = title
+        print(f'\nMoving {title.title} to your watchlist')
+    # Update item in list
+    update_item_in_list(google_sheet, updated_title)
