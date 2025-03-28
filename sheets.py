@@ -32,7 +32,7 @@ def save_item_to_list(sheet, title_obj):
     """Saves an item to worksheet 
 
     Args:
-        sheet (str): Google sheet name 
+        sheet (gspread.Spreadsheet): Google sheet name 
         title_obj (Title): The Title object to save
     """
     # print_json(data=title_obj.to_sheet_row())
@@ -59,7 +59,7 @@ def check_for_duplicate(title_obj, sheet):
 
     Args:
         title_obj (Title): The Title instance to check
-        sheet (str): initialized google sheet
+        sheet (gspread.Spreadsheet): initialized google sheet
     Returns: 
         (bool): True (already in list) / False (new item)
     """
@@ -87,7 +87,7 @@ def get_titles_by_watch_status(sheet, watched):
     Returns a list of rows filtered by watched status
 
     Args:
-        sheet (str): Google Sheet
+        sheet (gspread.Spreadsheet): Google Sheet
         watched (bool): filter for watched titles or not
     Returns:
         list[dict]: filtered title rows as dict
@@ -101,15 +101,17 @@ def get_titles_by_watch_status(sheet, watched):
                     ]
         return filtered
     except gspread.exceptions.WorksheetNotFound:
-        print("\nNo data found. Select 'search' to add your first title.")
+        print("\nNo data found. Select 1 to search and add your first title.")
         return []
 
 def update_item_in_list(sheet, title_obj):
-    """_summary_
+    """
+    Finds title in Google Sheet 
+    and replace cells with updated values
 
     Args:
-        sheet (_type_): _description_
-        title_obj (_type_): _description_
+        sheet (gspread.Spreadsheet): Initialized Google Sheet
+        title_obj (obj): Selected title
     """
     found, row_index, existing_row = find_existing_row_info(title_obj, sheet)
     new_row = title_obj.to_sheet_row()
@@ -154,6 +156,7 @@ def find_existing_row_info(title_obj, sheet):
         index (int): row index number
         row (list): row list data
     """
+    print(f"\nLooking for {title_obj.title} in list...")
     try:
         worksheet = sheet.worksheet('My_List')
         all_values = worksheet.get_all_values()
@@ -169,3 +172,18 @@ def find_existing_row_info(title_obj, sheet):
         return False, None, None
     except gspread.exceptions.WorksheetNotFound:
         return False, None, None
+
+def delete_item_in_list(sheet, title_obj):
+    """
+    Finds existing row and delete it from sheet
+
+    Args:
+        sheet (gspread.Spreadsheet): Initialized Google Sheet
+        title_obj (obj): Selected Title object
+    """
+    found, row_index, _ = find_existing_row_info(title_obj, sheet)
+    worksheet = sheet.worksheet('My_List')
+    if found:
+        worksheet.delete_rows(row_index)
+        return True
+    return False

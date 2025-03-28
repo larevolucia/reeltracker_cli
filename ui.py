@@ -10,7 +10,8 @@ from sheets import (
     save_item_to_list,
     check_for_duplicate,
     update_item_in_list,
-    get_titles_by_watch_status
+    get_titles_by_watch_status,
+    delete_item_in_list
     )
 
 def get_user_search_input(prompt="\nSearch a title to get started: "):
@@ -167,7 +168,7 @@ def handle_search(google_sheet):
     """Handles user interaction with search functionality
 
     Args:
-        google_sheet (_type_): _description_
+        google_sheet (gspread.Spreadsheet): Initialized google sheets
     """
     while True:
         print('\nStarting a new search...')
@@ -209,7 +210,7 @@ def handle_title_selection(selected_title, google_sheet):
 
     Args:
         selected_title (obj): selected Title object
-        google_sheet (str): Initialized google sheet
+        google_sheet (gspread.Spreadsheet): Initialized google sheet
     """
     is_duplicate, _ = check_for_duplicate(selected_title, google_sheet)
     if is_duplicate:
@@ -222,13 +223,13 @@ def handle_title_selection(selected_title, google_sheet):
 
 def handle_watchlist_or_watched(list_type, google_sheet):
     """
-    
+    Handle manage list action options
 
     Args:
-        list_type (_type_): _description_
-        google_sheet (_type_): _description_
+        list_type (_str_): list of items to be managed (watched/watchlist)
+        google_sheet (gspread.Spreadsheet) : Initialized Google Sheet
     """
-    print(f'\nLoading {list_type} options...')
+    print(f'\nLoading {list_type} menu...')
     # Set watch_flag to True if choice is watched
     watched_flag = list_type == 'watched'
     # Get titles from Google Sheets
@@ -266,4 +267,8 @@ def handle_watchlist_or_watched(list_type, google_sheet):
         update_item_in_list(google_sheet, updated_title)
         print(f'\nYou changed {selected_title.title} rating to {title_rating}')
     elif action == 'd':
-        print(f'\nYou removed {selected_title.title} from your list.')
+        is_deleted = delete_item_in_list(google_sheet, selected_title)
+        if is_deleted:
+            print(f'\nYou removed {selected_title.title} from your list.')
+        else:
+            print(f"\nCouldn't find and remove {selected_title.title} from your list.")
