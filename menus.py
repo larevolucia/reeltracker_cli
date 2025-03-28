@@ -8,13 +8,13 @@ menus = {
             "1": "Search and add new title",
             "2": "Manage watchlist titles",
             "3": "Manage watched titles",
-            "4": "Exit"
+            "e": "Exit"
         },
         "valid_choices": {
             "1": "search",
             "2": "watchlist",
             "3": "watched",
-            "4": "exit"
+            "e": "exit"
         }
     },
     "watchlist": {
