@@ -4,6 +4,7 @@ User prompts, rating input, search input, etc.
 from tabulate import tabulate
 from title import Title
 from tmdb import fetch_tmdb_results, TMDB_API_KEY
+from menus import handle_list_menu
 from utils import filter_results_by_media_type, sort_items_by_popularity
 from sheets import (
     save_item_to_list,
@@ -218,3 +219,51 @@ def handle_title_selection(selected_title, google_sheet):
     else:
         selected_title.watched = False
     save_item_to_list(google_sheet, selected_title)
+
+def handle_watchlist_or_watched(list_type, google_sheet):
+    """
+    
+
+    Args:
+        list_type (_type_): _description_
+        google_sheet (_type_): _description_
+    """
+    print(f'\nLoading {list_type} options...')
+    # Set watch_flag to True if choice is watched
+    watched_flag = list_type == 'watched'
+    # Get titles from Google Sheets
+    titles_data = get_titles_by_watch_status(google_sheet, watched_flag)
+    if not titles_data:
+        print(f"\nNo {list_type} title found.")
+        return
+    # Transform list of rows into list of objects
+    titles = [Title.from_sheet_row(row) for row in titles_data]
+    display_title_entries(titles, list_type)
+    # Unpack command and Title object
+    action, index = handle_list_menu(titles, list_type)
+    if action is None:
+        return
+    selected_title = titles[index]
+    if action == 'w':
+        # Toggle watched flag
+        selected_title.toggle_watched()
+        if selected_title.watched:
+            # get rating if watched True
+            updated_title = get_title_rating(selected_title)
+            title_rating = updated_title.rating
+            print(f'\nMarking {selected_title.title} as watched '
+                  f'and rating it {title_rating}')
+        else:
+            updated_title = selected_title
+            print(f'\nMoving {selected_title.title} to your watchlist')
+        # Update item in list
+        update_item_in_list(google_sheet, updated_title)
+    elif action == 'r':
+        # get new rating value
+        updated_title = get_title_rating(selected_title)
+        title_rating = updated_title.rating
+        # Update item in list
+        update_item_in_list(google_sheet, updated_title)
+        print(f'\nYou changed {selected_title.title} rating to {title_rating}')
+    elif action == 'd':
+        print(f'\nYou removed {selected_title.title} from your list.')
