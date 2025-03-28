@@ -32,7 +32,7 @@ class Title:
         self.overview = overview
         self.watched = False
         self.added_date = get_current_timestamp()
-        self.watched_date = None
+        self.watched_date = ''
         self.rating = 'N/A'
     def toggle_watched(self, rating=None):
         """Allow user to mark title as watched
@@ -69,10 +69,10 @@ class Title:
             lists: title metadata as lists
         """
         values = [
-            self.id,
+            str(self.id),
             self.title,
             self.media_type,
-            self.release_date,
+            str(self.release_date),
             ', '.join(map(str, self.genres)),
             str(self.popularity),
             self.overview,
