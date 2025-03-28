@@ -131,8 +131,10 @@ def get_watch_status(title_obj):
         command = input("> ").strip().lower()
         if command == 'y':
             title_obj.toggle_watched()
+            print(f'\nMarking {title_obj.title} as watched...')
             return True
         if command == 'n':
+            print(f'\nMarking {title_obj.title} as not watched...')
             return False
         print("\nInvalid input. Please type 'y' for yes or 'n' for no.")
 
@@ -155,7 +157,7 @@ def get_title_rating(title_obj):
         rating = int(command)
         try:
             title_obj.set_rating(rating)
-            print("\nSaving rating...")
+            print(f"\nSaving {title_obj.title} rating...")
             return title_obj
         except ValueError as e:
             print(f"\nInvalid input: {e}")
@@ -195,12 +197,24 @@ def handle_search(google_sheet):
         print(f"\nYou've selected {results_selected_title.title}"
               f"({results_selected_title.release_date})")
         # 9. Check for item duplicate before saving
-        is_duplicate, _ = check_for_duplicate(results_selected_title, google_sheet)
-        # 10. Ask watch status
-        if not is_duplicate:
-            if get_watch_status(results_selected_title):
-                get_title_rating(results_selected_title)
-            else:
-                results_selected_title.watched = False
-            save_item_to_list(google_sheet, results_selected_title)
-            break
+        handle_title_selection(results_selected_title, google_sheet)
+        break
+
+def handle_title_selection(selected_title, google_sheet):
+    """
+    Check for duplicates, verify if item is_watched,
+    get rating, if applicable
+    and save item to Google Sheets
+
+    Args:
+        selected_title (obj): selected Title object
+        google_sheet (str): Initialized google sheet
+    """
+    is_duplicate, _ = check_for_duplicate(selected_title, google_sheet)
+    if is_duplicate:
+        return
+    if get_watch_status(selected_title):
+        get_title_rating(selected_title)
+    else:
+        selected_title.watched = False
+    save_item_to_list(google_sheet, selected_title)
