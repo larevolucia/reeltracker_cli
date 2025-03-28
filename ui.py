@@ -250,11 +250,7 @@ def handle_watchlist_or_watched(list_type, google_sheet):
     elif action == 'r':
         handle_change_rating(selected_title, google_sheet)
     elif action == 'd':
-        is_deleted = delete_item_in_list(google_sheet, selected_title)
-        if is_deleted:
-            print(f'\nYou removed {selected_title.title} from your list.')
-        else:
-            print(f"\nCouldn't find {selected_title.title} in your list.")
+        handle_delete(selected_title, google_sheet)
 
 def handle_toggle_watched(title, google_sheet):
     """
@@ -268,10 +264,8 @@ def handle_toggle_watched(title, google_sheet):
     title.toggle_watched()
     if title.watched:
     # get rating if watched True
+        print(f'\nMarking {title.title} as watched...')
         updated_title = get_title_rating(title)
-        title_rating = updated_title.rating
-        print(f'\nMarking {title.title} as watched '
-              f'and rating it {title_rating}...')
     else:
         updated_title = title
         print(f'\nMoving {title.title} to your watchlist')
@@ -290,3 +284,15 @@ def handle_change_rating(title, google_sheet):
     updated_title = get_title_rating(title)
     # Update item in list
     update_item_in_list(google_sheet, updated_title)
+
+def handle_delete(title, google_sheet):
+    """
+    Triggers deletion and messages user of success
+
+    Args:
+        title (obj): Seletect title
+        google_sheet (gspread.Spreadsheet): Initialized Google Sheet
+    """
+    is_deleted = delete_item_in_list(google_sheet, title)
+    if is_deleted:
+        print(f'\nYou removed {title.title} from your list.')
