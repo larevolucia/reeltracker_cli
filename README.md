@@ -45,8 +45,63 @@ More details at [#1](https://github.com/larevolucia/reeltracker_cli/issues/1)
 
 ## Features
 
-### Data Transformation
-The `Title` class includes methods that transform its data into different formats depending on where it’s being used. For example, `to_dict()` converts the object into a dictionary suitable for programmatic use or storage, while `to_sheet_row()` formats the data as a list tailored for writing to a spreadsheet. The `from_sheet_row` class method allows you to reconstruct a `Title` object from a saved spreadsheet entry, making it easy to load and work with previously stored data across session.
+### 🎯 Core Functionality
+#### Search titles via TMDb API
+
+Users can search for movies or TV shows by keyword. The app returns results from The Movie Database (TMDb) API, including title, type, release year, and a short overview.
+Related user story:  [#3 Search for a title](https://github.com/larevolucia/reeltracker_cli/issues/3)
+
+#### Add to watchlist
+Users can add any title from the search results directly to their personal watchlist for future viewing.
+Related user story:  [#4 Add to watchlist or Viewing History](https://github.com/larevolucia/reeltracker_cli/issues/4)
+
+#### Mark titles as watched and assign ratings
+Users can mark a title as watched and give it a personal rating from 1 to 10. This allows them to track both progress and preferences.
+Related user story:  [#5 View lists](https://github.com/larevolucia/reeltracker_cli/issues/5), [#9 Rate watched title](https://github.com/larevolucia/reeltracker_cli/issues/9), [#14 Update title](https://github.com/larevolucia/reeltracker_cli/issues/14)
+
+####  Move titles between lists
+A title can be moved from the Watchlist to the Viewing History once watched, preserving metadata such as date added.
+When moving a title from Viewing History to Watchlist, watched data and rating are reset. 
+Related user story:  [#7 Move title between lists](https://github.com/larevolucia/reeltracker_cli/issues/7), [#14 Update title](https://github.com/larevolucia/reeltracker_cli/issues/14)
+
+#### Delete title from lists
+Users can delete a title from the lists.
+Related user story:  [#6 Remove a title from lists](https://github.com/larevolucia/reeltracker_cli/issues/6)
+
+📊 Google Sheets integration for saving and syncing lists
+🔄 Reload and reconstruct titles from saved data
+📈 Custom popularity sorting with weighted scoring
+🧠 Smart logarithmic scaling to balance popularity with vote count
+🧹 Clean and readable terminal UI output
+🧩 Modular architecture for easy expansion
+
+### Modules 
+ReelTracker CLI is structured in modular files to enhance scalability and readability:
+```bash
+.
+├── run.py             # Entry point for the CLI
+├── menus.py           # Menu logic and user navigation
+├── sheets.py          # Google Sheets integration
+├── tmdb.py            # TMDb API interaction
+├── ui.py              # User interface formatting and display
+├── utils.py           # Helper functions (e.g., sorting, formatting)
+├── title.py           # Title model and data transformation
+├── user_data.py       # User-specific metadata (ratings, watched logs and status)
+```
+
+### Classes Overview
+`Title`
+Represents a movie or TV title. Holds attributes like name, type, release date, overview, popularity, vote count.
+Includes methods for:
+- `to_sheet_row`: formats the title data for saving to Google Sheets
+- `from_sheets_row`: reconstructs a `Title` object from saved sheet data
+
+`UserTitleData`
+Stores user-generated data about a title:
+- `watched` status: edited using the `toggle_watched` method
+- Personal `rating`: edited using the `set_rating` method
+- `added_date` log: populated with timestamp when object creation
+- `watched_date` log: populated with timestamp when `watched` status is changed to `True`
 
 Consulted references:
 - [PyNative](https://pynative.com/python-class-method-vs-static-method-vs-instance-method)
@@ -68,7 +123,6 @@ Why use logarithms? Using multiplication would result on the opposite problem. I
 | 100        | 2.00                  |
 | 1000       | 3.00                  |
 | 10000      | 4.00                  |
-
 
 Consulted references:
 - [Python Math](https://docs.python.org/3/library/math.html)
@@ -191,27 +245,7 @@ This project uses TMDB API to fetch data of movies and TV Shows. You'll need to 
         return data['results']
     ```
 
-
-
-
-
-
-
-
-
----
-
-![CI logo](https://codeinstitute.s3.amazonaws.com/fullstack/ci_logo_small.png)
-
-Welcome,
-
-This is the Code Institute student template for deploying your third portfolio project, the Python command-line project. The last update to this file was: **May 14, 2024**
-
-## Reminders
-
-- Your code must be placed in the `run.py` file
-- Your dependencies must be placed in the `requirements.txt` file
-- Do not edit any of the other files or your code may not deploy properly
+## Deployment
 
 ## Creating the Heroku app
 
@@ -220,16 +254,13 @@ When you create the app, you will need to add two buildpacks from the _Settings_
 1. `heroku/python`
 2. `heroku/nodejs`
 
+## Config Var
 You must then create a _Config Var_ called `PORT`. Set this to `8000`
+You must then create a _Config Var_ called `CREDS`. Copy&Paste your `creds.json` file contents.
+You must then create a _Config Var_ called `TMDB_API_KEY`. Copy&Paste your API Key value.
 
-If you have credentials, such as in the Love Sandwiches project, you must create another _Config Var_ called `CREDS` and paste the JSON into the value field.
-
-Connect your GitHub repository and deploy as normal.
+Connect your GitHub repository and deploy.
 
 ## Constraints
 
 The deployment terminal is set to 80 columns by 24 rows. That means that each line of text needs to be 80 characters or less otherwise it will be wrapped onto a second line.
-
----
-
-Happy coding!
