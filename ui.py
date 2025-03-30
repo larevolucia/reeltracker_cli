@@ -67,7 +67,7 @@ def display_title_entries(title_objects, mode, max_results=None):
             title.release_date,
         ]
         if is_watched:
-            row.append(title.rating)
+            row.append(title.user_data.rating)
         else:
             overview = title.overview
             if len(overview) > 80:
@@ -218,7 +218,7 @@ def handle_title_selection(selected_title, google_sheet):
     if get_watch_status(selected_title):
         get_title_rating(selected_title)
     else:
-        selected_title.watched = False
+        selected_title.user_data.watched = False
     save_item_to_list(google_sheet, selected_title)
 
 def handle_watchlist_or_watched(list_type, google_sheet):
@@ -262,13 +262,13 @@ def handle_toggle_watched(title, google_sheet):
     """
     # Toggle watched flag
     title.toggle_watched()
-    if title.watched:
+    if title.user_data.watched:
     # get rating if watched True
         print(f'\nMarking {title.title} as watched...')
         updated_title = get_title_rating(title)
     else:
         updated_title = title
-        print(f'\nMoving {title.title} to your watchlist')
+        print(f'\nMoving {title.title} to your watchlist...')
     # Update item in list
     update_item_in_list(google_sheet, updated_title)
 
