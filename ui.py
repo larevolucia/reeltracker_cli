@@ -1,7 +1,6 @@
 """
 User prompts, rating input, search input, etc.
 """
-from tabulate import tabulate
 from title import Title
 from tmdb import fetch_tmdb_results, TMDB_API_KEY
 from menus import handle_list_menu
@@ -26,7 +25,7 @@ def get_user_search_input(prompt="\nSearch a title to get started: "):
     """
     while True:
         print(prompt)
-        user_query = input(">\n ").strip()
+        user_query = input("> ").strip()
         if user_query:
             return user_query
         print('\nSearch cannot be emtpy. Please try again.\n')
@@ -50,36 +49,23 @@ def display_title_entries(title_objects, mode, max_results=None):
 
     print(f"\n{headers.get(mode, 'Titles')}:\n")
     is_watched = mode == 'watched'
-    col_headers = ["#", "Title", "Type", "Release"]
-    if is_watched:
-        col_headers.append("Rating")
-    else:
-        col_headers.append("Overview")
-    table_data = []
     for index, title in enumerate(title_objects[:max_results], start=1):
         title_str = title.title
-        if len(title_str) > 34:
-            title_str = title_str[:34].rstrip() + "..."
-        row = [
-            index,
-            title_str,
-            title.media_type,
-            title.release_date,
-        ]
+        if len(title_str) > 30:
+            title_str = title_str[:27].rstrip() + "..."
+        media_type = title.media_type
+        release = title.release_date
+        rating = title.user_data.rating
+        overview = title.overview
+        line = f"{index:>2} | {title_str:<30} | {media_type:<6} | {release:<4}"
         if is_watched:
-            row.append(title.user_data.rating)
-        else:
-            overview = title.overview
-            if len(overview) > 80:
-                overview = overview[:80].rstrip() + "..."
-            row.append(overview)
-        table_data.append(row)
-    print(tabulate(
-        table_data,
-        headers=col_headers,
-        tablefmt="rounded_grid",
-        maxcolwidths=[None]*len(col_headers)
-        ))
+            line += f" | Rating: {rating:<4}"
+        print(line)
+        if not is_watched:
+            if len(overview) > 100:
+                overview = overview[:97].rstrip() + "..."
+            print(f'     {overview}')
+            print()
     return title_objects[:max_results]
 
 def select_item_from_results(title_list):
