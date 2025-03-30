@@ -8,6 +8,9 @@ Reel Tracker CLI is a lightweight, command-line-based personal watchlist manager
 
 More details at [#1](https://github.com/larevolucia/reeltracker_cli/issues/1)
 
+Deployed at [Heroku](https://reeltrackercli-ff0190b86239.herokuapp.com/)
+Titles Data available for read at [Google Sheets](https://docs.google.com/spreadsheets/d/1t0eogZL-QBFHBdLL0oipMXqyZ8MA3sZ8TJJPvrBvdYk/edit?usp=sharing)
+
 ## Project Goals
 1. Address Information Overload in Entertainment
 2. Develop a Personal Watchlist Tracker
