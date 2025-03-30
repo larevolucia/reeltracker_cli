@@ -110,7 +110,7 @@ The codebase is structured in modules by responsibility. This improves readabili
 ├── user_data.py       # User-specific metadata (ratings, watched logs and status)
 ```
 
-### Classes Overview
+#### Classes Overview
 `Title`
 Represents a movie or TV title. Holds attributes like name, type, release date, overview, popularity, vote count.
 Includes methods for:
