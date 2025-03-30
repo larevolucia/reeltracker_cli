@@ -46,6 +46,7 @@ More details at [#1](https://github.com/larevolucia/reeltracker_cli/issues/1)
 ## Features
 
 ### 🎯 Core Functionality
+
 #### Search titles via TMDb API
 
 Users can search for movies or TV shows by keyword. The app returns results from The Movie Database (TMDb) API, including title, type, release year, and a short overview.
@@ -68,15 +69,35 @@ Related user story:  [#7 Move title between lists](https://github.com/larevoluci
 Users can delete a title from the lists.
 Related user story:  [#6 Remove a title from lists](https://github.com/larevolucia/reeltracker_cli/issues/6)
 
-📊 Google Sheets integration for saving and syncing lists
-🔄 Reload and reconstruct titles from saved data
-📈 Custom popularity sorting with weighted scoring
-🧠 Smart logarithmic scaling to balance popularity with vote count
-🧹 Clean and readable terminal UI output
-🧩 Modular architecture for easy expansion
+### 📁 Data Storage & Sync
 
-### Modules 
-ReelTracker CLI is structured in modular files to enhance scalability and readability:
+#### Google Sheets integration 
+All user data (watchlist, history, ratings) is stored in a personal Google Sheet via the Sheets API. This ensures cloud persistence and makes data accessible outside the CLI.
+- Uses `gspread` and `google-auth` for integration
+- Credentials are safely loaded from a `.json` file and hidden using `.gitignore`
+
+#### Reload and reconstruct data
+The app can rebuild `Title` objects from the spreadsheet using the `from_sheet_row()` method. This ensures data continuity across sessions.
+
+### 📈 Smart Sorting & Discovery
+
+#### Weighted popularity sorting
+
+A custom `calculate_weighted_popularity()` function ensures titles are ranked based on both `TMDb popularity` and `vote count`. This prevents obscure titles with low votes from unfairly topping the list. Search output uses this function to display most relevant item on top with the use of `sort_items_by_popularity`.
+
+Consulted references:
+- [Python Math](https://docs.python.org/3/library/math.html)
+- [W3School sorted( )](https://www.w3schools.com/python/ref_func_sorted.asp)
+- [FreeCodeCamp lambda sort list in Python](https://www.freecodecamp.org/news/lambda-sort-list-in-python/)
+
+### 🧰 Interface & Code Design
+
+#### Clean and readable terminal output
+The UI adapts to Heroku CLI constraints (80x24), avoiding broken formatting and wrapping issues. Multi-line outputs (like overviews) are carefully indented for clarity.
+
+### Modular code architecture 
+The codebase is structured in modules by responsibility. This improves readability, scalability, and maintainability.
+
 ```bash
 .
 ├── run.py             # Entry point for the CLI
@@ -107,27 +128,6 @@ Consulted references:
 - [PyNative](https://pynative.com/python-class-method-vs-static-method-vs-instance-method)
 - [BuiltIn](https://builtin.com/software-engineering-perspectives/python-cls)
 - [GeeksForGeeks](https://www.geeksforgeeks.org/classmethod-in-python/)
-
-### Popularity Sorting
-Initially, I intended to use API provided popularity to sort the items. Upon testing with a few queries, I noticed that titles with very few high ratings would dominate over more mainstream titles. This would lead to very niche titles with limited user feedback to peear as more popular than well established ones, reducing reliability of the popularity data.
-
-To address that, I've created the `sort_items_by_popularity` and the `calculate_weighted_popularity` functions, in which a weighted popularity score is calculated by multiplying a title’s raw popularity with the logarithm (base 10) of its number of votes. This logarithmic weighting reduces the disproportionate influence of titles that have high popularity scores but very few ratings, ensuring that titles with both strong popularity and substantial viewer feedback rise to the top. 
-
-Why use logarithms? Using multiplication would result on the opposite problem. Items with a lot of user feedback, even if predominantly negative would end up on top of the list. With logarithms extremes are more easily controlled as the increments are relatively small.
-
-*Logarithmic scale reference (base 10):*
-| vote_count | log₁₀(vote_count + 1) |
-|------------|-----------------------|
-| 1          | 0.30                  |
-| 10         | 1.04                  |
-| 100        | 2.00                  |
-| 1000       | 3.00                  |
-| 10000      | 4.00                  |
-
-Consulted references:
-- [Python Math](https://docs.python.org/3/library/math.html)
-- [W3School sorted( )](https://www.w3schools.com/python/ref_func_sorted.asp)
-- [FreeCodeCamp lambda sort list in Python](https://www.freecodecamp.org/news/lambda-sort-list-in-python/)
 
 ## Requirements
 
@@ -260,7 +260,3 @@ You must then create a _Config Var_ called `CREDS`. Copy&Paste your `creds.json`
 You must then create a _Config Var_ called `TMDB_API_KEY`. Copy&Paste your API Key value.
 
 Connect your GitHub repository and deploy.
-
-## Constraints
-
-The deployment terminal is set to 80 columns by 24 rows. That means that each line of text needs to be 80 characters or less otherwise it will be wrapped onto a second line.
