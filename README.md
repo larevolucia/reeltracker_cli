@@ -95,7 +95,7 @@ Consulted references:
 #### Clean and readable terminal output
 The UI adapts to Heroku CLI constraints (80x24), avoiding broken formatting and wrapping issues. Multi-line outputs (like overviews) are carefully indented for clarity.
 
-### Modular code architecture 
+#### Modular code architecture 
 The codebase is structured in modules by responsibility. This improves readability, scalability, and maintainability.
 
 ```bash
