@@ -26,7 +26,7 @@ def get_user_search_input(prompt="\nSearch a title to get started: "):
     """
     while True:
         print(prompt)
-        user_query = input("> ").strip()
+        user_query = input(">\n ").strip()
         if user_query:
             return user_query
         print('\nSearch cannot be emtpy. Please try again.\n')
@@ -96,7 +96,7 @@ def select_item_from_results(title_list):
             f"\nSelect an item (1-{len(title_list)}) to save it, "
             f"type 'n' for a new search or 'm' to return to main menu: "
         )
-        command = input("> ").strip().lower()
+        command = input(">\n ").strip().lower()
 
         if command == 'n':
             return None  # New search
@@ -130,7 +130,7 @@ def get_watch_status(title_obj):
     """
     while True:
         print(f'\nHave you already watched {title_obj.title}? (y/n):')
-        command = input("> ").strip().lower()
+        command = input(">\n ").strip().lower()
         if command == 'y':
             title_obj.toggle_watched()
             print(f'\nMarking {title_obj.title} as watched...')
@@ -151,7 +151,7 @@ def get_title_rating(title_obj):
         print(
             f'\nHow would you rate {title_obj.title}? '
             f'Select a number from 1-10: ')
-        command = input("> ").strip()
+        command = input(">\n ").strip()
         if not command.isdigit():
             print("\nInvalid input: Please enter a whole number.")
             continue

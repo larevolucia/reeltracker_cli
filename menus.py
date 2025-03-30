@@ -82,7 +82,7 @@ def get_menu_choice(menu_key):
     valid = menu.get("valid_choices", menu["options"])
     while True:
         print("\nSelect an option:")
-        command = input("> ").strip().lower()
+        command = input(">\n ").strip().lower()
         if command in valid:
             # return command value for main menu
             return valid[command] if menu_key == "main" else command
