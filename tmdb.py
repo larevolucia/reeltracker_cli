@@ -43,7 +43,7 @@ def fetch_tmdb_results(search_key, api_key=TMDB_API_KEY, page=1, language=DEFAUL
         data = response.json()
         return data.get('results', [])
     except requests.RequestException as e:
-        print(f"API request failed: {e}")
+        print(f"\n❌ API request failed: {e}")
         return []
 
 def get_genre_mapping(media_type, api_key):
@@ -66,7 +66,7 @@ def get_genre_mapping(media_type, api_key):
         data = response.json()
         return data.get('genres', [])
     except requests.RequestException as e:
-        print(f"API request failed: {e}")
+        print(f"❌  API request failed: {e}")
         return []
 
 def get_genre_names_from_ids(genre_ids, media_type):

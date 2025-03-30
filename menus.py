@@ -86,7 +86,7 @@ def get_menu_choice(menu_key):
         if command in valid:
             # return command value for main menu
             return valid[command] if menu_key == "main" else command
-        print("Invalid option. Please try again.")
+        print("\n⚠️  Invalid option. Please try again.")
 
 def display_main_menu():
     """
@@ -112,12 +112,12 @@ def handle_action_with_index(command, valid_actions, list_length):
     try:
         action, idx_str = command.split(maxsplit=1)
     except ValueError:
-        return None, None, ("\nInvalid command format. Try something like 'r 1' or 'd 2'.")
+        return None, None, ("\n⚠️  Invalid command format. Try something like 'r 1' or 'd 2'.")
     if action not in valid_actions:
-        return None, None, f"\nInvalid action '{action}'."
+        return None, None, f"\n⚠️  Invalid action '{action}'."
     if not idx_str.isdigit():
-        return None, None, f"\nInvalid index '{idx_str}'. Use a number."
+        return None, None, f"\n⚠️  Invalid index '{idx_str}'. Use a number."
     index = int(idx_str) - 1
     if index < 0 or index >= list_length:
-        return None, None, f"\nIndex out of range. Choose between 1 and {list_length}."
+        return None, None, f"\n⚠️   Index out of range. Choose between 1 and {list_length}."
     return action, index, None

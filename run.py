@@ -18,7 +18,7 @@ def main():
     while True:
         user_choice = display_main_menu()
         if user_choice == 'exit':
-            print('\nGoodbye! 👋\n')
+            print('\n👋 Goodbye!')
             break
         if user_choice == 'search':
             handle_search(google_sheet)

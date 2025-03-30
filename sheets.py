@@ -50,7 +50,7 @@ def save_item_to_list(sheet, title_obj):
         worksheet.append_row(headers)
     # Prepare row
     worksheet.append_row(title_obj.to_sheet_row())
-    print(f"\n{title_obj.title} successfully written to the sheet.")
+    print(f"\n✅ {title_obj.title} successfully written to the sheet.")
 
 def check_for_duplicate(title_obj, sheet):
     """
@@ -101,7 +101,7 @@ def get_titles_by_watch_status(sheet, watched):
                     ]
         return filtered
     except gspread.exceptions.WorksheetNotFound:
-        print("\nNo data found. Select 1 to search and add your first title.")
+        print("\n❌ No data found. Select 1 to search and add your first title.")
         return []
 
 def update_item_in_list(sheet, title_obj):
@@ -131,14 +131,14 @@ def update_item_in_list(sheet, title_obj):
                 cell = gspread.utils.rowcol_to_a1(row_index, col_index + 1)
                 updates.append((cell, new_value))
         if not updates:
-            print(f'\nNo updates found for {title_obj.title}.')
+            print(f'\n❌  No updates found for {title_obj.title}.')
             return 'skipped'
 
-        print(f'\nUpdating {title_obj.title}...')
+        print(f'\n🔄 Updating {title_obj.title}...')
         for cell, value in updates:
             worksheet.update(cell, [[value]])
 
-        print(f"\n{title_obj.title} updated successfully ({len(updates)} changes).")
+        print(f"\n✅ {title_obj.title} updated successfully ({len(updates)} changes).")
         return 'updated'
 
     # If not found, just add it
@@ -158,7 +158,7 @@ def find_existing_row_info(title_obj, sheet):
         index (int): row index number
         row (list): row list data
     """
-    print(f"\nLooking for {title_obj.title} in sheet...")
+    print(f"\n🔎 Looking for {title_obj.title} in sheet...")
     try:
         worksheet = sheet.worksheet('My_List')
         all_values = worksheet.get_all_values()
@@ -171,7 +171,7 @@ def find_existing_row_info(title_obj, sheet):
             if len(row) > max(id_index, type_index):
                 if row[id_index] == str(title_obj.id) and row[type_index] == title_obj.media_type:
                     return True, i, row
-        print(f"\n{title_obj.title} not found in sheet.")
+        print(f"\n❌ {title_obj.title} not found in sheet.")
         return False, None, None
     except gspread.exceptions.WorksheetNotFound:
         return False, None, None

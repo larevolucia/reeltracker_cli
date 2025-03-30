@@ -28,7 +28,7 @@ def get_user_search_input(prompt="\nSearch a title to get started: "):
         user_query = input("> ").strip()
         if user_query:
             return user_query
-        print('\nSearch cannot be emtpy. Please try again.\n')
+        print('\n⚠️  Search cannot be emtpy. Please try again.\n')
 
 def display_title_entries(title_objects, mode, max_results=None):
     """
@@ -102,7 +102,7 @@ def select_item_from_results(title_list):
             return chosen_item
 
         except ValueError as e:
-            print(f"\nInvalid input: {e}. Please enter a number, 'm' or 'n'.")
+            print(f"\n⚠️  Invalid input: {e}. Please enter a number, 'm' or 'n'.")
 
 def get_watch_status(title_obj):
     """
@@ -119,12 +119,12 @@ def get_watch_status(title_obj):
         command = input("> ").strip().lower()
         if command == 'y':
             title_obj.toggle_watched()
-            print(f'\nMarking {title_obj.title} as watched...')
+            print(f'\n🔄 Marking {title_obj.title} as watched...')
             return True
         if command == 'n':
-            print(f'\nMarking {title_obj.title} as not watched...')
+            print(f'\n🔄 Marking {title_obj.title} as not watched...')
             return False
-        print("\nInvalid input. Please type 'y' for yes or 'n' for no.")
+        print("\n⚠️ Invalid input. Please type 'y' for yes or 'n' for no.")
 
 def get_title_rating(title_obj):
     """
@@ -139,16 +139,16 @@ def get_title_rating(title_obj):
             f'Select a number from 1-10: ')
         command = input("> ").strip()
         if not command.isdigit():
-            print("\nInvalid input: Please enter a whole number.")
+            print("\n⚠️ Invalid input: Please enter a whole number.")
             continue
 
         rating = int(command)
         try:
             title_obj.set_rating(rating)
-            print(f"\nSaving {title_obj.title} rating...")
+            print(f"\n🔄 Saving {title_obj.title} rating...")
             return title_obj
         except ValueError as e:
-            print(f"\nInvalid input: {e}")
+            print(f"\n⚠️ Invalid input: {e}")
 
 def handle_search(google_sheet):
     """Handles user interaction with search functionality
@@ -160,14 +160,14 @@ def handle_search(google_sheet):
         print('\nStarting a new search...')
         # 1. Prompt user to enter a search query
         search_query = get_user_search_input()
-        print(f'\nSearching for {search_query}...')
+        print(f'\n🔎 Searching for {search_query}...')
         # 2. Use the query to fetch API results
         search_results = fetch_tmdb_results(search_query, TMDB_API_KEY)
         # 3. Filter out non-movie/TV results
         filtered_results = filter_results_by_media_type(search_results)
         # 4. Handle case where no valid results are found
         if not filtered_results:
-            print("\nNo results found. Try another search.")
+            print("\n❌  No results found. Try another search.")
             continue # Go back to search (1)
         # 5. Sort results by custom weighted popularity
         sorted_results = sort_items_by_popularity(filtered_results)
@@ -182,7 +182,7 @@ def handle_search(google_sheet):
         if results_selected_title is None:
             continue # Go back to search (1)
         # 8. Valid item (int) is selected
-        print(f"\nYou've selected {results_selected_title.title}"
+        print(f"\n📥 You've selected {results_selected_title.title}"
               f"({results_selected_title.release_date})")
         # 9. Check for item duplicate before saving
         handle_title_selection(results_selected_title, google_sheet)
@@ -221,7 +221,7 @@ def handle_watchlist_or_watched(list_type, google_sheet):
     # Get titles from Google Sheets
     titles_data = get_titles_by_watch_status(google_sheet, watched_flag)
     if not titles_data:
-        print(f"\nNo {list_type} title found.")
+        print(f"\n❌  No {list_type} title found.")
         return
     # Transform list of rows into list of objects
     titles = [Title.from_sheet_row(row) for row in titles_data]
@@ -250,11 +250,11 @@ def handle_toggle_watched(title, google_sheet):
     title.toggle_watched()
     if title.user_data.watched:
     # get rating if watched True
-        print(f'\nMarking {title.title} as watched...')
+        print(f'\n🔄 Marking {title.title} as watched...')
         updated_title = get_title_rating(title)
     else:
         updated_title = title
-        print(f'\nMoving {title.title} to your watchlist...')
+        print(f'\n🔄 Moving {title.title} to your watchlist...')
     # Update item in list
     update_item_in_list(google_sheet, updated_title)
 
@@ -281,4 +281,4 @@ def handle_delete(title, google_sheet):
     """
     is_deleted = delete_item_in_list(google_sheet, title)
     if is_deleted:
-        print(f'\nYou removed {title.title} from your list.')
+        print(f'\n✅ {title.title} successfully removed from your list.')
