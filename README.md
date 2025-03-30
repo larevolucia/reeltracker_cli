@@ -247,14 +247,14 @@ This project uses TMDB API to fetch data of movies and TV Shows. You'll need to 
 
 ## Deployment
 
-## Creating the Heroku app
+### Creating the Heroku app
 
 When you create the app, you will need to add two buildpacks from the _Settings_ tab. The ordering is as follows:
 
 1. `heroku/python`
 2. `heroku/nodejs`
 
-## Config Var
+### Config Var
 You must then create a _Config Var_ called `PORT`. Set this to `8000`
 You must then create a _Config Var_ called `CREDS`. Copy&Paste your `creds.json` file contents.
 You must then create a _Config Var_ called `TMDB_API_KEY`. Copy&Paste your API Key value.
