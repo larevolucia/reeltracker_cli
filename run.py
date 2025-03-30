@@ -1,7 +1,6 @@
 """
 CLI Reel tracker orchestration
 """
-# import json
 from sheets import initialize_google_sheets
 from menus import display_main_menu
 from ui import (

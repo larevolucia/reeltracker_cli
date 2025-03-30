@@ -3,7 +3,6 @@ Handles Google sheets CRUD
 """
 import gspread
 from google.oauth2.service_account import Credentials
-# from rich import print_json
 
 # Google API authentication
 GOOGLE_SHEETS_SCOPE = [
