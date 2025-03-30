@@ -82,7 +82,7 @@ def select_item_from_results(title_list):
             f"\nSelect an item (1-{len(title_list)}) to save it, "
             f"type 'n' for a new search or 'm' to return to main menu: "
         )
-        command = input(">\n ").strip().lower()
+        command = input("> ").strip().lower()
 
         if command == 'n':
             return None  # New search
@@ -116,7 +116,7 @@ def get_watch_status(title_obj):
     """
     while True:
         print(f'\nHave you already watched {title_obj.title}? (y/n):')
-        command = input(">\n ").strip().lower()
+        command = input("> ").strip().lower()
         if command == 'y':
             title_obj.toggle_watched()
             print(f'\nMarking {title_obj.title} as watched...')
@@ -137,7 +137,7 @@ def get_title_rating(title_obj):
         print(
             f'\nHow would you rate {title_obj.title}? '
             f'Select a number from 1-10: ')
-        command = input(">\n ").strip()
+        command = input("> ").strip()
         if not command.isdigit():
             print("\nInvalid input: Please enter a whole number.")
             continue

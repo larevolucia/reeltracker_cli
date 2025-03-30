@@ -59,7 +59,7 @@ def handle_list_menu(title_list, list_type):
     while True:
         display_menu(list_type)
         print("\nEnter a command like 'd 2' or 'w 1':")
-        command = input("\n> ").strip().lower()
+        command = input("> ").strip().lower()
 
         if command == 'm':
             return None, None
@@ -82,7 +82,7 @@ def get_menu_choice(menu_key):
     valid = menu.get("valid_choices", menu["options"])
     while True:
         print("\nSelect an option:")
-        command = input(">\n ").strip().lower()
+        command = input("> ").strip().lower()
         if command in valid:
             # return command value for main menu
             return valid[command] if menu_key == "main" else command
