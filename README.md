@@ -77,7 +77,7 @@ When moving a title from Viewing History to Watchlist, watched data and rating a
 Related user story:  [#7 Move title between lists](https://github.com/larevolucia/reeltracker_cli/issues/7), [#14 Update title](https://github.com/larevolucia/reeltracker_cli/issues/14)
 
 ![Move watchlist to watched](documentation/watched_2.png)
-![Watchlist titles actions](documentation/watchlist_2.png)
+![Move watched to watchlist](documentation/watchlist_2.png)
 
 #### Delete title from lists
 Users can delete a title from the lists.
