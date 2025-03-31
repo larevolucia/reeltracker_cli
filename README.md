@@ -33,7 +33,7 @@ Titles Data available for read at [Google Sheets](https://docs.google.com/spread
 - [As a user, I want to add a title to my Watchlist or Viewing History so that I can track what I plan to watch or have already watched.](https://github.com/larevolucia/reeltracker_cli/issues/4)
 - [As a user, I want to view my Watchlist or Viewing History so that I can review the titles I saved or watched.](https://github.com/larevolucia/reeltracker_cli/issues/5)
 - [As a user, I want to remove a title from my Watchlist or Viewing History so that my lists remain accurate and updated.](https://github.com/larevolucia/reeltracker_cli/issues/6)
-- [As a user, I want to move title between different lists (e.g., from Watchlist to Viewing History), so that I can maintain accurate tracking of my viewing progress.](https://github.com/larevolucia/reeltracker_cli/issues/7)
+- [As a user, I want to move title between different lists (e.g. from Watchlist to Viewing History), so that I can maintain accurate tracking of my viewing progress.](https://github.com/larevolucia/reeltracker_cli/issues/7)
 - [As a user, I want to exit the app when I’m done so that I can close the session properly.](https://github.com/larevolucia/reeltracker_cli/issues/8)
 
 ### Should Have
@@ -56,22 +56,36 @@ Titles Data available for read at [Google Sheets](https://docs.google.com/spread
 Users can search for movies or TV shows by keyword. The app returns results from The Movie Database (TMDb) API, including title, type, release year, and a short overview.
 Related user story:  [#3 Search for a title](https://github.com/larevolucia/reeltracker_cli/issues/3)
 
+![Search prompt](documentation/search_1.png)
+![Search results](documentation/search_2.png)
+
 #### Add to watchlist
 Users can add any title from the search results directly to their personal watchlist for future viewing.
 Related user story:  [#4 Add to watchlist or Viewing History](https://github.com/larevolucia/reeltracker_cli/issues/4)
 
+![Add to watchlist](documentation/watchlist_1.png)
+![Moved watched to watchlist](documentation/watchlist_2.png)
+
 #### Mark titles as watched and assign ratings
 Users can mark a title as watched and give it a personal rating from 1 to 10. This allows them to track both progress and preferences.
 Related user story:  [#5 View lists](https://github.com/larevolucia/reeltracker_cli/issues/5), [#9 Rate watched title](https://github.com/larevolucia/reeltracker_cli/issues/9), [#14 Update title](https://github.com/larevolucia/reeltracker_cli/issues/14)
+
+![Add as watched](documentation/watched_1.png)
+![Move watchlist to watched](documentation/watched_2.png)
 
 ####  Move titles between lists
 A title can be moved from the Watchlist to the Viewing History once watched, preserving metadata such as date added.
 When moving a title from Viewing History to Watchlist, watched data and rating are reset. 
 Related user story:  [#7 Move title between lists](https://github.com/larevolucia/reeltracker_cli/issues/7), [#14 Update title](https://github.com/larevolucia/reeltracker_cli/issues/14)
 
+![Watched titles actions](documentation/watched_commands.png)
+![Watchlist titles actions](documentation/watchlist_commands.png)
+
 #### Delete title from lists
 Users can delete a title from the lists.
 Related user story:  [#6 Remove a title from lists](https://github.com/larevolucia/reeltracker_cli/issues/6)
+
+![Delete action](documentation/watchlist_commands.png)
 
 ### 📁 Data Storage & Sync
 
@@ -94,6 +108,32 @@ Consulted references:
 - [W3School sorted( )](https://www.w3schools.com/python/ref_func_sorted.asp)
 - [FreeCodeCamp lambda sort list in Python](https://www.freecodecamp.org/news/lambda-sort-list-in-python/)
 
+### 🛡️ Error Handling 
+
+#### Input validation
+
+- Invalid menu options prompt the user to try again (`get_menu_choice`)
+- Malformed commands (like `w x`) return a helpful message explaining the issue (`handle_action_with_index`)
+- Ratings must be numeric and between 1–10; otherwise, the user is re-prompted (`get_title_rating`)
+- Empty search queries are rejected with clear prompts (`get_user_search_input`)
+
+#### Index and Selection Handling
+
+When selecting items from a list:
+
+- Out-of-range indexes (e.g. choosing item 10 in a list of 3) are caught and explained (`select_item_from_results`)
+- Non-numeric selections result in a descriptive error, and the user is given a chance to try again
+
+#### External API & Sheets Failures
+
+- TMDb API requests (e.g. `fetch_tmdb_results`) handle network timeouts, invalid responses, and missing keys with user-friendly messages.
+- Google Sheets operations check for missing worksheets and initialize them as needed (`save_item_to_list`, `get_titles_by_watch_status`).
+- If the Google Sheet is missing or the `creds.json` is misconfigured, the app will not crash but instead show a clear error and exit gracefully.
+
+#### Graceful Recovery
+
+Whenever possible, users will be given the option to retry or return to a safe state (e.g. re-search, go back to the main menu) rather than exiting abruptly.
+
 ### 🧰 Interface & Code Design
 
 #### Clean and readable terminal output
@@ -109,7 +149,7 @@ The codebase is structured in modules by responsibility. This improves readabili
 ├── sheets.py          # Google Sheets integration
 ├── tmdb.py            # TMDb API interaction
 ├── ui.py              # User interface formatting and display
-├── utils.py           # Helper functions (e.g., sorting, formatting)
+├── utils.py           # Helper functions (e.g. sorting, formatting)
 ├── title.py           # Title model and data transformation
 ├── user_data.py       # User-specific metadata (ratings, watched logs and status)
 ```
