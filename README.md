@@ -140,21 +140,77 @@ Consulted references:
 - Script was coded using Python version 3.12.8
 - To install dependencies run `pip3 freeze > requirements.txt`
 
-### Google API
+###  Google Sheets & TMDb API
+
+To properly use the app, you’ll need:
+
+- A Google Sheets document to store your watchlist and history.
+- A Service Account JSON file for API access (creds.json)
+- A TMDb API key in a `.env` file.
+
+Follow the setup instructions on the following section to:
+
+- Enable Google APIs and generate `creds.json`
+- Create a `.env` file with your TMDb API Key
+
+Your project structure should look something like this:
+
+```bash
+.
+├── **creds.json**
+├── **.env**
+├── run.py
+├── ...
+```
+
+## Run Locally 
+
+To use ReelTracker CLI on your machine, you can clone it and run it locally following the below steps.
+
+### 1. Clone the Repository
+
+First, open your terminal and clone the repo to your local environment:
+```bash
+git clone https://github.com/larevolucia/reeltracker_cli.git
+cd reeltracker_cli
+```
+
+Verify the Python version you have installed is compatible. You can verify this with:
+
+```bash
+python3 --version
+```
+
+### 2. Set Up Your Virtual Environment (optional)
+
+Create and activate a virtual environment to manage dependencies:
+
+```bash
+python3 -m venv venv
+source venv\Scripts\activate # Windows
+source venv/bin/activate   # macOS/Linux
+```
+### 3. Install Required Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Set up Google API
 
 This project uses Google Sheets to store personal viewing history and watchlist. You'll need to enable Drive and Google Sheets API on your Google Cloud to be able to configure your personal list.
 
-#### 1. Creating a project
+#### I. Creating a project
 
-- Start by navigating to [Google Cloud Console](https://console.cloud.google.com/). If you don't have a Google account, you'll to create one.
+- Start by navigating to [Google Cloud Console](https://console.cloud.google.com/). If you don't have a Google account, you'll need to create one.
 - Create a new project. [Check the official documentation on new project creation](https://developers.google.com/workspace/guides/create-project).
 
-#### 2. Enable APIs
+#### II. Enable APIs
 - Go to your project home and navigate to _APIs and Services > Library_.
 - Search for Google Drive API, navigate to its page and click on **Enable**.
 - Follow the same process to activate Google Sheets API.
 
-#### 3. Get Credentials
+#### III. Get Credentials
 - In your project view, navigate to _APIs and Services > Credentials_.
 - Click on **Create credentials** button, select **Help me choose**.
 - On the form, select **Google Drive API** on the dropdownlist os APIs.
@@ -162,13 +218,13 @@ This project uses Google Sheets to store personal viewing history and watchlist.
 - Fill in the name of the service account and the account ID (_You'll need this to configure your script_).
 - Click and create and continue. 
 
-#### 4. Save credentials information
+####  IV. Save credentials information
 - You'll be redirect to a credential screen. Select the e-mail address under **Service Account** and click on the edit button.
 - Navigate to Keys and click go to _Add Key > Create New Key_
 - Select JSON and create.
 - The create will automatically trigger a download of the json file.
 
-#### 5. Project configuration
+#### V. Project configuration
 - Move the downloaded file to the root folder of your project. You can name it **creds.json** as I did, or give it another name. Just be sure that the name is matching in your `run.py` file.
 - On your Google account, create a new Google Sheets document. You can name it `reeltracker_cli` as I did, or give it another unique name. Just be sure that the name is matching in your `run.py` file.
 - On your new file, click on the share button and copy&paste the e-mail address that can be found in your creds.json.
@@ -191,16 +247,16 @@ This project uses Google Sheets to store personal viewing history and watchlist.
     SHEET =  GSPREAD_CLIENT.open('<your_google_sheet_name>')
     ```
 
-### TMDB API
+### 5. Set up TMDB API
 
 This project uses TMDB API to fetch data of movies and TV Shows. You'll need to create an account and request an API Key.
 
-#### 1. Requesting the API Key
+#### I. Requesting the API Key
 
 - Go to [TMDB Signup](https://www.themoviedb.org/signup)
 - Once signed in, request an API key at [TMDB API page](https://www.themoviedb.org/settings/api).
 
-#### 2. Project Configuration
+#### II. Project Configuration
 -  If you haven't yet, install `requests` and `python-dotenv` libraries.
 - Create a .env file on your root folder and add your API key `TMDB_API_KEY=your_actual_tmdb_api_key_here`.
 - Add .env to your .gitignore file to ensure it's never pushed to GitHub.
@@ -220,7 +276,7 @@ This project uses TMDB API to fetch data of movies and TV Shows. You'll need to 
        raise ValueError("TMDB_API_KEY not found. Check your .env file.")
     ```
 
-#### 3. Test API Request
+#### III. Test API Request
 - Test your configuration by sending an API request:
     ```python
     TMDB_URL ='https://api.themoviedb.org/3'
@@ -249,7 +305,19 @@ This project uses TMDB API to fetch data of movies and TV Shows. You'll need to 
         return data['results']
     ```
 
-## Deployment
+
+
+### 6. Run the application
+
+Once everything is configured, run the CLI tool:
+
+```bash
+python run.py
+```
+
+If everything is set up correctly, you should see the ReelTracker menu in your terminal.
+
+## Deploy to Heroku
 
 ### Creating the Heroku app
 
