@@ -64,28 +64,26 @@ Users can add any title from the search results directly to their personal watch
 Related user story:  [#4 Add to watchlist or Viewing History](https://github.com/larevolucia/reeltracker_cli/issues/4)
 
 ![Add to watchlist](documentation/watchlist_1.png)
-![Moved watched to watchlist](documentation/watchlist_2.png)
 
 #### Mark titles as watched and assign ratings
 Users can mark a title as watched and give it a personal rating from 1 to 10. This allows them to track both progress and preferences.
 Related user story:  [#5 View lists](https://github.com/larevolucia/reeltracker_cli/issues/5), [#9 Rate watched title](https://github.com/larevolucia/reeltracker_cli/issues/9), [#14 Update title](https://github.com/larevolucia/reeltracker_cli/issues/14)
 
 ![Add as watched](documentation/watched_1.png)
-![Move watchlist to watched](documentation/watched_2.png)
 
 ####  Move titles between lists
 A title can be moved from the Watchlist to the Viewing History once watched, preserving metadata such as date added.
 When moving a title from Viewing History to Watchlist, watched data and rating are reset. 
 Related user story:  [#7 Move title between lists](https://github.com/larevolucia/reeltracker_cli/issues/7), [#14 Update title](https://github.com/larevolucia/reeltracker_cli/issues/14)
 
-![Watched titles actions](documentation/watched_commands.png)
+![Move watchlist to watched](documentation/watched_2.png)
 ![Watchlist titles actions](documentation/watchlist_commands.png)
 
 #### Delete title from lists
 Users can delete a title from the lists.
 Related user story:  [#6 Remove a title from lists](https://github.com/larevolucia/reeltracker_cli/issues/6)
 
-![Delete action](documentation/watchlist_commands.png)
+![Delete action](documentation/delete.png)
 
 ### 📁 Data Storage & Sync
 
