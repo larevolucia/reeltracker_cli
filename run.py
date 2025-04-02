@@ -5,7 +5,8 @@ from sheets import initialize_google_sheets
 from menus import display_main_menu
 from ui import (
     handle_search,
-    handle_watchlist_or_watched
+    handle_watchlist_or_watched,
+    handle_recommendations
 )
 
 
@@ -26,6 +27,8 @@ def main():
         if user_choice in ['watched', 'watchlist']:
             handle_watchlist_or_watched(user_choice, google_sheet)
             continue
+        if user_choice == 'recommendation':
+            handle_recommendations(google_sheet)
 
 if __name__ == "__main__":
     main()

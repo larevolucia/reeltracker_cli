@@ -190,3 +190,22 @@ def delete_item_in_list(sheet, title_obj):
         worksheet.delete_rows(row_index)
         return True
     return False
+
+def has_items(sheet):
+    """
+    Check that sheet has items
+
+    Args:
+        sheet (gspread.Spreadsheet): Initialized Google Sheet
+
+    Returns:
+        _bool_: True for list with items 
+    """
+    try:
+        worksheet = sheet.worksheet('My_List')
+        all_values = worksheet.get_all_values()
+        return len(all_values) > 1  # >1 because the first row is headers
+    except gspread.exceptions.WorksheetNotFound:
+        return False
+
+

@@ -10,7 +10,8 @@ from sheets import (
     check_for_duplicate,
     update_item_in_list,
     get_titles_by_watch_status,
-    delete_item_in_list
+    delete_item_in_list,
+    has_items
     )
 
 def get_user_search_input(prompt="\nSearch a title to get started: "):
@@ -282,3 +283,13 @@ def handle_delete(title, google_sheet):
     is_deleted = delete_item_in_list(google_sheet, title)
     if is_deleted:
         print(f'\n✅ {title.title} successfully removed from your list.')
+
+def handle_recommendations(google_sheet):
+    """
+    Recommends a title to the user
+
+    Args:
+        google_sheet (_type_): _description_
+    """
+    result = has_items(google_sheet)
+    print(f'items in list: {result}')
