@@ -2,7 +2,7 @@
 User prompts, rating input, search input, etc.
 """
 from title import Title
-from tmdb import fetch_tmdb_results, TMDB_API_KEY
+from tmdb import fetch_tmdb_results, TMDB_API_KEY, fetch_trending_titles
 from menus import handle_list_menu
 from utils import filter_results_by_media_type, sort_items_by_popularity
 from sheets import (
@@ -47,7 +47,8 @@ def display_title_entries(title_objects, mode, max_results=None):
     headers = {
         'search': 'Search results',
         'watchlist': 'Your watchlist',
-        'watched': 'Your watched titles'
+        'watched': 'Your watched titles',
+        'trending': 'Trending titles'
     }
 
     print(f"\n{headers.get(mode, 'Titles')}:\n")
@@ -166,28 +167,23 @@ def handle_search(google_sheet):
         print(f'\n🔎 Searching for {search_query}...')
         # 2. Use the query to fetch API results
         search_results = fetch_tmdb_results(search_query, TMDB_API_KEY)
-        # 3. Filter out non-movie/TV results
-        filtered_results = filter_results_by_media_type(search_results)
-        # 4. Handle case where no valid results are found
-        if not filtered_results:
+        # 3. Format TMDB titles
+        results_title_objects = prepare_title_objects_from_tmdb(search_results)
+        if not results_title_objects:
             print("\n❌  No results found. Try another search.")
-            continue # Go back to search (1)
-        # 5. Sort results by custom weighted popularity
-        sorted_results = sort_items_by_popularity(filtered_results)
-        # 6. Display top results as Title objects
-        results_title_objects = [Title(result) for result in sorted_results]
+            continue
         displayed_titles = display_title_entries(results_title_objects, 'search')
-        # 7. Select result, back to main menu or new search
+        # 4. Select result, back to main menu or new search
         results_selected_title = select_item_from_results(displayed_titles)
         if results_selected_title == 'main':
             print("\nReturning to main menu...")
             break # Go back to main menu
         if results_selected_title is None:
             continue # Go back to search (1)
-        # 8. Valid item (int) is selected
+        # 5. Valid item (int) is selected
         print(f"\n📥 You've selected {results_selected_title.title}"
               f"({results_selected_title.release_date})")
-        # 9. Check for item duplicate before saving
+        # 6. Check for item duplicate before saving
         handle_title_selection(results_selected_title, google_sheet)
         break
 
@@ -286,6 +282,25 @@ def handle_delete(title, google_sheet):
     if is_deleted:
         print(f'\n✅ {title.title} successfully removed from your list.')
 
+def prepare_title_objects_from_tmdb(api_results):
+    """
+    Filters, sorts, and converts TMDB api results into Title objects
+
+    Args:
+        api_results (list): Raw results from TMDB API
+
+    Returns:
+        list[Title]: List of Title objects ready to display
+    """
+    filtered_results = filter_results_by_media_type(api_results)
+    if not filtered_results:
+        return []
+
+    sorted_results = sort_items_by_popularity(filtered_results)
+    title_objects = [Title(result) for result in sorted_results]
+    return title_objects
+
+
 def handle_recommendations(google_sheet):
     """
     Recommends a title to the user
@@ -297,3 +312,8 @@ def handle_recommendations(google_sheet):
     watched_items = has_watched(google_sheet)
     watchlist_items = has_watchlist(google_sheet)
     print(f'items in list: {items} / watchlist: {watchlist_items} / watched: {watched_items}')
+    if not items:
+        trending_results = fetch_trending_titles(TMDB_API_KEY)
+        trending_title_objects = prepare_title_objects_from_tmdb(trending_results)
+        print(f"\n🧪 Debug: {len(trending_title_objects)} titles to display")
+        displayed_titles = display_title_entries(trending_title_objects, 'trending', 6)
