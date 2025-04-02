@@ -208,4 +208,28 @@ def has_items(sheet):
     except gspread.exceptions.WorksheetNotFound:
         return False
 
+def has_watchlist(sheet):
+    """
+    Uses get_title_by_watch_status to check
+    if at least 1 title in watchlist exists
 
+    Args:
+        sheet (gspread.Spreadsheet): Initialized Google Sheet
+
+    Returns:
+        bool: True / False
+    """
+    return len(get_titles_by_watch_status(sheet, watched=False)) > 0
+
+def has_watched(sheet):
+    """
+    Uses get_title_by_watch_status to check
+    if at least 1 watched exists
+
+    Args:
+        sheet (gspread.Spreadsheet): Initialized Google Sheet
+
+    Returns:
+        bool: True / False
+    """
+    return len(get_titles_by_watch_status(sheet, watched=True)) > 0

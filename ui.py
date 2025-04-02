@@ -11,7 +11,9 @@ from sheets import (
     update_item_in_list,
     get_titles_by_watch_status,
     delete_item_in_list,
-    has_items
+    has_items,
+    has_watched,
+    has_watchlist
     )
 
 def get_user_search_input(prompt="\nSearch a title to get started: "):
@@ -291,5 +293,7 @@ def handle_recommendations(google_sheet):
     Args:
         google_sheet (_type_): _description_
     """
-    result = has_items(google_sheet)
-    print(f'items in list: {result}')
+    items = has_items(google_sheet)
+    watched_items = has_watched(google_sheet)
+    watchlist_items = has_watchlist(google_sheet)
+    print(f'items in list: {items} / watchlist: {watchlist_items} / watched: {watched_items}')
