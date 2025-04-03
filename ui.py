@@ -48,7 +48,8 @@ def display_title_entries(title_objects, mode, max_results=None):
         'search': 'Search results',
         'watchlist': 'Your watchlist',
         'watched': 'Your watched titles',
-        'trending': 'Trending titles'
+        'trending': 'Trending titles',
+        'recomendation': 'Recommended titles',
     }
 
     print(f"\n{headers.get(mode, 'Titles')}:\n")
@@ -303,7 +304,11 @@ def prepare_title_objects_from_tmdb(api_results):
 
 def handle_recommendations(google_sheet):
     """
-    Recommends a title to the user
+    Recommends titles to the user based on the state of their list
+        - If no titles at all: show trending
+        - If no watchlist: show similar to watched items
+        - If no watched items: show watchlist by popularity
+        - If watched and watchlist: selects from watched item
 
     Args:
         google_sheet (_type_): _description_
@@ -315,5 +320,12 @@ def handle_recommendations(google_sheet):
     if not items:
         trending_results = fetch_trending_titles(TMDB_API_KEY)
         trending_title_objects = prepare_title_objects_from_tmdb(trending_results)
-        print(f"\n🧪 Debug: {len(trending_title_objects)} titles to display")
+        print("Your list is looking a little empty.")
+        print("Check out what’s trending and find something that sparks your interest!")
         displayed_titles = display_title_entries(trending_title_objects, 'trending', 6)
+    elif not watchlist_items:
+        print("You have no watchlist items, but you have some watched items!")
+    elif not watched_items:
+        print("You have no watched items, but you have some watchlist items!")
+    else:
+        print("You have watched items and watchlist items.")
