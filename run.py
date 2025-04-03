@@ -3,7 +3,7 @@ CLI Reel tracker orchestration
 """
 from sheets import initialize_google_sheets
 from menus import display_main_menu
-from ui import (
+from ui_actions import (
     handle_search,
     handle_watchlist_or_watched,
 )

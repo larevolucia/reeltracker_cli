@@ -8,7 +8,7 @@ from sheets import (
     has_watchlist,
     get_titles_by_watch_status
     )
-from ui import (
+from ui_actions import (
     prepare_title_objects_from_tmdb,
     select_item_from_results,
     handle_title_selection)
