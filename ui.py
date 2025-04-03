@@ -4,7 +4,11 @@ User prompts, rating input, search input, etc.
 from title import Title
 from tmdb import fetch_tmdb_results, TMDB_API_KEY, fetch_trending_titles
 from menus import handle_list_menu
-from utils import filter_results_by_media_type, sort_items_by_popularity
+from utils import (
+    filter_results_by_media_type,
+    sort_items_by_popularity,
+    calculate_weighted_popularity
+    )
 from sheets import (
     save_item_to_list,
     check_for_duplicate,
@@ -49,7 +53,7 @@ def display_title_entries(title_objects, mode, max_results=None):
         'watchlist': 'Your watchlist',
         'watched': 'Your watched titles',
         'trending': 'Trending titles',
-        'recomendation': 'Recommended titles',
+        'recommendation': 'Recommended titles',
     }
 
     print(f"\n{headers.get(mode, 'Titles')}:\n")
@@ -62,7 +66,9 @@ def display_title_entries(title_objects, mode, max_results=None):
         release = title.release_date
         rating = title.user_data.rating
         overview = title.overview
+        popularity = title.popularity
         line = f"{index:>2} | {title_str:<30} | {media_type:<6} | {release:<4}"
+        line += f" | Popularity: {popularity:<4}"
         if is_watched:
             line += f" | Rating: {rating:<4}"
         print(line)
@@ -142,7 +148,7 @@ def get_watch_status(title_obj):
         if command == 'n':
             print(f'\n🔄 Marking {title_obj.title} as not watched...')
             return False
-        print("\n⚠️ Invalid input. Please type 'y' for yes or 'n' for no.")
+        print("\n⚠️  Invalid input. Please type 'y' for yes or 'n' for no.")
 
 def get_title_rating(title_obj):
     """
@@ -309,11 +315,12 @@ def prepare_title_objects_from_tmdb(api_results):
     filtered_results = filter_results_by_media_type(api_results)
     if not filtered_results:
         return []
-
+    for result in filtered_results:
+        weighted_popularity = calculate_weighted_popularity(result)
+        result['weighted_popularity'] = weighted_popularity
     sorted_results = sort_items_by_popularity(filtered_results)
     title_objects = [Title(result) for result in sorted_results]
     return title_objects
-
 
 def handle_recommendations(mode, google_sheet):
     """
@@ -332,19 +339,25 @@ def handle_recommendations(mode, google_sheet):
     if not items:
         trending_results = fetch_trending_titles(TMDB_API_KEY)
         trending_title_objects = prepare_title_objects_from_tmdb(trending_results)
-        print("\n1Your list is looking a little empty.")
+        print("\nYour list is looking a little empty.")
         print("Check out what’s trending and find something that sparks your interest!")
         displayed_titles = display_title_entries(trending_title_objects, 'trending', 6)
-    # elif not watchlist_items:
-    #     print("You have no watchlist items, but you have some watched items!")
-    # elif not watched_items:
-    #     print("You have no watched items, but you have some watchlist items!")
-    # else:
-    #     print("You have watched items and watchlist items")
         results_selected_title = select_item_from_results(displayed_titles, mode)
         if results_selected_title == 'main' or results_selected_title is None:
             print('\nReturning to main menu...')
         else:
             print(f"\n📥 You've selected {results_selected_title.title}"
                   f"({results_selected_title.release_date})")
-            handle_title_selection(results_selected_title, google_sheet)
+        handle_title_selection(results_selected_title, google_sheet)
+    elif not watched_items:
+        print("\nYou haven’t watched anything yet, but your watchlist has some great options.")
+        print("\nHere are the most popular ones to get you started.")
+        watchlist_titles = get_titles_by_watch_status(google_sheet, False)
+        title_objects = [Title.from_sheet_row(row) for row in watchlist_titles]
+        sorted_titles = sort_items_by_popularity(title_objects)
+        displayed_titles = display_title_entries(sorted_titles, 'recommendation', 6)
+    # elif not watchlist_items:
+    #     print("You have no watchlist items, but you have some watched items!")
+    #     preferred_genre = get_preferred_genre()
+    # else:
+    #     print("You have watched items and watchlist items")
