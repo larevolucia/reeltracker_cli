@@ -73,27 +73,40 @@ def display_title_entries(title_objects, mode, max_results=None):
             print()
     return title_objects[:max_results]
 
-def select_item_from_results(title_list):
+def select_item_from_results(title_list, mode):
     """
     Allows user to select an item from previously displayed results
     
     Args:
         title_list (list[Title]): List of Title objects
+         mode (str): Mode of interaction ('search' or 'recommendation')
     Returns:
-        Title object: selected item from list
+        Title object | None | str: Selected item, None (for new search), or 'main' to return
     """
-    while True:
-        print(
+    valid_commands = []
+    prompt = ""
+    if mode == 'search':
+        valid_commands = ['n', 'm']
+        prompt = (
             f"\nSelect an item (1-{len(title_list)}) to save it, "
             f"type 'n' for a new search or 'm' to return to main menu: "
         )
+    elif mode == 'recommendation':
+        valid_commands = ['m']
+        prompt = (
+            f"\nSelect an item (1-{len(title_list)}) to save it "
+            f"or 'm' to return to main menu: "
+        )
+    else:
+        print("⚠️  Unknown mode. Please use 'search' or 'recommendation'.")
+        return None
+    while True:
+        print(prompt)
         command = input("> ").strip().lower()
-
-        if command == 'n':
-            return None  # New search
-
         if command == 'm':
-            return 'main'  # Go back to main menu
+            return 'main'
+        if command == 'n' and mode == 'search':
+            return None
         try:
             selection = int(command)
             if not 1 <= selection <= len(title_list):
@@ -107,7 +120,7 @@ def select_item_from_results(title_list):
             return chosen_item
 
         except ValueError as e:
-            print(f"\n⚠️  Invalid input: {e}. Please enter a number, 'm' or 'n'.")
+            print(f"\n⚠️  Invalid input: {e}. Please enter a number, or {', '.join(valid_commands)}.")
 
 def get_watch_status(title_obj):
     """
@@ -155,7 +168,7 @@ def get_title_rating(title_obj):
         except ValueError as e:
             print(f"\n⚠️ Invalid input: {e}")
 
-def handle_search(google_sheet):
+def handle_search(mode, google_sheet):
     """Handles user interaction with search functionality
 
     Args:
@@ -175,7 +188,7 @@ def handle_search(google_sheet):
             continue
         displayed_titles = display_title_entries(results_title_objects, 'search')
         # 4. Select result, back to main menu or new search
-        results_selected_title = select_item_from_results(displayed_titles)
+        results_selected_title = select_item_from_results(displayed_titles, mode)
         if results_selected_title == 'main':
             print("\nReturning to main menu...")
             break # Go back to main menu
@@ -302,7 +315,7 @@ def prepare_title_objects_from_tmdb(api_results):
     return title_objects
 
 
-def handle_recommendations(google_sheet):
+def handle_recommendations(mode, google_sheet):
     """
     Recommends titles to the user based on the state of their list
         - If no titles at all: show trending
@@ -316,16 +329,22 @@ def handle_recommendations(google_sheet):
     items = has_items(google_sheet)
     watched_items = has_watched(google_sheet)
     watchlist_items = has_watchlist(google_sheet)
-    print(f'items in list: {items} / watchlist: {watchlist_items} / watched: {watched_items}')
     if not items:
         trending_results = fetch_trending_titles(TMDB_API_KEY)
         trending_title_objects = prepare_title_objects_from_tmdb(trending_results)
-        print("Your list is looking a little empty.")
+        print("\n1Your list is looking a little empty.")
         print("Check out what’s trending and find something that sparks your interest!")
         displayed_titles = display_title_entries(trending_title_objects, 'trending', 6)
-    elif not watchlist_items:
-        print("You have no watchlist items, but you have some watched items!")
-    elif not watched_items:
-        print("You have no watched items, but you have some watchlist items!")
-    else:
-        print("You have watched items and watchlist items.")
+    # elif not watchlist_items:
+    #     print("You have no watchlist items, but you have some watched items!")
+    # elif not watched_items:
+    #     print("You have no watched items, but you have some watchlist items!")
+    # else:
+    #     print("You have watched items and watchlist items")
+        results_selected_title = select_item_from_results(displayed_titles, mode)
+        if results_selected_title == 'main' or results_selected_title is None:
+            print('\nReturning to main menu...')
+        else:
+            print(f"\n📥 You've selected {results_selected_title.title}"
+                  f"({results_selected_title.release_date})")
+            handle_title_selection(results_selected_title, google_sheet)

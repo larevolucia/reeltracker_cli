@@ -22,13 +22,13 @@ def main():
             print('\n👋 Goodbye!')
             break
         if user_choice == 'search':
-            handle_search(google_sheet)
+            handle_search(user_choice, google_sheet)
             continue
         if user_choice in ['watched', 'watchlist']:
             handle_watchlist_or_watched(user_choice, google_sheet)
             continue
         if user_choice == 'recommendation':
-            handle_recommendations(google_sheet)
+            handle_recommendations(user_choice, google_sheet)
 
 if __name__ == "__main__":
     main()
