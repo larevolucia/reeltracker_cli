@@ -37,20 +37,15 @@ def calculate_weighted_popularity(item):
 
 def sort_items_by_popularity(items):
     """
-    Sorts a list of TMDb items by weighted popularity
+    Sorts a list of items (dicts or objects) by 'weighted_popularity' if available
 
     Args:
-        items (list): List of TMDb items dictionaries
+        items (list): List of dicts or objects
 
     Returns:
         list: Sorted list by descending popularity
     """
-    for item in items:
-        weighted_popularity = calculate_weighted_popularity(item)
-        item['weighted_popularity'] = weighted_popularity
-
-    # for each x(item) in my list, sort by weighted_popularity
-    return sorted(items, key=lambda x: x['weighted_popularity'], reverse=True)
+    return sorted(items, key=get_popularity, reverse=True)
 
 def extract_year(date):
     """
@@ -71,3 +66,25 @@ def get_current_timestamp():
         _str_: YYYY-MM-DD HH:MM:SS
     """
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+def get_popularity(item):
+    """
+    Cheks if item is dict or object
+    
+
+    Args:
+        item (dict / obj): title metadata
+
+    Returns:
+        popularity (float): popularity score
+    """
+    if isinstance(item, dict):
+        return item.get('weighted_popularity') or item.get('popularity', 0)
+    # Fall back to .popularity (which is a string in Title)
+    raw_value = getattr(item, 'weighted_popularity', None)
+    if raw_value is None:
+        raw_value = getattr(item, 'popularity', '0')
+    try:
+        return float(raw_value)
+    except (ValueError, TypeError):
+        return 0
