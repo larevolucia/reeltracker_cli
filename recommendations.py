@@ -10,11 +10,13 @@ from sheets import (
     )
 from ui import (
     prepare_title_objects_from_tmdb,
-    display_title_entries,
     select_item_from_results,
     handle_title_selection)
 from title import Title
-from utils import sort_items_by_popularity
+from utils import (
+    sort_items_by_popularity,
+    display_title_entries
+    )
 
 def handle_recommendations(mode, google_sheet):
     """
