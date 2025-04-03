@@ -5,10 +5,8 @@ from title import Title
 from tmdb import fetch_tmdb_results, TMDB_API_KEY
 from menus import handle_list_menu
 from utils import (
-    filter_results_by_media_type,
-    sort_items_by_popularity,
-    calculate_weighted_popularity,
-    display_title_entries
+    display_title_entries,
+    prepare_title_objects_from_tmdb
     )
 from sheets import (
     save_item_to_list,
@@ -152,23 +150,3 @@ def handle_delete(title, google_sheet):
     is_deleted = delete_item_in_list(google_sheet, title)
     if is_deleted:
         print(f'\n✅ {title.title} successfully removed from your list.')
-
-def prepare_title_objects_from_tmdb(api_results):
-    """
-    Filters, sorts, and converts TMDB api results into Title objects
-
-    Args:
-        api_results (list): Raw results from TMDB API
-
-    Returns:
-        list[Title]: List of Title objects ready to display
-    """
-    filtered_results = filter_results_by_media_type(api_results)
-    if not filtered_results:
-        return []
-    for result in filtered_results:
-        weighted_popularity = calculate_weighted_popularity(result)
-        result['weighted_popularity'] = weighted_popularity
-    sorted_results = sort_items_by_popularity(filtered_results)
-    title_objects = [Title(result) for result in sorted_results]
-    return title_objects

@@ -3,20 +3,51 @@
 """
 import math
 from datetime import datetime
+from title import Title
 
-def filter_results_by_media_type(result_list, allowed_media_types=('movie', 'tv')):
+# --- Formatting ---
+def extract_year(date):
     """
-    Filters the TMDB results by media_type
+    Use datetime to extract year from string
+
     Args:
-        result_list (list): list of dictionaries from API
-        allowed_media_types(tuple): Types used for filtering   
-    Returns: 
-        list: Filtered list limited to allowed media types
+        date (str): YYYY-MM-DD format
     """
-    return [
-        result for result in result_list
-        if result.get("media_type") in allowed_media_types
-        ]
+    d = datetime.strptime(date, '%Y-%m-%d')
+    year_string = d.strftime("%Y")
+    return year_string
+
+def get_current_timestamp():
+    """
+    Give current timestamp
+
+    Returns:
+        _str_: YYYY-MM-DD HH:MM:SS
+    """
+    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+# --- Popularity ---
+def get_popularity(item):
+    """
+    Cheks if item is dict or object
+    
+
+    Args:
+        item (dict / obj): title metadata
+
+    Returns:
+        popularity (float): popularity score
+    """
+    if isinstance(item, dict):
+        return item.get('weighted_popularity') or item.get('popularity', 0)
+    # Fall back to .popularity (which is a string in Title)
+    raw_value = getattr(item, 'weighted_popularity', None)
+    if raw_value is None:
+        raw_value = getattr(item, 'popularity', '0')
+    try:
+        return float(raw_value)
+    except (ValueError, TypeError):
+        return 0
 
 def calculate_weighted_popularity(item):
     """
@@ -47,48 +78,7 @@ def sort_items_by_popularity(items):
     """
     return sorted(items, key=get_popularity, reverse=True)
 
-def extract_year(date):
-    """
-    Use datetime to extract year from string
-
-    Args:
-        date (str): YYYY-MM-DD format
-    """
-    d = datetime.strptime(date, '%Y-%m-%d')
-    year_string = d.strftime("%Y")
-    return year_string
-
-def get_current_timestamp():
-    """
-    Give current timestamp
-
-    Returns:
-        _str_: YYYY-MM-DD HH:MM:SS
-    """
-    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
-def get_popularity(item):
-    """
-    Cheks if item is dict or object
-    
-
-    Args:
-        item (dict / obj): title metadata
-
-    Returns:
-        popularity (float): popularity score
-    """
-    if isinstance(item, dict):
-        return item.get('weighted_popularity') or item.get('popularity', 0)
-    # Fall back to .popularity (which is a string in Title)
-    raw_value = getattr(item, 'weighted_popularity', None)
-    if raw_value is None:
-        raw_value = getattr(item, 'popularity', '0')
-    try:
-        return float(raw_value)
-    except (ValueError, TypeError):
-        return 0
-
+# --- Display ---
 def display_title_entries(title_objects, mode, max_results=None):
     """
     Display a list of Title objects in a table format based on context.
@@ -130,3 +120,38 @@ def display_title_entries(title_objects, mode, max_results=None):
             print(f'     {overview}')
             print()
     return title_objects[:max_results]
+
+# --- API Result Transformation ---
+def prepare_title_objects_from_tmdb(api_results):
+    """
+    Filters, sorts, and converts TMDB api results into Title objects
+
+    Args:
+        api_results (list): Raw results from TMDB API
+
+    Returns:
+        list[Title]: List of Title objects ready to display
+    """
+    filtered_results = filter_results_by_media_type(api_results)
+    if not filtered_results:
+        return []
+    for result in filtered_results:
+        weighted_popularity = calculate_weighted_popularity(result)
+        result['weighted_popularity'] = weighted_popularity
+    sorted_results = sort_items_by_popularity(filtered_results)
+    title_objects = [Title(result) for result in sorted_results]
+    return title_objects
+
+def filter_results_by_media_type(result_list, allowed_media_types=('movie', 'tv')):
+    """
+    Filters the TMDB results by media_type
+    Args:
+        result_list (list): list of dictionaries from API
+        allowed_media_types(tuple): Types used for filtering   
+    Returns: 
+        list: Filtered list limited to allowed media types
+    """
+    return [
+        result for result in result_list
+        if result.get("media_type") in allowed_media_types
+        ]
