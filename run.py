@@ -6,8 +6,8 @@ from menus import display_main_menu
 from ui import (
     handle_search,
     handle_watchlist_or_watched,
-    handle_recommendations
 )
+from recommendations import handle_recommendations
 
 
 def main():
