@@ -11,11 +11,12 @@ from sheets import (
 from ui_actions import (
     prepare_title_objects_from_tmdb,
     select_item_from_results,
-    handle_title_selection)
+    handle_title_selection,
+    display_title_entries
+    )
 from title import Title
 from utils import (
-    sort_items_by_popularity,
-    display_title_entries
+    sort_items_by_popularity
     )
 
 def handle_recommendations(mode, google_sheet):
@@ -54,6 +55,5 @@ def handle_recommendations(mode, google_sheet):
         displayed_titles = display_title_entries(sorted_titles, 'recommendation', 6)
     # elif not watchlist_items:
     #     print("You have no watchlist items, but you have some watched items!")
-    #     preferred_genre = get_preferred_genre()
     # else:
     #     print("You have watched items and watchlist items")
