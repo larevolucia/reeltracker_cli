@@ -1,6 +1,7 @@
 """
 Recommendation logic
 """
+from collections import defaultdict
 from tmdb import TMDB_API_KEY, fetch_trending_titles
 from sheets import (
     has_items,
@@ -58,6 +59,8 @@ def handle_recommendations(mode, google_sheet):
         watched_titles = get_titles_by_watch_status(google_sheet, True)
         title_objects = [Title.from_sheet_row(row) for row in watched_titles]
         top_rated_titles = get_top_rated_titles(title_objects)
+        get_preferred_genre(top_rated_titles)
+
         for index, title in enumerate(top_rated_titles, start=1):
             title_str = title.title
             genres = title.genres
@@ -73,3 +76,16 @@ def get_top_rated_titles(titles_list):
     top_rated_titles = [title for title in titles_list if title.user_data.rating >= 3]
 
     return top_rated_titles
+
+def get_preferred_genre(title_list):
+    """
+    Analyse list and provides preferred genre
+    """
+    genres_count = defaultdict(int)
+    for title in title_list:
+        for genre in title.genres:
+            genres_count[genre] +=1
+    preferred_genre = max(genres_count, key=genres_count.get)
+    preferred_genre_count = genres_count[preferred_genre]
+    print(f'Your preferred genre: {preferred_genre}: {preferred_genre_count} views')
+    return preferred_genre
