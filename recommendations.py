@@ -53,7 +53,23 @@ def handle_recommendations(mode, google_sheet):
         title_objects = [Title.from_sheet_row(row) for row in watchlist_titles]
         sorted_titles = sort_items_by_popularity(title_objects)
         displayed_titles = display_title_entries(sorted_titles, 'recommendation', 6)
-    # elif not watchlist_items:
-    #     print("You have no watchlist items, but you have some watched items!")
+    elif not watchlist_items:
+        print("You have no watchlist items, but you have some watched items!")
+        watched_titles = get_titles_by_watch_status(google_sheet, True)
+        title_objects = [Title.from_sheet_row(row) for row in watched_titles]
+        top_rated_titles = get_top_rated_titles(title_objects)
+        for index, title in enumerate(top_rated_titles, start=1):
+            title_str = title.title
+            genres = title.genres
+            rating = title.user_data.rating
+            watched_date = title.user_data.watched_date
+            print(f'({index}) {title_str} - {genres} - {rating} - {watched_date}')
     # else:
     #     print("You have watched items and watchlist items")
+def get_top_rated_titles(titles_list):
+    """
+    Extracts top rated items from list
+    """
+    top_rated_titles = [title for title in titles_list if title.user_data.rating >= 3]
+
+    return top_rated_titles
