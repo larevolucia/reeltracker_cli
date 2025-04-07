@@ -42,7 +42,7 @@ def get_watch_status(title_obj):
 
 def get_title_rating(title_obj):
     """
-    Prompts user to provide movie rating 1-10
+    Prompts user to provide movie rating 1-5
     updates object using set_rating method
     Args:
         title_obj(Title): The Title object to save
@@ -50,7 +50,7 @@ def get_title_rating(title_obj):
     while True:
         print(
             f'\nHow would you rate {title_obj.title}? '
-            f'Select a number from 1-10: ')
+            f'Select a number from 1-5: ')
         command = input("> ").strip()
         if not command.isdigit():
             print("\n⚠️ Invalid input: Please enter a whole number.")

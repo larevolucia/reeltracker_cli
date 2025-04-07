@@ -36,8 +36,8 @@ class UserTitleData:
         Raises:
             ValueError: Notify if rating is not valid
         """
-        if not 1 <= rating <= 10:
-            raise ValueError("Rating must be between 1 and 10.")
+        if not 1 <= rating <= 5:
+            raise ValueError("Rating must be between 1 and 5.")
         self.rating = rating
 
     def to_dict(self):
