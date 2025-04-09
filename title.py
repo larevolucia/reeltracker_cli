@@ -12,7 +12,7 @@ class Title:
     """
     def __init__(self, data):
         self.id = data.get('id')
-        self.title = data.get('title') or data.get('name') or 'No title available'
+        self.title = str(data.get('title') or data.get('name') or 'No title available')
         self.media_type = data.get('media_type', 'Unknown')
         release_date = data.get('release_date') or data.get('first_air_date') or 'Unknown'
         self.release_date = (
@@ -75,8 +75,8 @@ class Title:
         # create Title instance from main data
         obj = cls({
             "id": row.get('id'),
-            "title": row.get('title'),
             "media_type": row.get('media_type'),
+            "title": row.get('title'),
             "overview": row.get('overview'),
             'weighted_popularity': float(row.get('weighted_popularity', 0))
         })
