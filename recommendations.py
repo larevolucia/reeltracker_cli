@@ -60,6 +60,7 @@ def handle_recommendations(mode, google_sheet):
     elif not watchlist_items:
         print("You have no watchlist items, but you have some watched items!")
         watched_titles = get_titles_by_watch_status(google_sheet, True)
+        watched_titles = get_titles_by_watch_status(google_sheet, True)
         title_objects = [Title.from_sheet_row(row) for row in watched_titles]
         top_rated_titles = get_top_rated_titles(title_objects)
         preferred_genre = get_preferred_genre(top_rated_titles)
@@ -92,8 +93,25 @@ def handle_recommendations(mode, google_sheet):
             print(f"\n📥 You've selected {results_selected_title.title}"
                   f"({results_selected_title.release_date})")
         handle_title_selection(results_selected_title, google_sheet)
-    # else:
-    #     print("You have watched items and watchlist items")
+    else:
+        print("You have watched items and watchlist items")
+        watched_titles = get_titles_by_watch_status(google_sheet, True)
+        watched_titles_objects = [Title.from_sheet_row(row) for row in watched_titles]
+        watchlist_titles = get_titles_by_watch_status(google_sheet,False)
+        watchlist_titles_objects = [Title.from_sheet_row(row) for row in watched_titles]
+        top_rated_titles = get_top_rated_titles(watched_titles_objects)
+        preferred_genre = get_preferred_genre(top_rated_titles)
+        titles_in_genre = filter_list_by_genre(top_rated_titles, preferred_genre)
+        top_title = get_most_relevant_title(titles_in_genre)
+        titles_matching_genre = filter_list_by_genre(watchlist_titles_objects, preferred_genre)
+        for index, title in enumerate(titles_matching_genre, start=1):
+            title_str = title.title
+            genres = title.genres
+            rating = title.user_data.rating
+            watched_date = title.user_data.watched_date
+            print(f'({index}) {title_str} - {genres} - {rating} - {watched_date}')
+
+
 def get_top_rated_titles(titles_list):
     """
     Extracts top rated items from list
