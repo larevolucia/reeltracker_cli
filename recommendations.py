@@ -98,7 +98,7 @@ def handle_recommendations(mode, google_sheet):
         watched_titles = get_titles_by_watch_status(google_sheet, True)
         watched_titles_objects = [Title.from_sheet_row(row) for row in watched_titles]
         watchlist_titles = get_titles_by_watch_status(google_sheet,False)
-        watchlist_titles_objects = [Title.from_sheet_row(row) for row in watched_titles]
+        watchlist_titles_objects = [Title.from_sheet_row(row) for row in watchlist_titles]
         top_rated_titles = get_top_rated_titles(watched_titles_objects)
         preferred_genre = get_preferred_genre(top_rated_titles)
         titles_in_genre = filter_list_by_genre(top_rated_titles, preferred_genre)
