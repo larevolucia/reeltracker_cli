@@ -189,7 +189,7 @@ To properly use the app, you’ll need:
 Follow the setup instructions on the following section to:
 
 - Enable Google APIs and generate `creds.json`
-- Create a `.env` file with your TMDb API Key
+- Create a `.env` file with your TMDb API Key 
 
 Your project structure should look something like this:
 
@@ -297,6 +297,7 @@ This project uses TMDB API to fetch data of movies and TV Shows. You'll need to 
 #### II. Project Configuration
 -  If you haven't yet, install `requests` and `python-dotenv` libraries.
 - Create a .env file on your root folder and add your API key `TMDB_API_KEY=your_actual_tmdb_api_key_here`.
+- Optionally, you can also add the TMDB API URL `TMDB_URL ='https://api.themoviedb.org/3'`
 - Add .env to your .gitignore file to ensure it's never pushed to GitHub.
 - Load API Key from .env file:
 
@@ -308,20 +309,21 @@ This project uses TMDB API to fetch data of movies and TV Shows. You'll need to 
     load_dotenv()
 
     # Access TMDB API key
-    api_key = os.getenv('TMDB_API_KEY')
+    TMDB_API_KEY = os.getenv('TMDB_API_KEY')
+    TMDB_URL = os.getenv('TMDB_URL') # if stored in .env otherwise TMDB_URL ='https://api.themoviedb.org/3'
 
-    if api_key is None:
+    if TMDB_API_KEY is None:
        raise ValueError("TMDB_API_KEY not found. Check your .env file.")
     ```
 
 #### III. Test API Request
 - Test your configuration by sending an API request:
     ```python
-    TMDB_URL ='https://api.themoviedb.org/3'
+    TMDB_URL = os.getenv('TMDB_URL')
     LANGUAGE ='language=en-US'
-    tmdb_api_key = os.getenv('TMDB_API_KEY')
+    TMDB_API_KEY = os.getenv('TMDB_API_KEY')
 
-    url = f'{TMDB_URL}/movie/popular?api_key={api_key}&{LANGUAGE}&page=1'
+    url = f'{TMDB_URL}/movie/popular?api_key={TMDB_API_KEY}&{LANGUAGE}&page=1'
     response = requests.get(url,timeout=10)
     if response.status_code == 200:
         data = response.json()
