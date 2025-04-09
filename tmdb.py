@@ -6,13 +6,14 @@ from dotenv import load_dotenv
 import requests
 
 # Constants
-TMDB_URL ='https://api.themoviedb.org/3'
 DEFAULT_LANGUAGE ='en-US'
 
 # Load environment variables from .env file
 load_dotenv()
 
 TMDB_API_KEY = os.getenv('TMDB_API_KEY')
+TMDB_URL = os.getenv('TMDB_URL')
+
 
 if TMDB_API_KEY is None:
     raise EnvironmentError("TMDB_API_KEY not found! Check your .env file.")
