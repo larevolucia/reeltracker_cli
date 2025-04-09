@@ -103,13 +103,31 @@ def handle_recommendations(mode, google_sheet):
         preferred_genre = get_preferred_genre(top_rated_titles)
         titles_in_genre = filter_list_by_genre(top_rated_titles, preferred_genre)
         top_title = get_most_relevant_title(titles_in_genre)
+        title_str = top_title.title
+        genres = top_title.genres
+        rating = top_title.user_data.rating
+        watched_date = top_title.user_data.watched_date
+        top_title_media_type = top_title.media_type
+        top_title_id = top_title.id
+        print(f'{title_str} - {genres} - {rating} - {watched_date}')
+        top_title_media_type = top_title.media_type
         titles_matching_genre = filter_list_by_genre(watchlist_titles_objects, preferred_genre)
         for index, title in enumerate(titles_matching_genre, start=1):
             title_str = title.title
             genres = title.genres
-            rating = title.user_data.rating
+            popularity = title.popularity
             watched_date = title.user_data.watched_date
-            print(f'({index}) {title_str} - {genres} - {rating} - {watched_date}')
+            print(f'({index}) {title_str} - {genres} - {popularity} - {watched_date}')
+        match_media_type_titles, non_match_media_type_titles = partition_list_by_media_type(
+            watchlist_titles_objects,
+            top_title_media_type
+            )
+        for index, title in enumerate(match_media_type_titles, start=1):
+            title_str = title.title
+            genres = title.genres
+            popularity = title.popularity
+            watched_date = title.user_data.watched_date
+            print(f'({index}) {title_str} - {genres} - {popularity} - {watched_date}')
 
 
 def get_top_rated_titles(titles_list):
@@ -156,3 +174,20 @@ def get_most_relevant_title(title_list):
     """
     sorted_titles = sort_titles_by_relevance(title_list)
     return sorted_titles[0]
+
+def partition_list_by_media_type(title_list, target_media_type):
+    """
+    Splits a single list into two
+    using media_type as criteria
+
+    Args:
+        title_list (_type_): _description_
+    """
+    match_media_type = []
+    non_match_media_type = []
+    for title in title_list:
+        if title.media_type == target_media_type:
+            match_media_type.append(title)
+        else:
+            non_match_media_type.append(title)
+    return match_media_type, non_match_media_type
