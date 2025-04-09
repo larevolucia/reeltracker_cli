@@ -40,12 +40,7 @@ def handle_recommendations(mode, google_sheet):
     if not items:
         handle_no_items(google_sheet, mode)
     elif not watched_items:
-        print("\nYou haven't watched anything yet, but your watchlist has some great options.")
-        print("\nHere are the most popular ones to get you started.")
-        watchlist_titles = get_titles_by_watch_status(google_sheet, False)
-        title_objects = [Title.from_sheet_row(row) for row in watchlist_titles]
-        sorted_titles = sort_items_by_popularity(title_objects)
-        displayed_titles = display_title_entries(sorted_titles, 'recommendation', 6)
+        handle_no_watched_items(google_sheet)
     elif not watchlist_items:
         print("You have no watchlist items, but you have some watched items!")
         watched_titles = get_titles_by_watch_status(google_sheet, True)
@@ -124,12 +119,20 @@ def handle_recommendations(mode, google_sheet):
 
 
 def handle_no_items(google_sheet, mode):
-    trending_results = fetch_trending_titles(TMDB_API_KEY)
-    trending_title_objects = prepare_title_objects_from_tmdb(trending_results)
     print("\nYour list is looking a little empty.")
     print("Check out what’s trending and find something that sparks your interest!")
+    trending_results = fetch_trending_titles(TMDB_API_KEY)
+    trending_title_objects = prepare_title_objects_from_tmdb(trending_results)
     display_and_select_title(trending_title_objects, mode, google_sheet)
 
+def handle_no_watched_items(google_sheet):
+    print("\nYou haven't watched anything yet, but your watchlist has some great options.")
+    print("\nHere are the most popular ones to get you started.")
+    watchlist_titles = get_titles_by_watch_status(google_sheet, False)
+    title_objects = build_title_objects_from_sheet(watchlist_titles)
+    sorted_titles = sort_items_by_popularity(title_objects)
+    display_title_entries(sorted_titles, 'recommendation', 6)
+        
 def get_top_rated_titles(titles_list):
     """
     Extracts top rated items from list
@@ -224,3 +227,6 @@ def display_and_select_title(titles, mode, google_sheet):
     else:
         print(f"\n📥 You've selected {selected.title} ({selected.release_date})")
         handle_title_selection(selected, google_sheet)
+
+def build_title_objects_from_sheet(sheet_rows):
+    return [Title.from_sheet_row(row) for row in sheet_rows]
