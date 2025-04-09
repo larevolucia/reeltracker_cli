@@ -38,18 +38,7 @@ def handle_recommendations(mode, google_sheet):
     watched_items = has_watched(google_sheet)
     watchlist_items = has_watchlist(google_sheet)
     if not items:
-        trending_results = fetch_trending_titles(TMDB_API_KEY)
-        trending_title_objects = prepare_title_objects_from_tmdb(trending_results)
-        print("\nYour list is looking a little empty.")
-        print("Check out what’s trending and find something that sparks your interest!")
-        displayed_titles = display_title_entries(trending_title_objects, 'trending', 6)
-        results_selected_title = select_item_from_results(displayed_titles, mode)
-        if results_selected_title == 'main' or results_selected_title is None:
-            print('\nReturning to main menu...')
-        else:
-            print(f"\n📥 You've selected {results_selected_title.title}"
-                  f"({results_selected_title.release_date})")
-        handle_title_selection(results_selected_title, google_sheet)
+        handle_no_items(google_sheet, mode)
     elif not watched_items:
         print("\nYou haven't watched anything yet, but your watchlist has some great options.")
         print("\nHere are the most popular ones to get you started.")
@@ -134,6 +123,13 @@ def handle_recommendations(mode, google_sheet):
             print(f'({index}) {title_str} - {genres} - {popularity} - {similarity_score}')
 
 
+def handle_no_items(google_sheet, mode):
+    trending_results = fetch_trending_titles(TMDB_API_KEY)
+    trending_title_objects = prepare_title_objects_from_tmdb(trending_results)
+    print("\nYour list is looking a little empty.")
+    print("Check out what’s trending and find something that sparks your interest!")
+    display_and_select_title(trending_title_objects, mode, google_sheet)
+
 def get_top_rated_titles(titles_list):
     """
     Extracts top rated items from list
@@ -185,7 +181,6 @@ def sort_titles_by_relevance(title_list, mode='watched', reference_title=None):
         print("Couldn't sort titles by relevance")
         return []
 
-
 def get_top_viewed_title(title_list):
     """
     Returns most relevant title
@@ -220,3 +215,12 @@ def calculate_genre_similarity(title_1, title_2):
     """
     similarity_score = len(set(title_1.genres) & set(title_2.genres))
     return similarity_score
+
+def display_and_select_title(titles, mode, google_sheet):
+    displayed_titles = display_title_entries(titles, mode, 6)
+    selected = select_item_from_results(displayed_titles, mode)
+    if selected == 'main' or selected is None:
+        print('\nReturning to main menu...')
+    else:
+        print(f"\n📥 You've selected {selected.title} ({selected.release_date})")
+        handle_title_selection(selected, google_sheet)
