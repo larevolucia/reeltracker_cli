@@ -110,6 +110,32 @@ def fetch_trending_titles(api_key=TMDB_API_KEY, page=1, language=DEFAULT_LANGUAG
     except requests.RequestException as e:
         print(f"\n❌ API request failed: {e}")
         return []
-    else:
-        print(f"Error: {response.status_code}, {response.text}")
+
+
+def fetch_title_base_recommendation(
+    media_type,
+    title_id,
+    api_key=TMDB_API_KEY,
+    page=1,
+    language=DEFAULT_LANGUAGE):
+    """
+    Fetches title-based recommendations from TMDB
+    Args:
+        api_key (_type_, optional): _description_. Defaults to TMDB_API_KEY.
+        page (int, optional): _description_. Defaults to 1.
+        language (_type_, optional): _description_. Defaults to DEFAULT_LANGUAGE.
+    """
+    url = f'{TMDB_URL}/{media_type}/{title_id}/recommendations'
+    params = {
+        'api_key': api_key,
+        'language': language,
+        'page': page,
+    }
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+        return data.get('results', [])
+    except requests.RequestException as e:
+        print(f"\n❌ API request failed: {e}")
         return []
