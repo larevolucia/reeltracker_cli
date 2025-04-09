@@ -112,14 +112,8 @@ def handle_recommendations(mode, google_sheet):
         print(f'{title_str} - {genres} - {rating} - {watched_date}')
         top_title_media_type = top_title.media_type
         titles_matching_genre = filter_list_by_genre(watchlist_titles_objects, preferred_genre)
-        for index, title in enumerate(titles_matching_genre, start=1):
-            title_str = title.title
-            genres = title.genres
-            popularity = title.popularity
-            watched_date = title.user_data.watched_date
-            print(f'({index}) {title_str} - {genres} - {popularity} - {watched_date}')
         match_media_type_titles, non_match_media_type_titles = partition_list_by_media_type(
-            watchlist_titles_objects,
+            titles_matching_genre,
             top_title_media_type
             )
         for index, title in enumerate(match_media_type_titles, start=1):
@@ -127,7 +121,15 @@ def handle_recommendations(mode, google_sheet):
             genres = title.genres
             popularity = title.popularity
             watched_date = title.user_data.watched_date
-            print(f'({index}) {title_str} - {genres} - {popularity} - {watched_date}')
+            similarity_score = calculate_genre_similarity(title, top_title)
+            print(f'({index}) {title_str} - {genres} - {popularity} - {similarity_score}')
+        for index, title in enumerate(non_match_media_type_titles, start=1):
+            title_str = title.title
+            genres = title.genres
+            popularity = title.popularity
+            watched_date = title.user_data.watched_date
+            similarity_score = calculate_genre_similarity(title, top_title)
+            print(f'({index}) {title_str} - {genres} - {popularity} - {similarity_score}')
 
 
 def get_top_rated_titles(titles_list):
@@ -191,3 +193,14 @@ def partition_list_by_media_type(title_list, target_media_type):
         else:
             non_match_media_type.append(title)
     return match_media_type, non_match_media_type
+
+def calculate_genre_similarity(title_1, title_2):
+    """
+    Score titles acording to subgenre similarity
+
+    Args:
+        title_list (_type_): _description_
+        top_title (_type_): _description_
+    """
+    similarity_score = len(set(title_1.genres) & set(title_2.genres))
+    return similarity_score
