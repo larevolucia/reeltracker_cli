@@ -372,3 +372,11 @@ You must then create a _Config Var_ called `CREDS`. Copy&Paste your `creds.json`
 You must then create a _Config Var_ called `TMDB_API_KEY`. Copy&Paste your API Key value.
 
 Connect your GitHub repository and deploy.
+
+## References:
+
+- [The Movie Database API documentation](https://developer.themoviedb.org/docs/getting-started)
+- [Google Sheets API Documentation](https://developers.google.com/workspace/sheets/api/guides/concepts)
+- [Google Drive API Documentation](https://developers.google.com/workspace/drive/api/guides/about-sdk)
+- [Google Workplace Documentation](https://developers.google.com/workspace/guides/get-started)
+- [PyNative Object Orienting Programming](https://pynative.com/python/object-oriented-programming/)
