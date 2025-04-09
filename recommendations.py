@@ -51,7 +51,7 @@ def handle_recommendations(mode, google_sheet):
                   f"({results_selected_title.release_date})")
         handle_title_selection(results_selected_title, google_sheet)
     elif not watched_items:
-        print("\nYou haven’t watched anything yet, but your watchlist has some great options.")
+        print("\nYou haven't watched anything yet, but your watchlist has some great options.")
         print("\nHere are the most popular ones to get you started.")
         watchlist_titles = get_titles_by_watch_status(google_sheet, False)
         title_objects = [Title.from_sheet_row(row) for row in watchlist_titles]
@@ -71,7 +71,7 @@ def handle_recommendations(mode, google_sheet):
             rating = title.user_data.rating
             watched_date = title.user_data.watched_date
             print(f'({index}) {title_str} - {genres} - {rating} - {watched_date}')
-        top_title = get_most_relevant_title(titles_in_genre)
+        top_title = get_top_viewed_title(titles_in_genre)
         title_str = top_title.title
         genres = top_title.genres
         rating = top_title.user_data.rating
@@ -102,7 +102,7 @@ def handle_recommendations(mode, google_sheet):
         top_rated_titles = get_top_rated_titles(watched_titles_objects)
         preferred_genre = get_preferred_genre(top_rated_titles)
         titles_in_genre = filter_list_by_genre(top_rated_titles, preferred_genre)
-        top_title = get_most_relevant_title(titles_in_genre)
+        top_title = get_top_viewed_title(titles_in_genre)
         title_str = top_title.title
         genres = top_title.genres
         rating = top_title.user_data.rating
@@ -112,8 +112,10 @@ def handle_recommendations(mode, google_sheet):
         print(f'{title_str} - {genres} - {rating} - {watched_date}')
         top_title_media_type = top_title.media_type
         titles_matching_genre = filter_list_by_genre(watchlist_titles_objects, preferred_genre)
+        relevance_sorted_titles = sort_titles_by_relevance(
+            titles_matching_genre, "watchlist", top_title)
         match_media_type_titles, non_match_media_type_titles = partition_list_by_media_type(
-            titles_matching_genre,
+            relevance_sorted_titles,
             top_title_media_type
             )
         for index, title in enumerate(match_media_type_titles, start=1):
@@ -159,22 +161,36 @@ def filter_list_by_genre(title_list, genre):
     """
     return [title for title in title_list if genre in title.genres]
 
-def sort_titles_by_relevance(title_list):
+def sort_titles_by_relevance(title_list, mode='watched', reference_title=None):
     """
     Sort titles by highest rating and recent view
     """
-    return sorted(
-        title_list, key=lambda title: (
-            title.user_data.rating, title.user_data.watched_date
-            ),
-        reverse=True
-        )
+    if mode == "watched":
+        return sorted(
+            title_list, key=lambda title: (
+                title.user_data.rating, title.user_data.watched_date
+                ),
+            reverse=True
+            )
+    elif mode == "watchlist" and reference_title:
+        return sorted(
+            title_list,
+            key=lambda title: (
+                calculate_genre_similarity(title, reference_title),
+                title.popularity
+                ),
+            reverse=True
+            )
+    else:
+        print("Couldn't sort titles by relevance")
+        return []
 
-def get_most_relevant_title(title_list):
+
+def get_top_viewed_title(title_list):
     """
     Returns most relevant title
     """
-    sorted_titles = sort_titles_by_relevance(title_list)
+    sorted_titles = sort_titles_by_relevance(title_list, 'watched', None)
     return sorted_titles[0]
 
 def partition_list_by_media_type(title_list, target_media_type):
