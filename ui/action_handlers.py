@@ -88,15 +88,12 @@ def handle_watchlist_or_watched(list_type, google_sheet):
     print(f'\nLoading {list_type} menu...')
     # Set watch_flag to True if choice is watched
     watched_flag = list_type == 'watched'
-    # Get titles from Google Sheets
     titles_data = get_titles_by_watch_status(google_sheet, watched_flag)
     if not titles_data:
         print(f"\n❌  No {list_type} title found.")
         return
-    # Transform list of rows into list of objects
     titles = build_title_objects_from_sheet (titles_data)
     display_title_entries(titles, list_type)
-    # Unpack command and Title object
     action, index = handle_list_menu(titles, list_type)
     if action is None:
         return
@@ -116,16 +113,13 @@ def handle_toggle_watched(title, google_sheet):
         title (obj): selected title
         google_sheet (gspread.Spreadsheet): Initialized Google Sheet
     """
-    # Toggle watched flag
     title.toggle_watched()
     if title.user_data.watched:
-    # get rating if watched True
         print(f'\n🔄 Marking {title.metadata.title} as watched...')
         updated_title = get_title_rating(title)
     else:
         updated_title = title
         print(f'\n🔄 Moving {title.metadata.title} to your watchlist...')
-    # Update item in list
     update_item_in_list(google_sheet, updated_title)
 
 def handle_change_rating(title, google_sheet):
@@ -136,9 +130,7 @@ def handle_change_rating(title, google_sheet):
         title (obj): selected title object
         google_sheet (gspread.Spreadsheet): Initialized Google Sheets
     """
-    # get new rating value
     updated_title = get_title_rating(title)
-    # Update item in list
     update_item_in_list(google_sheet, updated_title)
 
 def handle_delete(title, google_sheet):
