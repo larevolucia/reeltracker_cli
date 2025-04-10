@@ -9,7 +9,7 @@ and includes methods for data transformation from and to spreadsheet rows.
 """
 
 from utils.utils import extract_year
-from tmdb.tmdb import get_genre_names_from_ids
+from tmdb.utils import get_genre_names_from_ids
 from .user_data import UserTitleData
 from .title_metadata import TitleMetadata
 
