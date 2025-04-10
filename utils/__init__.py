@@ -1,6 +1,9 @@
 """
-Shared utility functions 
+Aggregates commonly used utility functions for easy access.
+
+Includes timestamping, popularity calculations, and formatting helpers.
 """
+
 from .utils import (
     extract_year,
     get_current_timestamp,

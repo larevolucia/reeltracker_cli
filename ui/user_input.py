@@ -1,6 +1,9 @@
 """
-Functions that handle user input
+Handles all user input for search, selection, watch status, and ratings.
+
+Ensures valid, interactive prompts for various workflows.
 """
+
 def get_user_search_input(prompt="\nSearch a title to get started: "):
     """
     Prompts user input for searching a title. Ensures non-empty input

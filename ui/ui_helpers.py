@@ -1,6 +1,9 @@
 """
-Helpers
+Helper functions for processing and preparing TMDB API data.
+
+Filters and formats API results into display-ready Title objects.
 """
+
 from models import Title
 from utils.utils import calculate_weighted_popularity, sort_items_by_popularity
 

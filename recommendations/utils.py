@@ -1,8 +1,22 @@
+"""
+Provides utilities for filtering and ranking recommended titles.
+
+Includes logic for genre detection, similarity scoring, and sorting by
+relevance or popularity.
+"""
+
+
 from collections import defaultdict
 
 def get_top_rated_titles(titles_list):
     """
-    Extracts top rated items from list
+    Return titles with a user rating of 3 or higher
+
+    Args:
+        titles_list (list): list of Title objects
+
+    Returns:
+        list: filtered list of top-rated Title objects
     """
     top_rated_titles = [title for title in titles_list if title.user_data.rating >= 3]
 
@@ -10,7 +24,13 @@ def get_top_rated_titles(titles_list):
 
 def get_preferred_genre(title_list):
     """
-    Analyse list and provides preferred genre
+    Determine the user's preferred genre based on frequency
+
+    Args:
+        title_list (list): List of Title objects
+
+    Returns:
+        str: Genre with the highest occurrence
     """
     genres_count = defaultdict(int)
     for title in title_list:
@@ -22,13 +42,28 @@ def get_preferred_genre(title_list):
 
 def filter_list_by_genre(title_list, genre):
     """
-    Filters a list by a given genre
+    Filter titles by a specific genre
+
+    Args:
+        title_list (list): list of Title objects
+        genre (str): genre to filter by
+
+    Returns:
+        list: Titles that include the given genre
     """
     return [title for title in title_list if genre in title.metadata.genres]
 
 def sort_titles_by_relevance(title_list, mode='watched', reference_title=None):
     """
-    Sort titles by highest rating and recent view
+    Sort titles by rating and recency, or by genre similarity and popularity
+
+    Args:
+        title_list (list): List of Title objects
+        mode (str): 'watched' or 'watchlist'
+        reference_title (Title, optional): Title to compare for similarity
+
+    Returns:
+        list: Sorted list of Title objects.
     """
     if mode == "watched":
         return sorted(
@@ -37,7 +72,7 @@ def sort_titles_by_relevance(title_list, mode='watched', reference_title=None):
                 ),
             reverse=True
             )
-    elif mode == "watchlist" and reference_title:
+    if mode == "watchlist" and reference_title:
         return sorted(
             title_list,
             key=lambda title: (
@@ -52,7 +87,13 @@ def sort_titles_by_relevance(title_list, mode='watched', reference_title=None):
 
 def get_top_title(title_list):
     """
-    Returns most relevant title
+    Return the top title based on rating and recency
+
+    Args:
+        title_list (list): list of Title objects
+
+    Returns:
+        Title: most relevant title
     """
     sorted_titles = sort_titles_by_relevance(title_list, 'watched', None)
     top_title = sorted_titles[0]
@@ -60,11 +101,14 @@ def get_top_title(title_list):
 
 def partition_list_by_media_type(title_list, target_media_type):
     """
-    Splits a single list into two
-    using media_type as criteria
+    Split titles into matching and non-matching media types
 
     Args:
-        title_list (_type_): _description_
+        title_list (list): list of Title objects
+        target_media_type (str): media type to filter by
+
+    Returns:
+        tuple: (matching titles, non-matching titles)
     """
     match_media_type = []
     non_match_media_type = []
@@ -77,25 +121,27 @@ def partition_list_by_media_type(title_list, target_media_type):
 
 def calculate_genre_similarity(title_1, title_2):
     """
-    Score titles acording to subgenre similarity
+    Calculate genre similarity score between two titles
 
     Args:
-        title_list (_type_): _description_
-        top_title (_type_): _description_
+        title_1 (Title): 1st title
+        title_2 (Title): 2nd title
+
+    Returns:
+        int: number of shared genres
     """
     similarity_score = len(set(title_1.metadata.genres) & set(title_2.metadata.genres))
     return similarity_score
 
 def get_top_title_by_preferred_genre(title_objects):
     """
-    Filters top-rated titles by user's preferred genre and returns
-    the most relevant title.
+    Get the most relevant top-rated title in the preferred genre
 
     Args:
-        title_objects (list[Title]): List of Title objects
+        title_objects (list): List of Title objects
 
     Returns:
-        Title: Most relevant title in preferred genre
+        Title or None: Top title in the preferred genre, or None if unavailable
     """
     top_rated_titles = get_top_rated_titles(title_objects)
     if not top_rated_titles:
@@ -110,6 +156,19 @@ def get_top_title_by_preferred_genre(title_objects):
     return get_top_title(titles_in_genre)
 
 def get_personalized_recommendations(watched_titles, watchlist_titles):
+    """
+    Generate personalized recommendations from watchlist
+
+    Uses the user's top-rated watched titles to determine a preferred genre,
+    then sorts watchlist titles by genre and media type matches
+
+    Args:
+        watched_titles (list): titles marked as watched
+        watchlist_titles (list): titles marked as watchlist
+
+    Returns:
+        list: personalized and sorted recommendation list
+    """
     top_rated_titles = get_top_rated_titles(watched_titles)
     preferred_genre = get_preferred_genre(top_rated_titles)
     top_title = get_top_title_by_preferred_genre(top_rated_titles)

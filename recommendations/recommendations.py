@@ -1,5 +1,8 @@
 """
-Recommendation logic
+Controls the logic for generating title recommendations.
+
+Selects the appropriate handler based on what content the user has added
+or watched.
 """
 from sheets.sheets import (
     has_items,

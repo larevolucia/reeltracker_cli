@@ -1,6 +1,9 @@
 """
-Initializes the TMDb module
+Exposes TMDb-related functions for use throughout the app.
+
+Includes search, recommendation, and genre utilities.
 """
+
 from .tmdb import (
     fetch_tmdb_results,
     get_genre_mapping,

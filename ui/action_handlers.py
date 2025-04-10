@@ -1,6 +1,9 @@
 """
-User prompts, rating input, search input, etc.
+Handles actions triggered by user interactions.
+
+Includes search, selection, rating, watch status toggling, and deletion.
 """
+
 from tmdb.tmdb import fetch_tmdb_results, TMDB_API_KEY
 from ui.menus import handle_list_menu
 from sheets.utils import build_title_objects_from_sheet

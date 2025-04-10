@@ -1,4 +1,9 @@
-# --- Display ---
+"""
+Displays title data in a formatted, user-friendly layout.
+
+Used for showing search results, lists, and recommendations.
+"""
+
 def display_title_entries(title_objects, mode, max_results=None):
     """
     Display a list of Title objects in a table format based on context.

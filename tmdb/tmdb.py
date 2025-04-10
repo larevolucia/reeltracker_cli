@@ -1,6 +1,9 @@
 """
-Handles TMDB API calls 
+Handles communication with the TMDb API for search and recommendations.
+
+Provides functions for fetching titles, trending content, and genre data.
 """
+
 import os
 from dotenv import load_dotenv
 import requests

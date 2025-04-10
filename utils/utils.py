@@ -1,6 +1,9 @@
 """
-    Utility functions for filtering, formatting, sorting data and display helpers
+Provides helper functions for formatting dates, scoring popularity, and sorting.
+
+Supports both raw API data and custom objects for flexible handling.
 """
+
 import math
 from datetime import datetime
 
@@ -65,6 +68,7 @@ def calculate_weighted_popularity(item):
 
     return weighted_popularity
 
+# --- Sorting ---
 def sort_items_by_popularity(items):
     """
     Sorts a list of items (dicts or objects) by 'weighted_popularity' if available

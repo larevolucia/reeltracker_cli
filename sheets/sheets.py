@@ -1,5 +1,8 @@
 """
-Handles Google sheets CRUD 
+Manages reading and writing data to a Google Sheet.
+
+Supports operations like adding, updating, deleting, and filtering titles
+based on watch status.
 """
 import gspread
 from google.oauth2.service_account import Credentials

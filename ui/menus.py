@@ -1,6 +1,9 @@
 """
-Menu logic and config
+Defines and displays user-facing menus for the CLI interface.
+
+Supports navigation, command parsing, and action selection.
 """
+
 menus = {
     "main": {
         "title": "🎬 ReelTracker Menu",
