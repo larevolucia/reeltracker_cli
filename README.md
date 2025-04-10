@@ -66,7 +66,7 @@ Related user story:  [#4 Add to watchlist or Viewing History](https://github.com
 ![Add to watchlist](documentation/watchlist_1.png)
 
 #### Mark titles as watched and assign ratings
-Users can mark a title as watched and give it a personal rating from 1 to 10. This allows them to track both progress and preferences.
+Users can mark a title as watched and give it a personal rating from 1 to 5. This allows them to track both progress and preferences.
 Related user story:  [#5 View lists](https://github.com/larevolucia/reeltracker_cli/issues/5), [#9 Rate watched title](https://github.com/larevolucia/reeltracker_cli/issues/9), [#14 Update title](https://github.com/larevolucia/reeltracker_cli/issues/14)
 
 ![Add as watched](documentation/watched_1.png)
@@ -170,6 +170,7 @@ Consulted references:
 - [PyNative](https://pynative.com/python-class-method-vs-static-method-vs-instance-method)
 - [BuiltIn](https://builtin.com/software-engineering-perspectives/python-cls)
 - [GeeksForGeeks](https://www.geeksforgeeks.org/classmethod-in-python/)
+- [`__new__()` method in Python](https://medium.com/@vinayakgupta3112/new-method-in-python-the-constructor-method-you-might-not-be-aware-of-72f72561afe4)
 
 ## Requirements
 
@@ -254,13 +255,13 @@ This project uses Google Sheets to store personal viewing history and watchlist.
 - On the form, select **Google Drive API** on the dropdownlist os APIs.
 - Select **App Data** regarding the type of data to be used.
 - Fill in the name of the service account and the account ID (_You'll need this to configure your script_).
-- Click and create and continue. 
+- Click and **Create and Continue**. 
 
 ####  IV. Save credentials information
 - You'll be redirect to a credential screen. Select the e-mail address under **Service Account** and click on the edit button.
-- Navigate to Keys and click go to _Add Key > Create New Key_
+- Navigate to Keys and go to _Add Key > Create New Key_
 - Select JSON and create.
-- The create will automatically trigger a download of the json file.
+- This action will automatically trigger a download of the json file.
 
 #### V. Project configuration
 - Move the downloaded file to the root folder of your project. You can name it **creds.json** as I did, or give it another name. Just be sure that the name is matching in your `run.py` file.
@@ -373,10 +374,21 @@ You must then create a _Config Var_ called `TMDB_API_KEY`. Copy&Paste your API K
 
 Connect your GitHub repository and deploy.
 
-## References:
+
+## Testing
+
+Basic functionality can be tested by running the CLI locally and performing operations like:
+
+- Searching for a title
+- Adding it to the watchlist
+- Marking as watched
+- Rating and viewing updated sheet data
+
+## References
 
 - [The Movie Database API documentation](https://developer.themoviedb.org/docs/getting-started)
 - [Google Sheets API Documentation](https://developers.google.com/workspace/sheets/api/guides/concepts)
 - [Google Drive API Documentation](https://developers.google.com/workspace/drive/api/guides/about-sdk)
 - [Google Workplace Documentation](https://developers.google.com/workspace/guides/get-started)
+- [Python documentation](https://docs.python.org/)
 - [PyNative Object Orienting Programming](https://pynative.com/python/object-oriented-programming/)
