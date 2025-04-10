@@ -3,7 +3,7 @@ User prompts, rating input, search input, etc.
 """
 from tmdb.tmdb import fetch_tmdb_results, TMDB_API_KEY
 from ui.menus import handle_list_menu
-from utils.utils import build_title_objects_from_sheet
+from sheets.utils import build_title_objects_from_sheet
 from sheets.sheets import (
     save_item_to_list,
     check_for_duplicate,

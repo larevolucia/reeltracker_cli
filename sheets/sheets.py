@@ -74,9 +74,13 @@ def check_for_duplicate(title_obj, sheet):
 
         for row in all_values[1:]:
             if len(row) > max(id_index, type_index):
-                if row[id_index] == str(title_obj.metadata.id) and row[type_index] == title_obj.metadata.media_type:
+                if (
+                    row[id_index] == str(title_obj.metadata.id) and
+                    row[type_index] == title_obj.metadata.media_type
+                    ):
                     watch_status = 'watched' if row[watched_index] == "True" else 'watchlist'
-                    print(f"\n{title_obj.metadata.title} already in list, marked as {watch_status}.")
+                    print(f"\n{title_obj.metadata.title} already in list, "
+                          f"marked as {watch_status}.")
                     return True, watch_status
         return False, False
     except gspread.exceptions.WorksheetNotFound:
@@ -169,7 +173,10 @@ def find_existing_row_info(title_obj, sheet):
 
         for i, row in enumerate(all_values[1:], start=2):
             if len(row) > max(id_index, type_index):
-                if row[id_index] == str(title_obj.metadata.id) and row[type_index] == title_obj.metadata.media_type:
+                if (
+                    row[id_index] == str(title_obj.metadata.id) and
+                    row[type_index] == title_obj.metadata.media_type
+                    ):
                     return True, i, row
         print(f"\n❌ {title_obj.metadata.title} not found in sheet.")
         return False, None, None

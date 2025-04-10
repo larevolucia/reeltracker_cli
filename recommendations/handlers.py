@@ -14,9 +14,9 @@ from ui.ui_helpers import (
     prepare_title_objects_from_tmdb
 )
 from ui.display import display_title_entries
+from sheets.utils import build_title_objects_from_sheet
 from .display import display_and_select_title
 from .utils import (
-    build_title_objects_from_sheet,
     get_top_title_by_preferred_genre,
     get_personalized_recommendations
     )

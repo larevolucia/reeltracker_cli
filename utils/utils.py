@@ -3,7 +3,6 @@
 """
 import math
 from datetime import datetime
-from models import Title
 
 # --- Formatting ---
 def extract_year(date):
@@ -77,6 +76,3 @@ def sort_items_by_popularity(items):
         list: Sorted list by descending popularity
     """
     return sorted(items, key=get_popularity, reverse=True)
-
-def build_title_objects_from_sheet(sheet_rows):
-    return [Title.from_sheet_row(row) for row in sheet_rows]
