@@ -4,10 +4,9 @@ Provides utilities for filtering and ranking recommended titles.
 Includes logic for genre detection, similarity scoring, and sorting by
 relevance or popularity.
 """
-
-
 from collections import defaultdict
 
+# --- Filtering ---
 def get_top_rated_titles(titles_list):
     """
     Return titles with a user rating of 3 or higher
@@ -22,6 +21,40 @@ def get_top_rated_titles(titles_list):
 
     return top_rated_titles
 
+def filter_list_by_genre(title_list, genre):
+    """
+    Filter titles by a specific genre
+
+    Args:
+        title_list (list): list of Title objects
+        genre (str): genre to filter by
+
+    Returns:
+        list: Titles that include the given genre
+    """
+    return [title for title in title_list if genre in title.metadata.genres]
+
+def partition_list_by_media_type(title_list, target_media_type):
+    """
+    Split titles into matching and non-matching media types
+
+    Args:
+        title_list (list): list of Title objects
+        target_media_type (str): media type to filter by
+
+    Returns:
+        tuple: (matching titles, non-matching titles)
+    """
+    match_media_type = []
+    non_match_media_type = []
+    for title in title_list:
+        if title.metadata.media_type == target_media_type:
+            match_media_type.append(title)
+        else:
+            non_match_media_type.append(title)
+    return match_media_type, non_match_media_type
+
+# --- Genre Analysis ---
 def get_preferred_genre(title_list):
     """
     Determine the user's preferred genre based on frequency
@@ -40,18 +73,34 @@ def get_preferred_genre(title_list):
 
     return preferred_genre
 
-def filter_list_by_genre(title_list, genre):
+def calculate_genre_similarity(title_1, title_2):
     """
-    Filter titles by a specific genre
+    Calculate genre similarity score between two titles
+
+    Args:
+        title_1 (Title): 1st title
+        title_2 (Title): 2nd title
+
+    Returns:
+        int: number of shared genres
+    """
+    similarity_score = len(set(title_1.metadata.genres) & set(title_2.metadata.genres))
+    return similarity_score
+
+# --- Sorting ---
+def get_top_title(title_list):
+    """
+    Return the top title based on rating and recency
 
     Args:
         title_list (list): list of Title objects
-        genre (str): genre to filter by
 
     Returns:
-        list: Titles that include the given genre
+        Title: most relevant title
     """
-    return [title for title in title_list if genre in title.metadata.genres]
+    sorted_titles = sort_titles_by_relevance(title_list, 'watched', None)
+    top_title = sorted_titles[0]
+    return top_title
 
 def sort_titles_by_relevance(title_list, mode='watched', reference_title=None):
     """
@@ -85,54 +134,7 @@ def sort_titles_by_relevance(title_list, mode='watched', reference_title=None):
         print("Couldn't sort titles by relevance")
         return []
 
-def get_top_title(title_list):
-    """
-    Return the top title based on rating and recency
-
-    Args:
-        title_list (list): list of Title objects
-
-    Returns:
-        Title: most relevant title
-    """
-    sorted_titles = sort_titles_by_relevance(title_list, 'watched', None)
-    top_title = sorted_titles[0]
-    return top_title
-
-def partition_list_by_media_type(title_list, target_media_type):
-    """
-    Split titles into matching and non-matching media types
-
-    Args:
-        title_list (list): list of Title objects
-        target_media_type (str): media type to filter by
-
-    Returns:
-        tuple: (matching titles, non-matching titles)
-    """
-    match_media_type = []
-    non_match_media_type = []
-    for title in title_list:
-        if title.metadata.media_type == target_media_type:
-            match_media_type.append(title)
-        else:
-            non_match_media_type.append(title)
-    return match_media_type, non_match_media_type
-
-def calculate_genre_similarity(title_1, title_2):
-    """
-    Calculate genre similarity score between two titles
-
-    Args:
-        title_1 (Title): 1st title
-        title_2 (Title): 2nd title
-
-    Returns:
-        int: number of shared genres
-    """
-    similarity_score = len(set(title_1.metadata.genres) & set(title_2.metadata.genres))
-    return similarity_score
-
+# --- Smart Recommendations ---
 def get_top_title_by_preferred_genre(title_objects):
     """
     Get the most relevant top-rated title in the preferred genre
