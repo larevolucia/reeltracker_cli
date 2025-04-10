@@ -142,14 +142,53 @@ The codebase is structured in modules by responsibility. This improves readabili
 
 ```bash
 .
-├── run.py             # Entry point for the CLI
-├── menus.py           # Menu logic and user navigation
-├── sheets.py          # Google Sheets integration
-├── tmdb.py            # TMDb API interaction
-├── ui.py              # User interface formatting and display
-├── utils.py           # Helper functions (e.g. sorting, formatting)
-├── title.py           # Title model and data transformation
-├── user_data.py       # User-specific metadata (ratings, watched logs and status)
+├── run.py                      # Entry point for the CLI application
+├── requirements.txt            # Python package dependencies
+├── .gitignore                  # Specifies files and directories to be ignored by Git
+├── .env                        # Environment variables: TMDB API key, TMBD URL (ignored in Git)
+├── creds.json                  # Google Sheets API credentials (ignored in Git)
+├── README.md                   # Project overview and setup instructions
+
+├── models/                     # Core application data classes and logic
+│   ├── __init__.py             
+│   ├── title.py                # Represents a media title with metadata and user-specific logic
+│   ├── user_data.py            # Manages user-generated data like watch history and ratings
+│   └── title_metadata.py       # Defines the TitleMetadata dataclass for detailed metadata
+
+├── recommendations/            # Title recommendation system
+│   ├── __init__.py
+│   ├── display.py              # Displays recommendations in the UI
+│   ├── handlers.py             # Handles recommendation logic (user actions, data routing)
+│   ├── utils.py                # Helper functions for recommendations
+│   └── recommendations.py      # Generates and manages recommendations
+
+├── sheets/                     # Google Sheets integration
+│   ├── __init__.py
+│   ├── utils.py                # Sheet-specific helpers and formatting
+│   └── sheets.py               # Handles syncing and authorization with Google Sheets
+
+├── tmdb/                       # TMDb API integration for fetching movie data
+│   ├── __init__.py             # 
+│   └── tmdb.py                 # Contains functions for interacting with the TMDb API
+
+├── ui/                         # CLI display components and handlers
+│   ├── __init__.py
+│   ├── action_handlers.py      # Responds to user menu selections and triggers logic
+│   ├── display.py              # Handles layout and terminal content display
+│   ├── menus.py                # CLI menus and navigation
+│   ├── ui_helpers.py           # Formatting helpers for CLI
+│   └── user_input.py           # Captures and validates user input
+
+├── utils/                      # General-purpose utilities
+│   ├── __init__.py             # 
+│   └── utils.py                # Utitlity functions such as formatting and sorting
+
+├── documentation/              # Contains project documentation and visual assets
+│   ├── search_1.png            # Screenshot demonstrating search functionality
+│   ├── watched_1.png           # Screenshot demonstrating watched list feature
+│   └── ...                     # Additional documentation files and assets
+
+
 ```
 
 #### Classes Overview
