@@ -3,9 +3,28 @@ Helper functions for processing and preparing TMDB API data.
 
 Filters and formats API results into display-ready Title objects.
 """
-
 from models import Title
 from utils.utils import calculate_weighted_popularity, sort_items_by_popularity
+from .tmdb import (
+    TMDB_API_KEY,
+    get_genre_mapping
+    )
+
+def get_genre_names_from_ids(genre_ids, media_type):
+    """
+    Fetch genre list of dictionaries, convert to dictionary
+    and match with Title's genres_ids
+
+    Args:
+        genre_id (list): numeric genre identifier
+        media_type (str): Media type of the Title (tv/movie)
+    Returns:
+        matched_names (list): list of genre names
+    """
+    genre_list = get_genre_mapping(media_type, TMDB_API_KEY)
+    genre_dict = {genre['id']: genre['name'] for genre in genre_list}
+    matched_genres = [genre_dict.get(genre_id) for genre_id in genre_ids if genre_id in genre_dict]
+    return matched_genres
 
 def prepare_title_objects_from_tmdb(api_results):
     """
