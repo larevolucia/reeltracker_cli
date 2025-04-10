@@ -29,14 +29,14 @@ def get_watch_status(title_obj):
         bool: True (watched), False (not watched)
     """
     while True:
-        print(f'\nHave you already watched {title_obj.title}? (y/n):')
+        print(f'\nHave you already watched {title_obj.metadata.title}? (y/n):')
         command = input("> ").strip().lower()
         if command == 'y':
             title_obj.toggle_watched()
-            print(f'\n🔄 Marking {title_obj.title} as watched...')
+            print(f'\n🔄 Marking {title_obj.metadata.title} as watched...')
             return True
         if command == 'n':
-            print(f'\n🔄 Marking {title_obj.title} as not watched...')
+            print(f'\n🔄 Marking {title_obj.metadata.title} as not watched...')
             return False
         print("\n⚠️  Invalid input. Please type 'y' for yes or 'n' for no.")
 
@@ -49,7 +49,7 @@ def get_title_rating(title_obj):
     """
     while True:
         print(
-            f'\nHow would you rate {title_obj.title}? '
+            f'\nHow would you rate {title_obj.metadata.title}? '
             f'Select a number from 1-5: ')
         command = input("> ").strip()
         if not command.isdigit():
@@ -59,7 +59,7 @@ def get_title_rating(title_obj):
         rating = int(command)
         try:
             title_obj.set_rating(rating)
-            print(f"\n🔄 Saving {title_obj.title} rating...")
+            print(f"\n🔄 Saving {title_obj.metadata.title} rating...")
             return title_obj
         except ValueError as e:
             print(f"\n⚠️ Invalid input: {e}")

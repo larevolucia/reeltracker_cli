@@ -50,7 +50,7 @@ def save_item_to_list(sheet, title_obj):
         worksheet.append_row(headers)
     # Prepare row
     worksheet.append_row(title_obj.to_sheet_row())
-    print(f"\n✅ {title_obj.title} successfully written to the sheet.")
+    print(f"\n✅ {title_obj.metadata.title} successfully written to the sheet.")
 
 def check_for_duplicate(title_obj, sheet):
     """
@@ -74,9 +74,9 @@ def check_for_duplicate(title_obj, sheet):
 
         for row in all_values[1:]:
             if len(row) > max(id_index, type_index):
-                if row[id_index] == str(title_obj.id) and row[type_index] == title_obj.media_type:
+                if row[id_index] == str(title_obj.metadata.id) and row[type_index] == title_obj.metadata.media_type:
                     watch_status = 'watched' if row[watched_index] == "True" else 'watchlist'
-                    print(f"\n{title_obj.title} already in list, marked as {watch_status}.")
+                    print(f"\n{title_obj.metadata.title} already in list, marked as {watch_status}.")
                     return True, watch_status
         return False, False
     except gspread.exceptions.WorksheetNotFound:
@@ -131,14 +131,14 @@ def update_item_in_list(sheet, title_obj):
                 cell = gspread.utils.rowcol_to_a1(row_index, col_index + 1)
                 updates.append((cell, new_value))
         if not updates:
-            print(f'\n❌  No updates found for {title_obj.title}.')
+            print(f'\n❌  No updates found for {title_obj.metadata.title}.')
             return 'skipped'
 
-        print(f'\n🔄 Updating {title_obj.title}...')
+        print(f'\n🔄 Updating {title_obj.metadata.title}...')
         for cell, value in updates:
             worksheet.update(cell, [[value]])
 
-        print(f"\n✅ {title_obj.title} updated successfully ({len(updates)} changes).")
+        print(f"\n✅ {title_obj.metadata.title} updated successfully ({len(updates)} changes).")
         return 'updated'
 
     # If not found, just add it
@@ -158,7 +158,7 @@ def find_existing_row_info(title_obj, sheet):
         index (int): row index number
         row (list): row list data
     """
-    print(f"\n🔎 Looking for {title_obj.title} in sheet...")
+    print(f"\n🔎 Looking for {title_obj.metadata.title} in sheet...")
     try:
         worksheet = sheet.worksheet('My_List')
         all_values = worksheet.get_all_values()
@@ -169,9 +169,9 @@ def find_existing_row_info(title_obj, sheet):
 
         for i, row in enumerate(all_values[1:], start=2):
             if len(row) > max(id_index, type_index):
-                if row[id_index] == str(title_obj.id) and row[type_index] == title_obj.media_type:
+                if row[id_index] == str(title_obj.metadata.id) and row[type_index] == title_obj.metadata.media_type:
                     return True, i, row
-        print(f"\n❌ {title_obj.title} not found in sheet.")
+        print(f"\n❌ {title_obj.metadata.title} not found in sheet.")
         return False, None, None
     except gspread.exceptions.WorksheetNotFound:
         return False, None, None

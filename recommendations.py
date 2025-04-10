@@ -18,7 +18,7 @@ from ui_actions import (
     handle_title_selection,
     display_title_entries
     )
-from title import Title
+from classes.title import Title
 from utils import (
     sort_items_by_popularity
     )
@@ -67,12 +67,12 @@ def handle_no_watchlist_items(google_sheet, mode):
     title_objects = build_title_objects_from_sheet(watched_titles)
     top_title = get_top_title_by_preferred_genre(title_objects)
 
-    print(f"\nYou've recently liked {top_title.title}. "
+    print(f"\nYou've recently liked {top_title.metadata.title}. "
           "Here are some titles you might also like...")
 
     recommended_titles = fetch_title_base_recommendation(
-        top_title.media_type,
-        top_title.id,
+        top_title.metadata.media_type,
+        top_title.metadata.id,
         TMDB_API_KEY
         )
     recommended_titles_object = prepare_title_objects_from_tmdb(recommended_titles)
@@ -104,7 +104,7 @@ def get_preferred_genre(title_list):
     """
     genres_count = defaultdict(int)
     for title in title_list:
-        for genre in title.genres:
+        for genre in title.metadata.genres:
             genres_count[genre] +=1
     preferred_genre = max(genres_count, key=genres_count.get)
 
@@ -114,7 +114,7 @@ def filter_list_by_genre(title_list, genre):
     """
     Filters a list by a given genre
     """
-    return [title for title in title_list if genre in title.genres]
+    return [title for title in title_list if genre in title.metadata.genres]
 
 def sort_titles_by_relevance(title_list, mode='watched', reference_title=None):
     """
@@ -132,7 +132,7 @@ def sort_titles_by_relevance(title_list, mode='watched', reference_title=None):
             title_list,
             key=lambda title: (
                 calculate_genre_similarity(title, reference_title),
-                title.popularity
+                title.metadata.popularity
                 ),
             reverse=True
             )
@@ -159,7 +159,7 @@ def partition_list_by_media_type(title_list, target_media_type):
     match_media_type = []
     non_match_media_type = []
     for title in title_list:
-        if title.media_type == target_media_type:
+        if title.metadata.media_type == target_media_type:
             match_media_type.append(title)
         else:
             non_match_media_type.append(title)
@@ -173,7 +173,7 @@ def calculate_genre_similarity(title_1, title_2):
         title_list (_type_): _description_
         top_title (_type_): _description_
     """
-    similarity_score = len(set(title_1.genres) & set(title_2.genres))
+    similarity_score = len(set(title_1.metadata.genres) & set(title_2.metadata.genres))
     return similarity_score
 
 def display_and_select_title(titles, mode, google_sheet):
@@ -182,7 +182,7 @@ def display_and_select_title(titles, mode, google_sheet):
     if selected == 'main' or selected is None:
         print('\nReturning to main menu...')
     else:
-        print(f"\n📥 You've selected {selected.title} ({selected.release_date})")
+        print(f"\n📥 You've selected {selected.metadata.title} ({selected.metadata.release_date})")
         handle_title_selection(selected, google_sheet)
 
 def build_title_objects_from_sheet(sheet_rows):
@@ -216,9 +216,9 @@ def get_personalized_recommendations(watched_titles, watchlist_titles):
     top_rated_titles = get_top_rated_titles(watched_titles)
     preferred_genre = get_preferred_genre(top_rated_titles)
     top_title = get_top_title_by_preferred_genre(top_rated_titles)
-    print(f"\nYou've been watching {preferred_genre} titles, such as {top_title.title}!")
+    print(f"\nYou've been watching {preferred_genre} titles, such as {top_title.metadata.title}!")
     print("\n🔄 Generating recommendations based on viewing history...")
-    top_title_media_type = top_title.media_type
+    top_title_media_type = top_title.metadata.media_type
     titles_matching_genre = filter_list_by_genre(watchlist_titles, preferred_genre)
     relevance_sorted_titles = sort_titles_by_relevance(
         titles_matching_genre, "watchlist", top_title)

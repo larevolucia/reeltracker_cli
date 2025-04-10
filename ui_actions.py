@@ -1,7 +1,7 @@
 """
 User prompts, rating input, search input, etc.
 """
-from title import Title
+from classes.title import Title
 from tmdb import fetch_tmdb_results, TMDB_API_KEY
 from menus import handle_list_menu
 from utils import (
@@ -50,8 +50,8 @@ def handle_search(mode, google_sheet):
         if results_selected_title is None:
             continue # Go back to search (1)
         # 5. Valid item (int) is selected
-        print(f"\n📥 You've selected {results_selected_title.title}"
-              f"({results_selected_title.release_date})")
+        print(f"\n📥 You've selected {results_selected_title.metadata.title}"
+              f" ({results_selected_title.metadata.release_date})")
         # 6. Check for item duplicate before saving
         handle_title_selection(results_selected_title, google_sheet)
         break
@@ -118,11 +118,11 @@ def handle_toggle_watched(title, google_sheet):
     title.toggle_watched()
     if title.user_data.watched:
     # get rating if watched True
-        print(f'\n🔄 Marking {title.title} as watched...')
+        print(f'\n🔄 Marking {title.metadata.title} as watched...')
         updated_title = get_title_rating(title)
     else:
         updated_title = title
-        print(f'\n🔄 Moving {title.title} to your watchlist...')
+        print(f'\n🔄 Moving {title.metadata.title} to your watchlist...')
     # Update item in list
     update_item_in_list(google_sheet, updated_title)
 
@@ -149,7 +149,7 @@ def handle_delete(title, google_sheet):
     """
     is_deleted = delete_item_in_list(google_sheet, title)
     if is_deleted:
-        print(f'\n✅ {title.title} successfully removed from your list.')
+        print(f'\n✅ {title.metadata.title} successfully removed from your list.')
 
 # --- Display ---
 def display_title_entries(title_objects, mode, max_results=None):
@@ -167,21 +167,20 @@ def display_title_entries(title_objects, mode, max_results=None):
         'search': 'Search results',
         'watchlist': 'Your watchlist',
         'watched': 'Your watched titles',
-        'trending': 'Trending titles',
         'recommendation': 'Recommended titles',
     }
 
     print(f"\n{headers.get(mode, 'Titles')}:\n")
     is_watched = mode == 'watched'
     for index, title in enumerate(title_objects[:max_results], start=1):
-        title_str = title.title
+        title_str = title.metadata.title
         if len(title_str) > 30:
             title_str = title_str[:27].rstrip() + "..."
-        media_type = title.media_type
-        release = title.release_date
+        media_type = title.metadata.media_type
+        release = title.metadata.release_date
         rating = title.user_data.rating
-        overview = title.overview
-        popularity = title.popularity
+        overview = title.metadata.overview
+        popularity = title.metadata.popularity
         line = f"{index:>2} | {title_str:<30} | {media_type:<6} | {release:<4}"
         line += f" | Popularity: {popularity:<4}"
         if is_watched:
