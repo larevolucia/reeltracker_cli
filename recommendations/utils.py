@@ -99,6 +99,8 @@ def get_top_title(title_list):
         Title: most relevant title
     """
     sorted_titles = sort_titles_by_relevance(title_list, 'watched', None)
+    if not sorted_titles:
+        return None
     top_title = sorted_titles[0]
     return top_title
 
@@ -174,6 +176,9 @@ def get_personalized_recommendations(watched_titles, watchlist_titles):
     top_rated_titles = get_top_rated_titles(watched_titles)
     preferred_genre = get_preferred_genre(top_rated_titles)
     top_title = get_top_title_by_preferred_genre(top_rated_titles)
+    if not top_title or not hasattr(top_title, "metadata"):
+        print("\n⚠️  Unable to generate personalized recommendations.")
+        return []
     print(f"\nYou've been watching {preferred_genre} titles, such as {top_title.metadata.title}!")
     print("\n🔄 Generating recommendations based on viewing history...")
     top_title_media_type = top_title.metadata.media_type

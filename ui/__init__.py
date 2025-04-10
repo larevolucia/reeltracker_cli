@@ -23,8 +23,4 @@ from .action_handlers import (
 from .user_input import (
     get_user_search_input
     )
-from .ui_helpers import (
-    prepare_title_objects_from_tmdb,
-    filter_results_by_media_type
-    )
 from .display import display_title_entries

@@ -169,14 +169,14 @@ The codebase is structured in modules by responsibility. This improves readabili
 
 ├── tmdb/                       # TMDb API integration for fetching movie data
 │   ├── __init__.py             # 
-│   └── tmdb.py                 # Contains functions for interacting with the TMDb API
+│   ├── tmdb.py                 # Contains functions for interacting with the TMDb API 
+│   └── utils.py                # Processes and prepares TMDB API data
 
 ├── ui/                         # CLI display components and handlers
 │   ├── __init__.py
 │   ├── action_handlers.py      # Responds to user menu selections and triggers logic
 │   ├── display.py              # Handles layout and terminal content display
 │   ├── menus.py                # CLI menus and navigation
-│   ├── ui_helpers.py           # Formatting helpers for CLI
 │   └── user_input.py           # Captures and validates user input
 
 ├── utils/                      # General-purpose utilities

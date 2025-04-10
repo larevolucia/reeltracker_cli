@@ -25,6 +25,9 @@ def display_title_entries(title_objects, mode, max_results=None):
     print(f"\n{headers.get(mode, 'Titles')}:\n")
     is_watched = mode == 'watched'
     for index, title in enumerate(title_objects[:max_results], start=1):
+        if not hasattr(title, "metadata"):
+            print(f"⚠️  Skipping item without metadata: {title}")
+            continue  # Skip invalid entry
         title_str = title.metadata.title
         if len(title_str) > 30:
             title_str = title_str[:27].rstrip() + "..."

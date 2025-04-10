@@ -5,6 +5,9 @@ Includes search, selection, rating, watch status toggling, and deletion.
 """
 
 from tmdb.tmdb import fetch_tmdb_results, TMDB_API_KEY
+from tmdb.utils import (
+    prepare_title_objects_from_tmdb
+)
 from ui.menus import handle_list_menu
 from sheets.utils import build_title_objects_from_sheet
 from sheets.sheets import (
@@ -19,9 +22,6 @@ from .user_input import (
     get_watch_status,
     get_title_rating,
     select_item_from_results
-)
-from .ui_helpers import (
-    prepare_title_objects_from_tmdb
 )
 from .display import display_title_entries
 

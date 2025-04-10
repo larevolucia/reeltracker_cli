@@ -1,5 +1,7 @@
 """
-Handles displaying titles and user selection for recommendations.
+Handles displaying a list of recommended titles and user selection.
+
+Used to present title options and trigger follow-up actions based on input.
 """
 from ui.display import display_title_entries
 from ui.user_input import select_item_from_results
