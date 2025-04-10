@@ -7,7 +7,6 @@ Filters and formats API results into display-ready Title objects.
 from models import Title
 from utils.utils import calculate_weighted_popularity, sort_items_by_popularity
 
-# --- API Result Transformation ---
 def prepare_title_objects_from_tmdb(api_results):
     """
     Filters, sorts, and converts TMDB api results into Title objects
