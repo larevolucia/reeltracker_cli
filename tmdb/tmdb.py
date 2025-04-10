@@ -31,7 +31,8 @@ def fetch_tmdb_results(search_key, api_key=TMDB_API_KEY, page=1, language=DEFAUL
         page(int): Page number of results (default 1)
         language(str): language code for results (default en-US)
     Returns:
-        list: A list of dictionaries with results data
+        data (list): A list of dictionaries with results data
+                    Or an empty list if the request fails
     """
     url = f'{TMDB_URL}/search/multi'
     params = {
@@ -57,8 +58,9 @@ def get_genre_mapping(media_type, api_key):
     Args:
         media_type (str): media_type of title
         api_key (str): TMDb API authentication key
+        
     Returns:
-        genre_mapping (json): list of dictionaries with genre mapping 
+        genre_mapping (dict): list of dictionaries with genre mapping 
     """
     url = f'{TMDB_URL}/genre/{media_type}/list'
     params = {
@@ -91,11 +93,15 @@ def get_genre_names_from_ids(genre_ids, media_type):
 
 def fetch_trending_titles(api_key=TMDB_API_KEY, page=1, language=DEFAULT_LANGUAGE):
     """
-    Fetches a list of  popular movies from TMDb API.
+    Fetches a list of  popular movies from TMDb API 
+    
     Args:
-        api_key (str): TMDb API key authenticates the request.
+        api_key (str): authentication API key. Defaults to TMDB_API_KEY
+        page (int, optional): number of response pages. Defaults to 1
+        language (str, optional): response language. Defaults to DEFAULT_LANGUAGE
+        
     Returns:
-        list: A list of dictionaries with movie data
+        data (list): A list of dictionaries with results data
               Or an empty list if the request fails
     """
     url = f'{TMDB_URL}/trending/all/week'
@@ -119,13 +125,19 @@ def fetch_title_base_recommendation(
     title_id,
     api_key=TMDB_API_KEY,
     page=1,
-    language=DEFAULT_LANGUAGE):
+    language=DEFAULT_LANGUAGE
+    ):
     """
     Fetches title-based recommendations from TMDB
+    
     Args:
-        api_key (_type_, optional): _description_. Defaults to TMDB_API_KEY.
-        page (int, optional): _description_. Defaults to 1.
-        language (_type_, optional): _description_. Defaults to DEFAULT_LANGUAGE.
+        api_key (str): authentication API key. Defaults to TMDB_API_KEY
+        page (int, optional): number of response pages. Defaults to 1
+        language (str, optional): response language. Defaults to DEFAULT_LANGUAGE
+        
+    Returns:
+        data (list): A list of dictionaries with results data
+              Or an empty list if the request fails
     """
     url = f'{TMDB_URL}/{media_type}/{title_id}/recommendations'
     params = {
