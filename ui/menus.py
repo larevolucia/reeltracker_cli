@@ -37,6 +37,7 @@ menus = {
         }
     }
 }
+
 def display_menu(menu_key):
     """
     Dynamically display menu data from menu.py based on given menu_key

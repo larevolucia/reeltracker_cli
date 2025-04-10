@@ -8,8 +8,8 @@ The class supports integration with Google Sheets for persistent storage,
 and includes methods for data transformation from and to spreadsheet rows.
 """
 
-from utils import extract_year
-from tmdb import get_genre_names_from_ids
+from utils.utils import extract_year
+from tmdb.tmdb import get_genre_names_from_ids
 from .user_data import UserTitleData
 from .title_metadata import TitleMetadata
 

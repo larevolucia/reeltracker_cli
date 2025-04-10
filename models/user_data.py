@@ -4,7 +4,7 @@ User data module
 This module contains the UserTitleData class, which tracks user-specific metadata 
 for media titles such as watch status, dates, and rating
 """
-from utils import get_current_timestamp
+from utils.utils import get_current_timestamp
 
 class UserTitleData:
     """

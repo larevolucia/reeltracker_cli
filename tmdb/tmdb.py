@@ -111,7 +111,6 @@ def fetch_trending_titles(api_key=TMDB_API_KEY, page=1, language=DEFAULT_LANGUAG
         print(f"\n❌ API request failed: {e}")
         return []
 
-
 def fetch_title_base_recommendation(
     media_type,
     title_id,

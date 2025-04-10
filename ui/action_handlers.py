@@ -1,27 +1,26 @@
 """
 User prompts, rating input, search input, etc.
 """
-from classes.title import Title
-from tmdb import fetch_tmdb_results, TMDB_API_KEY
-from menus import handle_list_menu
-from utils import (
-    calculate_weighted_popularity,
-    sort_items_by_popularity
-)
-from sheets import (
+from tmdb.tmdb import fetch_tmdb_results, TMDB_API_KEY
+from ui.menus import handle_list_menu
+from utils.utils import build_title_objects_from_sheet
+from sheets.sheets import (
     save_item_to_list,
     check_for_duplicate,
     update_item_in_list,
     get_titles_by_watch_status,
     delete_item_in_list
     )
-from user_input import (
+from .user_input import (
     get_user_search_input,
     get_watch_status,
     get_title_rating,
     select_item_from_results
 )
-
+from .ui_helpers import (
+    prepare_title_objects_from_tmdb
+)
+from .display import display_title_entries
 
 def handle_search(mode, google_sheet):
     """Handles user interaction with search functionality
@@ -92,7 +91,7 @@ def handle_watchlist_or_watched(list_type, google_sheet):
         print(f"\n❌  No {list_type} title found.")
         return
     # Transform list of rows into list of objects
-    titles = [Title.from_sheet_row(row) for row in titles_data]
+    titles = build_title_objects_from_sheet (titles_data)
     display_title_entries(titles, list_type)
     # Unpack command and Title object
     action, index = handle_list_menu(titles, list_type)
@@ -150,80 +149,3 @@ def handle_delete(title, google_sheet):
     is_deleted = delete_item_in_list(google_sheet, title)
     if is_deleted:
         print(f'\n✅ {title.metadata.title} successfully removed from your list.')
-
-# --- Display ---
-def display_title_entries(title_objects, mode, max_results=None):
-    """
-    Display a list of Title objects in a table format based on context.
-    
-    Args:
-        title_objects (list): _description_
-        mode (str): _description_
-        max_results (int, optional): _description_. Defaults to None.
-    Returns:
-        (list[Title]): Title objects list slice [:max_results]
-    """
-    headers = {
-        'search': 'Search results',
-        'watchlist': 'Your watchlist',
-        'watched': 'Your watched titles',
-        'recommendation': 'Recommended titles',
-    }
-
-    print(f"\n{headers.get(mode, 'Titles')}:\n")
-    is_watched = mode == 'watched'
-    for index, title in enumerate(title_objects[:max_results], start=1):
-        title_str = title.metadata.title
-        if len(title_str) > 30:
-            title_str = title_str[:27].rstrip() + "..."
-        media_type = title.metadata.media_type
-        release = title.metadata.release_date
-        rating = title.user_data.rating
-        overview = title.metadata.overview
-        popularity = title.metadata.popularity
-        line = f"{index:>2} | {title_str:<30} | {media_type:<6} | {release:<4}"
-        line += f" | Popularity: {popularity:<4}"
-        if is_watched:
-            line += f" | Rating: {rating:<4}"
-        print(line)
-        if not is_watched:
-            if len(overview) > 100:
-                overview = overview[:97].rstrip() + "..."
-            print(f'     {overview}')
-            print()
-    return title_objects[:max_results]
-
-# --- API Result Transformation ---
-def prepare_title_objects_from_tmdb(api_results):
-    """
-    Filters, sorts, and converts TMDB api results into Title objects
-
-    Args:
-        api_results (list): Raw results from TMDB API
-
-    Returns:
-        list[Title]: List of Title objects ready to display
-    """
-    filtered_results = filter_results_by_media_type(api_results)
-    if not filtered_results:
-        return []
-    for result in filtered_results:
-        weighted_popularity = calculate_weighted_popularity(result)
-        result['weighted_popularity'] = weighted_popularity
-    sorted_results = sort_items_by_popularity(filtered_results)
-    title_objects = [Title(result) for result in sorted_results]
-    return title_objects
-
-def filter_results_by_media_type(result_list, allowed_media_types=('movie', 'tv')):
-    """
-    Filters the TMDB results by media_type
-    Args:
-        result_list (list): list of dictionaries from API
-        allowed_media_types(tuple): Types used for filtering   
-    Returns: 
-        list: Filtered list limited to allowed media types
-    """
-    return [
-        result for result in result_list
-        if result.get("media_type") in allowed_media_types
-        ]

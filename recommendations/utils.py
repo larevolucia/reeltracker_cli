@@ -1,94 +1,4 @@
-"""
-Recommendation logic
-"""
 from collections import defaultdict
-from tmdb import (
-    TMDB_API_KEY,
-    fetch_trending_titles,
-    fetch_title_base_recommendation)
-from sheets import (
-    has_items,
-    has_watched,
-    has_watchlist,
-    get_titles_by_watch_status
-    )
-from ui_actions import (
-    prepare_title_objects_from_tmdb,
-    select_item_from_results,
-    handle_title_selection,
-    display_title_entries
-    )
-from classes.title import Title
-from utils import (
-    sort_items_by_popularity
-    )
-
-def handle_recommendations(mode, google_sheet):
-    """
-    Recommends titles to the user based on the state of their list
-        - If no titles at all: show trending
-        - If no watchlist: show similar to watched items
-        - If no watched items: show watchlist by popularity
-        - If watched and watchlist: selects from watched item
-
-    Args:
-        google_sheet (_type_): _description_
-    """
-    items = has_items(google_sheet)
-    watched_items = has_watched(google_sheet)
-    watchlist_items = has_watchlist(google_sheet)
-    if not items:
-        handle_no_items(google_sheet, mode)
-    elif not watched_items:
-        handle_no_watched_items(google_sheet)
-    elif not watchlist_items:
-        handle_no_watchlist_items(google_sheet, mode)
-    else:
-        handle_watched_and_watchlist(google_sheet, mode)
-
-def handle_no_items(google_sheet, mode):
-    print("\nYour list is looking a little empty.")
-    print("Check out what’s trending and find something that sparks your interest!")
-    trending_results = fetch_trending_titles(TMDB_API_KEY)
-    trending_title_objects = prepare_title_objects_from_tmdb(trending_results)
-    display_and_select_title(trending_title_objects, mode, google_sheet)
-
-def handle_no_watched_items(google_sheet):
-    print("\nYou haven't watched anything yet, but your watchlist has some great options.")
-    print("\nHere are the most popular ones to get you started.")
-    watchlist_titles = get_titles_by_watch_status(google_sheet, False)
-    title_objects = build_title_objects_from_sheet(watchlist_titles)
-    sorted_titles = sort_items_by_popularity(title_objects)
-    display_title_entries(sorted_titles, 'recommendation', 6)
-
-def handle_no_watchlist_items(google_sheet, mode):
-    print("\nYou haven't got any titles on your watchlist yet!")
-    watched_titles = get_titles_by_watch_status(google_sheet, True)
-    title_objects = build_title_objects_from_sheet(watched_titles)
-    top_title = get_top_title_by_preferred_genre(title_objects)
-
-    print(f"\nYou've recently liked {top_title.metadata.title}. "
-          "Here are some titles you might also like...")
-
-    recommended_titles = fetch_title_base_recommendation(
-        top_title.metadata.media_type,
-        top_title.metadata.id,
-        TMDB_API_KEY
-        )
-    recommended_titles_object = prepare_title_objects_from_tmdb(recommended_titles)
-    display_and_select_title(recommended_titles_object, mode, google_sheet)
-
-def handle_watched_and_watchlist(google_sheet, mode):
-    print("\n🔄 Analyzing viewing history...")
-    watched_titles = get_titles_by_watch_status(google_sheet, True)
-    watched_titles_objects = build_title_objects_from_sheet(watched_titles)
-    watchlist_titles = get_titles_by_watch_status(google_sheet,False)
-    watchlist_titles_objects = build_title_objects_from_sheet(watchlist_titles)
-    recommendation_list = get_personalized_recommendations(
-        watched_titles_objects,
-        watchlist_titles_objects
-        )
-    display_title_entries(recommendation_list, mode, 6)
 
 def get_top_rated_titles(titles_list):
     """
@@ -176,18 +86,6 @@ def calculate_genre_similarity(title_1, title_2):
     similarity_score = len(set(title_1.metadata.genres) & set(title_2.metadata.genres))
     return similarity_score
 
-def display_and_select_title(titles, mode, google_sheet):
-    displayed_titles = display_title_entries(titles, mode, 6)
-    selected = select_item_from_results(displayed_titles, mode)
-    if selected == 'main' or selected is None:
-        print('\nReturning to main menu...')
-    else:
-        print(f"\n📥 You've selected {selected.metadata.title} ({selected.metadata.release_date})")
-        handle_title_selection(selected, google_sheet)
-
-def build_title_objects_from_sheet(sheet_rows):
-    return [Title.from_sheet_row(row) for row in sheet_rows]
-
 def get_top_title_by_preferred_genre(title_objects):
     """
     Filters top-rated titles by user's preferred genre and returns
@@ -212,7 +110,6 @@ def get_top_title_by_preferred_genre(title_objects):
     return get_top_title(titles_in_genre)
 
 def get_personalized_recommendations(watched_titles, watchlist_titles):
-    
     top_rated_titles = get_top_rated_titles(watched_titles)
     preferred_genre = get_preferred_genre(top_rated_titles)
     top_title = get_top_title_by_preferred_genre(top_rated_titles)

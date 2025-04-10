@@ -1,13 +1,13 @@
 """
 CLI Reel tracker orchestration
 """
-from sheets import initialize_google_sheets
-from menus import display_main_menu
-from ui_actions import (
+from ui.menus import display_main_menu
+from ui.action_handlers import (
     handle_search,
     handle_watchlist_or_watched,
 )
-from recommendations import handle_recommendations
+from .sheets.sheets import initialize_google_sheets
+from .recommendations.recommendations import handle_recommendations
 
 
 def main():
