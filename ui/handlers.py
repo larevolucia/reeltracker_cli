@@ -5,7 +5,7 @@ Includes search, selection, rating, watch status toggling, and deletion.
 """
 
 from tmdb.tmdb import fetch_tmdb_results, TMDB_API_KEY
-from tmdb.utils import (
+from models.title import (
     prepare_title_objects_from_tmdb
 )
 from ui.menus import handle_list_menu

@@ -116,3 +116,22 @@ def select_item_from_results(title_list, mode):
         except ValueError as e:
             print(f"\n⚠️  Invalid input: {e}. Please enter a number, or"
                   f" {', '.join(valid_commands)}.")
+
+def confirm_action(prompt="\nAre you sure you want to proceed? (y/n): "):
+    """
+    Request user action confirmation
+
+    Args:
+        prompt (str, optional): Prompts user for action confirmation. 
+            Defaults to "\nAre you sure you want to proceed? (y/n): ".
+
+    Returns:
+        (bool): True (confirms) / False 
+    """
+    while True:
+        response = input(prompt).strip().lower()
+        if response in ('y', 'yes'):
+            return True
+        if response in ('n', 'no'):
+            return False
+        print("⚠️  Please enter 'y' for yes or 'n' for no.")

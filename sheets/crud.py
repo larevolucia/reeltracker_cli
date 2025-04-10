@@ -4,7 +4,9 @@ Provides functions for saving, updating, and deleting rows in a Google Sheet.
 Handles low-level data manipulation for title objects in the user's list.
 """
 import gspread
+from ui.user_input import confirm_action
 from .query import find_existing_row_info
+
 def save_item_to_list(sheet, title_obj):
     """Saves an item to worksheet 
 
@@ -13,6 +15,10 @@ def save_item_to_list(sheet, title_obj):
         title_obj (Title): The Title object to save
     """
     # print_json(data=title_obj.to_sheet_row())
+    if not confirm_action(f"\nDo you want to save '{title_obj.metadata.title}'"
+                          f" to your list? (y/n): "):
+        print("\n❌ Action cancelled.")
+        return
 
     try:
         worksheet = sheet.worksheet('My_List')
@@ -37,6 +43,10 @@ def delete_item_in_list(sheet, title_obj):
         sheet (gspread.Spreadsheet): Initialized Google Sheet
         title_obj (obj): Selected Title object
     """
+    if not confirm_action(f"\nAre you sure you want to delete '{title_obj.metadata.title}'"
+                          f" from your list? (y/n): "):
+        print("\n❌ Deletion cancelled.")
+        return False
     found, row_index, _ = find_existing_row_info(title_obj, sheet)
     worksheet = sheet.worksheet('My_List')
     if found:
@@ -53,6 +63,9 @@ def update_item_in_list(sheet, title_obj):
         sheet (gspread.Spreadsheet): Initialized Google Sheet
         title_obj (obj): Selected title
     """
+    if not confirm_action(f"\nDo you want to update '{title_obj.metadata.title}'? (y/n): "):
+        print("\n❌ Update cancelled.")
+        return 'skipped'
     found, row_index, existing_row = find_existing_row_info(title_obj, sheet)
     new_row = title_obj.to_sheet_row()
     worksheet = sheet.worksheet('My_List')

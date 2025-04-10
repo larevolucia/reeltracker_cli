@@ -9,7 +9,7 @@ from tmdb.tmdb import (
     fetch_trending_titles,
     fetch_title_base_recommendation
     )
-from tmdb.utils import (
+from models.title import (
     prepare_title_objects_from_tmdb
 )
 from sheets.query import (

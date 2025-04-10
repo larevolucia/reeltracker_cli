@@ -170,7 +170,7 @@ The codebase is structured in modules by responsibility. This improves readabili
 │   └── utils.py                # Converts raw sheet data into Title objects
 
 ├── tmdb/                       # TMDb API integration for fetching movie data
-│   ├── __init__.py             # 
+│   ├── __init__.py              
 │   ├── tmdb.py                 # Contains functions for interacting with the TMDb API 
 │   └── utils.py                # Processes and prepares TMDB API data
 
@@ -182,7 +182,7 @@ The codebase is structured in modules by responsibility. This improves readabili
 │   └── user_input.py           # Captures and validates user input
 
 ├── utils/                      # General-purpose utilities
-│   ├── __init__.py             # 
+│   ├── __init__.py              
 │   └── utils.py                # Utitlity functions such as formatting and sorting
 
 ├── documentation/              # Contains project documentation and visual assets

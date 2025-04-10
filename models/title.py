@@ -8,8 +8,15 @@ The class supports integration with Google Sheets for persistent storage,
 and includes methods for data transformation from and to spreadsheet rows.
 """
 
-from utils.utils import extract_year
-from tmdb.utils import get_genre_names_from_ids
+from utils.utils import (
+    calculate_weighted_popularity,
+    sort_items_by_popularity,
+    extract_year
+    )
+from tmdb.utils import (
+    get_genre_names_from_ids,
+    filter_results_by_media_type
+    )
 from .user_data import UserTitleData
 from .title_metadata import TitleMetadata
 
@@ -124,3 +131,23 @@ class Title:
         obj.metadata = metadata
         obj.user_data = user_data
         return obj
+
+def prepare_title_objects_from_tmdb(api_results):
+    """
+    Filters, sorts, and converts TMDB api results into Title objects
+
+    Args:
+        api_results (list): Raw results from TMDB API
+
+    Returns:
+        list[Title]: List of Title objects ready to display
+    """
+    filtered_results = filter_results_by_media_type(api_results)
+    if not filtered_results:
+        return []
+    for result in filtered_results:
+        weighted_popularity = calculate_weighted_popularity(result)
+        result['weighted_popularity'] = weighted_popularity
+    sorted_results = sort_items_by_popularity(filtered_results)
+    title_objects = [Title(result) for result in sorted_results]
+    return title_objects

@@ -3,8 +3,6 @@ Helper functions for processing and preparing TMDB API data.
 
 Filters and formats API results into display-ready Title objects.
 """
-from models import Title
-from utils.utils import calculate_weighted_popularity, sort_items_by_popularity
 from .tmdb import (
     TMDB_API_KEY,
     get_genre_mapping
@@ -25,26 +23,6 @@ def get_genre_names_from_ids(genre_ids, media_type):
     genre_dict = {genre['id']: genre['name'] for genre in genre_list}
     matched_genres = [genre_dict.get(genre_id) for genre_id in genre_ids if genre_id in genre_dict]
     return matched_genres
-
-def prepare_title_objects_from_tmdb(api_results):
-    """
-    Filters, sorts, and converts TMDB api results into Title objects
-
-    Args:
-        api_results (list): Raw results from TMDB API
-
-    Returns:
-        list[Title]: List of Title objects ready to display
-    """
-    filtered_results = filter_results_by_media_type(api_results)
-    if not filtered_results:
-        return []
-    for result in filtered_results:
-        weighted_popularity = calculate_weighted_popularity(result)
-        result['weighted_popularity'] = weighted_popularity
-    sorted_results = sort_items_by_popularity(filtered_results)
-    title_objects = [Title(result) for result in sorted_results]
-    return title_objects
 
 def filter_results_by_media_type(result_list, allowed_media_types=('movie', 'tv')):
     """
