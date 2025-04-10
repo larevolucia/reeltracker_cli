@@ -4,7 +4,7 @@ Controls the logic for generating title recommendations.
 Selects the appropriate handler based on what content the user has added
 or watched.
 """
-from sheets.sheets import (
+from sheets.query import (
     has_items,
     has_watched,
     has_watchlist,

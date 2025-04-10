@@ -164,8 +164,10 @@ The codebase is structured in modules by responsibility. This improves readabili
 
 ├── sheets/                     # Google Sheets integration
 │   ├── __init__.py
-│   ├── utils.py                # Sheet-specific helpers and formatting
-│   └── sheets.py               # Handles syncing and authorization with Google Sheets
+│   ├── auth.py                 # Handles authentication and sheet connection setup
+│   ├── crud.py                 # Performs create, update, and delete operations on sheet rows
+│   ├── query.py                # Retrieves and filters rows, checks for duplicates
+│   └── utils.py                # Converts raw sheet data into Title objects
 
 ├── tmdb/                       # TMDb API integration for fetching movie data
 │   ├── __init__.py             # 
@@ -174,7 +176,7 @@ The codebase is structured in modules by responsibility. This improves readabili
 
 ├── ui/                         # CLI display components and handlers
 │   ├── __init__.py
-│   ├── action_handlers.py      # Responds to user menu selections and triggers logic
+│   ├── handlers.py             # Responds to user menu selections and triggers logic
 │   ├── display.py              # Handles layout and terminal content display
 │   ├── menus.py                # CLI menus and navigation
 │   └── user_input.py           # Captures and validates user input

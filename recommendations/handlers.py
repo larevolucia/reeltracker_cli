@@ -12,7 +12,7 @@ from tmdb.tmdb import (
 from tmdb.utils import (
     prepare_title_objects_from_tmdb
 )
-from sheets.sheets import (
+from sheets.query import (
     get_titles_by_watch_status
     )
 from sheets.utils import build_title_objects_from_sheet

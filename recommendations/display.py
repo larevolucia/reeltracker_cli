@@ -5,7 +5,7 @@ Used to present title options and trigger follow-up actions based on input.
 """
 from ui.display import display_title_entries
 from ui.user_input import select_item_from_results
-from ui.action_handlers import handle_title_selection
+from ui.handlers import handle_title_selection
 
 def display_and_select_title(titles, mode, google_sheet):
     """

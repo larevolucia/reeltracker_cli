@@ -10,11 +10,13 @@ from tmdb.utils import (
 )
 from ui.menus import handle_list_menu
 from sheets.utils import build_title_objects_from_sheet
-from sheets.sheets import (
-    save_item_to_list,
+from sheets.query import (
     check_for_duplicate,
+    get_titles_by_watch_status
+    )
+from sheets.crud import (
+    save_item_to_list,
     update_item_in_list,
-    get_titles_by_watch_status,
     delete_item_in_list
     )
 from .user_input import (

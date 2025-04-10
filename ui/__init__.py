@@ -12,7 +12,7 @@ from .menus import (
     display_main_menu,
     handle_action_with_index
     )
-from .action_handlers import (
+from .handlers import (
     handle_search,
     handle_title_selection,
     handle_watchlist_or_watched,

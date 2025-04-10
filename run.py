@@ -2,11 +2,11 @@
 CLI Reel tracker orchestration
 """
 from ui.menus import display_main_menu
-from ui.action_handlers import (
+from ui.handlers import (
     handle_search,
     handle_watchlist_or_watched,
 )
-from sheets.sheets import initialize_google_sheets
+from sheets.auth import initialize_google_sheets
 from recommendations.recommendations import handle_recommendations
 
 
