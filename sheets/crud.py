@@ -27,7 +27,7 @@ def save_item_to_list(sheet, title_obj):
         # Create headers if worksheet is new
         headers = [
             "id", "title", "media_type", "release_date",
-            "genres", "weighted_popularity", "overview",
+            "genre_ids", "genres", "weighted_popularity", "overview",
             "is_watched", "added_date", "watched_date", "rating"
         ]
         worksheet.append_row(headers)

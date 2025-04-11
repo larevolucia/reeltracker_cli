@@ -19,6 +19,7 @@ class TitleMetadata:
         title (str): Human-readable title of the media
         media_type (str): Type of media ('movie' or 'tv')
         release_date (str): Year of release
+        genres (List[ids]): List of genre ids associated with the title
         genres (List[str]): List of genre names associated with the title
         popularity (float): Weighted popularity score for sorting or ranking
         overview (str): Short description or synopsis of the title
@@ -27,6 +28,7 @@ class TitleMetadata:
     title: str
     media_type: str
     release_date: str
+    genre_ids:List[int]
     genres: List[str]
     popularity: float
     overview: str

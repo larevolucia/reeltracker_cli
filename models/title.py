@@ -41,12 +41,13 @@ class Title:
             if release_date != 'Unknown'
             else release_date
             )
-        genre_ids = data.get('genre_ids', [])
+        genre_ids=data.get('genre_ids', [])
         self.metadata = TitleMetadata(
             id=data.get('id'),
             title=str(data.get('title') or data.get('name') or 'No title available'),
             media_type=data.get('media_type', 'Unknown'),
             release_date=self.release_date,
+            genre_ids=genre_ids,
             genres=get_genre_names_from_ids(
                 genre_ids, data.get('media_type', 'Unknown'))
                 if genre_ids
@@ -90,6 +91,7 @@ class Title:
             self.metadata.title,
             self.metadata.media_type,
             str(self.metadata.release_date),
+            ', '.join(map(str, self.metadata.genre_ids)),
             ', '.join(map(str, self.metadata.genres)),
             str(self.metadata.popularity),
             self.metadata.overview,
@@ -112,15 +114,21 @@ class Title:
         Returns:
             obj: reconstructed Title object
         """
+        genre_ids = [
+        int(g.strip()) for g in row.get('genre_ids', '').split(',')
+        if g.strip().isdigit()
+        ] if row.get('genre_ids') else []
+
+        genres = [
+        g.strip() for g in row.get('genres', '').split(',')
+        ] if row.get('genres') else []
         metadata = TitleMetadata(
             id=row.get('id'),
             title=row.get('title'),
             media_type=row.get('media_type'),
             release_date=row.get('release_date'),
-            genres=[
-                g.strip() for g in row.get('genres', '').split(',')
-                ] if row.get('genres')
-                else [],
+            genre_ids=genre_ids,
+            genres=genres,
             popularity=float(row.get('weighted_popularity', 0)),
             overview=row.get('overview', 'No overview available')
         )

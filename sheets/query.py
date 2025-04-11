@@ -39,7 +39,6 @@ def check_for_duplicate(title_obj, sheet):
                     return True, watch_status
         return False, False
     except gspread.exceptions.WorksheetNotFound:
-        print("\n❌ No data found. Select 1 to search and add your first title.")
         return False, False
 
 def get_titles_by_watch_status(sheet, watched):

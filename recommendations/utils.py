@@ -7,7 +7,7 @@ relevance or popularity.
 from collections import defaultdict
 
 # --- Filtering ---
-def get_top_rated_titles(titles_list):
+def get_top_rated_titles(title_list):
     """
     Return titles with a user rating of 3 or higher
 
@@ -17,9 +17,33 @@ def get_top_rated_titles(titles_list):
     Returns:
         list: filtered list of top-rated Title objects
     """
-    top_rated_titles = [title for title in titles_list if title.user_data.rating >= 3]
+    top_rated_titles = [title for title in title_list if title.user_data.rating >= 3]
 
     return top_rated_titles
+
+def get_preferred_media_type(title_list):
+    """
+    Determine the user's preferred media_type based on frequency
+
+    Args:
+        title_list (list): List of Title objects
+
+    Returns:
+        str: Media Type with the highest occurrence
+    """
+    media_type_count = defaultdict(int)
+
+    for title in title_list:
+        media_type =  getattr(getattr(title, 'metadata', None), 'media_type', None)
+        if media_type:
+            media_type_count[media_type] +=1
+    if not media_type_count:
+        print("⚠️ No media types found in the list.")
+        return None
+
+    preferred_media_type = max(media_type_count, key=media_type_count.get)
+
+    return preferred_media_type
 
 def filter_list_by_genre(title_list, genre):
     """
@@ -182,21 +206,23 @@ def get_personalized_recommendations(watched_titles, watchlist_titles):
     if not top_rated_titles:
         print("\nNo title rated above 2...")
         preferred_genre = get_preferred_genre(watched_titles)
+        preferred_media_type = get_preferred_media_type(watched_titles)
         print(preferred_genre)
-    preferred_genre = get_preferred_genre(top_rated_titles)
-    top_title = get_top_title_by_preferred_genre(top_rated_titles)
-    if not top_title or not hasattr(top_title, "metadata"):
-        print("\n⚠️  Unable to generate personalized recommendations.")
-        return []
-    print(f"\nYou've been watching {preferred_genre} titles, such as {top_title.metadata.title}!")
-    print("\n🔄 Generating recommendations based on viewing history...")
-    top_title_media_type = top_title.metadata.media_type
-    titles_matching_genre = filter_list_by_genre(watchlist_titles, preferred_genre)
-    relevance_sorted_titles = sort_titles_by_relevance(
-        titles_matching_genre, "watchlist", top_title)
-    match_media_type_titles, non_match_media_type_titles = partition_list_by_media_type(
-        relevance_sorted_titles,
-        top_title_media_type
-        )
-    concatenated_titles = match_media_type_titles + non_match_media_type_titles
-    return concatenated_titles
+        print(preferred_media_type)
+    # preferred_genre = get_preferred_genre(top_rated_titles)
+    # top_title = get_top_title_by_preferred_genre(top_rated_titles)
+    # if not top_title or not hasattr(top_title, "metadata"):
+    #     print("\n⚠️  Unable to generate personalized recommendations.")
+    #     return []
+    # print(f"\nYou've been watching {preferred_genre} titles, such as {top_title.metadata.title}!")
+    # print("\n🔄 Generating recommendations based on viewing history...")
+    # top_title_media_type = top_title.metadata.media_type
+    # titles_matching_genre = filter_list_by_genre(watchlist_titles, preferred_genre)
+    # relevance_sorted_titles = sort_titles_by_relevance(
+    #     titles_matching_genre, "watchlist", top_title)
+    # match_media_type_titles, non_match_media_type_titles = partition_list_by_media_type(
+    #     relevance_sorted_titles,
+    #     top_title_media_type
+    #     )
+    # concatenated_titles = match_media_type_titles + non_match_media_type_titles
+    # return concatenated_titles
