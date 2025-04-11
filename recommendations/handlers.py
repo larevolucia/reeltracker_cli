@@ -25,7 +25,7 @@ from .trending import show_trending_titles
 from .display import display_and_select_title
 
 
-def handle_no_items(google_sheet, mode):
+def handle_no_items(google_sheet):
     """
     Handle case when the user has no titles in their list
 
@@ -34,7 +34,6 @@ def handle_no_items(google_sheet, mode):
 
     Args:
         google_sheet: Google Sheet object to read/write user data
-        mode (str): Current interaction mode (e.g. 'search', 'recommendations')
 
     Returns:
         None
