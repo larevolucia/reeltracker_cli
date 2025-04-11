@@ -12,6 +12,7 @@ menus = {
             "2": "Manage watchlist titles",
             "3": "Manage watched titles",
             "4": "Get recommendation",
+            "5": "See what's trending",
             "e": "Exit"
         },
         "valid_choices": {
@@ -19,6 +20,7 @@ menus = {
             "2": "watchlist",
             "3": "watched",
             "4": "recommendation",
+            "5": "trending",
             "e": "exit"
         }
     },
@@ -55,7 +57,15 @@ menus = {
         "<number>": "Select a title to save",
         "m": "Return to main menu"
     }
-}
+},
+    "trending": {
+    "title": "Trending Titles options:",
+    "options": {
+        "i <number>": "View more info",
+        "<number>": "Select a title to save",
+        "m": "Return to main menu"
+    }
+    },
 }
 
 def display_menu(menu_key):

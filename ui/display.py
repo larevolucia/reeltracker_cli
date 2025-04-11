@@ -20,6 +20,7 @@ def display_title_entries(title_objects, mode, max_results=None):
         'watchlist': 'Your watchlist',
         'watched': 'Your watched titles',
         'recommendation': 'Recommended titles',
+        'trending': '🔥 Trending titles',
     }
 
     print(f"\n{headers.get(mode, 'Titles')}:\n")

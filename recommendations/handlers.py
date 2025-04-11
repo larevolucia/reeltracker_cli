@@ -41,7 +41,7 @@ def handle_no_items(google_sheet, mode):
     """
     print("\nYour list is looking a little empty.")
     print("Check out what's trending and find something that sparks your interest!")
-    show_trending_titles(google_sheet, mode)
+    show_trending_titles("trending", google_sheet)
 
 
 def handle_no_watched_items(google_sheet):

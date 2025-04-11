@@ -9,7 +9,7 @@ from models.title import (
 )
 from .display import display_and_select_title
 
-def show_trending_titles(google_sheet, mode):
+def show_trending_titles(mode, google_sheet):
     """
     Fetch trending titles from TMDB and allow the user to explore or save one.
 

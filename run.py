@@ -8,6 +8,7 @@ from ui.handlers import (
 )
 from sheets.auth import initialize_google_sheets
 from recommendations.recommendations import handle_recommendations
+from recommendations.trending import show_trending_titles
 
 
 def main():
@@ -29,6 +30,8 @@ def main():
             continue
         if user_choice == 'recommendation':
             handle_recommendations(user_choice, google_sheet)
+        if user_choice == 'trending':
+            show_trending_titles(user_choice, google_sheet)
 
 if __name__ == "__main__":
     main()
