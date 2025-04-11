@@ -200,6 +200,16 @@ Includes methods for:
 - `to_sheet_row`: formats the title data for saving to Google Sheets
 - `from_sheets_row`: reconstructs a `Title` object from saved sheet data
 
+`TitleMetadata`
+Stores static metadata about a title:
+- `id (str)`: Unique identifier for the title (usually from TMDb)
+- `title (str)`: Human-readable title of the media
+- `media_type (str)`: Type of media ('movie' or 'tv')
+- `release_date (str)`: Year of release
+- `genres (List[str])`: List of genre names associated with the title
+- `popularity (float)`: Weighted popularity score for sorting or ranking
+- `overview (str)`: Description or synopsis of the title
+
 `UserTitleData`
 Stores user-generated data about a title:
 - `watched` status: edited using the `toggle_watched` method
@@ -212,6 +222,7 @@ Consulted references:
 - [BuiltIn](https://builtin.com/software-engineering-perspectives/python-cls)
 - [GeeksForGeeks](https://www.geeksforgeeks.org/classmethod-in-python/)
 - [`__new__()` method in Python](https://medium.com/@vinayakgupta3112/new-method-in-python-the-constructor-method-you-might-not-be-aware-of-72f72561afe4)
+- [How to use data classes](https://www.dataquest.io/blog/how-to-use-python-data-classes/)
 
 ## Requirements
 
