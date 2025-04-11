@@ -3,6 +3,7 @@ Handles all user input for search, selection, watch status, and ratings.
 
 Ensures valid, interactive prompts for various workflows.
 """
+from ui.menus import display_menu, handle_action_with_index
 
 def get_user_search_input(prompt="\nSearch a title to get started: "):
     """
@@ -67,55 +68,107 @@ def get_title_rating(title_obj):
         except ValueError as e:
             print(f"\n⚠️ Invalid input: {e}")
 
+# def select_item_from_results(title_list, mode):
+#     """
+#     Allows user to select an item from previously displayed result
+#
+#     Args:
+#         title_list (list[Title]): List of Title objects
+#          mode (str): Mode of interaction ('search' or 'recommendation')
+#     Returns:
+#         Title object | None | str: Selected item, None (for new search), or 'main' to return
+#     """
+#     valid_commands = []
+#     prompt = ""
+#     if mode == 'search':
+#         valid_commands = ['n', 'm']
+#         prompt = (
+#             f"\nSelect an item (1-{len(title_list)}) to save it, "
+#             f"type 'n' for a new search or 'm' to return to main menu: "
+#         )
+#     elif mode == 'recommendation':
+#         valid_commands = ['m']
+#         prompt = (
+#             f"\nSelect an item (1-{len(title_list)}) to save it "
+#             f"or 'm' to return to main menu: "
+#         )
+#     else:
+#         print("⚠️  Unknown mode. Please use 'search' or 'recommendation'.")
+#         return None
+#     while True:
+#         print(prompt)
+#         command = input("> ").strip().lower()
+#         if command == 'm':
+#             return 'main'
+#         if command == 'n' and mode == 'search':
+#             return None
+#         try:
+#             selection = int(command)
+#             if not 1 <= selection <= len(title_list):
+#                 raise ValueError(
+#                     f'Number out of range. You must choose between 1 and '
+#                     f'{len(title_list)}'
+#                 )
+
+#             chosen_item = title_list[selection - 1]
+
+#             return chosen_item
+
+#         except ValueError as e:
+#             print(f"\n⚠️  Invalid input: {e}. Please enter a number, or"
+#                   f" {', '.join(valid_commands)}.")
+
+
 def select_item_from_results(title_list, mode):
     """
-    Allows user to select an item from previously displayed results
-    
+    Allows user to select a title or view more info from the results list
+    Consistent with 'watchlist' and 'watched' command formats.
+
     Args:
         title_list (list[Title]): List of Title objects
-         mode (str): Mode of interaction ('search' or 'recommendation')
+        mode (str): 'search' or 'recommendation'
     Returns:
-        Title object | None | str: Selected item, None (for new search), or 'main' to return
+        Title object | None | 'main': Selected item, request new search, or return to main
     """
-    valid_commands = []
-    prompt = ""
-    if mode == 'search':
-        valid_commands = ['n', 'm']
-        prompt = (
-            f"\nSelect an item (1-{len(title_list)}) to save it, "
-            f"type 'n' for a new search or 'm' to return to main menu: "
-        )
-    elif mode == 'recommendation':
-        valid_commands = ['m']
-        prompt = (
-            f"\nSelect an item (1-{len(title_list)}) to save it "
-            f"or 'm' to return to main menu: "
-        )
-    else:
-        print("⚠️  Unknown mode. Please use 'search' or 'recommendation'.")
-        return None
+    menu_key =  mode
+    valid_actions = {'i'}
     while True:
-        print(prompt)
+        display_menu(menu_key)
+        print("\nEnter a command like '1', 'i 2', or 'm':")
+        if mode == "search":
+            print("You can also type 'n' to start a new search.")
+
         command = input("> ").strip().lower()
+
         if command == 'm':
             return 'main'
         if command == 'n' and mode == 'search':
             return None
+
+        # Handle commands like 'i 2'
+        if ' ' in command:
+            action, index, error = handle_action_with_index(command, valid_actions, len(title_list))
+            if error:
+                print(error)
+                continue
+            if action == 'i':
+                item = title_list[index]
+                print(f"\nAbout {item.metadata.title} ({item.metadata.release_date}):\n")
+                print(f"   - Type: {item.metadata.media_type}")
+                print(f"   - Genres: {', '.join(item.metadata.genres)}")
+                print(f"   - Popularity: {item.metadata.popularity}")
+                print(f"   - Overview: {item.metadata.overview}")
+            continue  # Go back to selection after info
+
+        # Handle single-number selection
         try:
             selection = int(command)
-            if not 1 <= selection <= len(title_list):
-                raise ValueError(
-                    f'Number out of range. You must choose between 1 and '
-                    f'{len(title_list)}'
-                )
-
-            chosen_item = title_list[selection - 1]
-
-            return chosen_item
-
-        except ValueError as e:
-            print(f"\n⚠️  Invalid input: {e}. Please enter a number, or"
-                  f" {', '.join(valid_commands)}.")
+            if 1 <= selection <= len(title_list):
+                return title_list[selection - 1]
+            else:
+                print(f"\n⚠️  Number out of range. Choose between 1 and {len(title_list)}.")
+        except ValueError:
+            print("\n⚠️  Invalid input. Try a number, 'i <number>', 'n', or 'm'.")
 
 def confirm_action(prompt="\nAre you sure you want to proceed? (y/n): "):
     """

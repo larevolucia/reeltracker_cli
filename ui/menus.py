@@ -22,8 +22,17 @@ menus = {
             "e": "exit"
         }
     },
+    "search": {
+        "title": "Search results options:",
+        "options": {
+            "i <number>": "View more info",
+            "<number>": "Select to save",
+            "n": "New search",
+            "m": "Return to main menu"
+        }
+    },
     "watchlist": {
-        "title": "Manage Watchlist",
+        "title": "Manage Watchlist:",
         "options": {
             "w": "Mark as watched and rate",
             "d": "Delete title",
@@ -31,14 +40,22 @@ menus = {
         }
     },
     "watched": {
-        "title": "Manage Watched Titles",
+        "title": "Manage Watched Titles:",
         "options": {
             "r": "Change rating",
             "w": "Move to watchlist",
             "d": "Delete title",
             "m": "Return to main menu"
         }
+    },
+    "recommendation": {
+    "title": "Recommended Titles options:",
+    "options": {
+        "i <number>": "View more info",
+        "<number>": "Select a title to save",
+        "m": "Return to main menu"
     }
+}
 }
 
 def display_menu(menu_key):
