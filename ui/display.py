@@ -35,9 +35,7 @@ def display_title_entries(title_objects, mode, max_results=None):
         release = title.metadata.release_date
         rating = title.user_data.rating
         overview = title.metadata.overview
-        popularity = title.metadata.popularity
         line = f"{index:>2} | {title_str:<30} | {media_type:<6} | {release:<4}"
-        line += f" | Popularity: {popularity:<4}"
         if is_watched:
             line += f" | Rating: {rating:<4}"
         print(line)
