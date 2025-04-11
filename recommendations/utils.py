@@ -67,8 +67,13 @@ def get_preferred_genre(title_list):
     """
     genres_count = defaultdict(int)
     for title in title_list:
-        for genre in title.metadata.genres:
-            genres_count[genre] +=1
+        genres =  getattr(getattr(title, 'metadata', None), 'genres', None)
+        if genres:
+            for genre in genres:
+                genres_count[genre] +=1
+    if not genres_count:
+        return None
+
     preferred_genre = max(genres_count, key=genres_count.get)
 
     return preferred_genre
@@ -174,6 +179,10 @@ def get_personalized_recommendations(watched_titles, watchlist_titles):
         list: personalized and sorted recommendation list
     """
     top_rated_titles = get_top_rated_titles(watched_titles)
+    if not top_rated_titles:
+        print("\nNo title rated above 2...")
+        preferred_genre = get_preferred_genre(watched_titles)
+        print(preferred_genre)
     preferred_genre = get_preferred_genre(top_rated_titles)
     top_title = get_top_title_by_preferred_genre(top_rated_titles)
     if not top_title or not hasattr(top_title, "metadata"):

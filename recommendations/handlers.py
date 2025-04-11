@@ -133,4 +133,5 @@ def handle_watched_and_watchlist(google_sheet, mode):
         watched_titles_objects,
         watchlist_titles_objects
         )
-    display_title_entries(recommendation_list, mode, 6)
+    if recommendation_list:
+        display_title_entries(recommendation_list, mode, 6)
