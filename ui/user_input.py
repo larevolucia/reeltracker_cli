@@ -68,57 +68,6 @@ def get_title_rating(title_obj):
         except ValueError as e:
             print(f"\n⚠️ Invalid input: {e}")
 
-# def select_item_from_results(title_list, mode):
-#     """
-#     Allows user to select an item from previously displayed result
-#
-#     Args:
-#         title_list (list[Title]): List of Title objects
-#          mode (str): Mode of interaction ('search' or 'recommendation')
-#     Returns:
-#         Title object | None | str: Selected item, None (for new search), or 'main' to return
-#     """
-#     valid_commands = []
-#     prompt = ""
-#     if mode == 'search':
-#         valid_commands = ['n', 'm']
-#         prompt = (
-#             f"\nSelect an item (1-{len(title_list)}) to save it, "
-#             f"type 'n' for a new search or 'm' to return to main menu: "
-#         )
-#     elif mode == 'recommendation':
-#         valid_commands = ['m']
-#         prompt = (
-#             f"\nSelect an item (1-{len(title_list)}) to save it "
-#             f"or 'm' to return to main menu: "
-#         )
-#     else:
-#         print("⚠️  Unknown mode. Please use 'search' or 'recommendation'.")
-#         return None
-#     while True:
-#         print(prompt)
-#         command = input("> ").strip().lower()
-#         if command == 'm':
-#             return 'main'
-#         if command == 'n' and mode == 'search':
-#             return None
-#         try:
-#             selection = int(command)
-#             if not 1 <= selection <= len(title_list):
-#                 raise ValueError(
-#                     f'Number out of range. You must choose between 1 and '
-#                     f'{len(title_list)}'
-#                 )
-
-#             chosen_item = title_list[selection - 1]
-
-#             return chosen_item
-
-#         except ValueError as e:
-#             print(f"\n⚠️  Invalid input: {e}. Please enter a number, or"
-#                   f" {', '.join(valid_commands)}.")
-
-
 def select_item_from_results(title_list, mode):
     """
     Allows user to select a title or view more info from the results list
