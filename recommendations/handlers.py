@@ -6,7 +6,6 @@ watchlist, or full history.
 """
 from tmdb.tmdb import (
     TMDB_API_KEY,
-    fetch_trending_titles,
     fetch_title_base_recommendation
     )
 from models.title import (
@@ -18,11 +17,12 @@ from sheets.query import (
 from sheets.utils import build_title_objects_from_sheet
 from utils.utils import sort_items_by_popularity
 from ui.display import display_title_entries
-from .display import display_and_select_title
 from .utils import (
     get_top_title_by_preferred_genre,
     get_personalized_recommendations
     )
+from .trending import show_trending_titles
+from .display import display_and_select_title
 
 
 def handle_no_items(google_sheet, mode):
@@ -41,12 +41,8 @@ def handle_no_items(google_sheet, mode):
     """
     print("\nYour list is looking a little empty.")
     print("Check out what's trending and find something that sparks your interest!")
-    trending_results = fetch_trending_titles(TMDB_API_KEY)
-    if not trending_results:
-        print("\n⚠️  Unable to fetch trending titles. Please try again later.")
-        return
-    trending_title_objects = prepare_title_objects_from_tmdb(trending_results)
-    display_and_select_title(trending_title_objects, mode, google_sheet)
+    show_trending_titles(google_sheet, mode)
+
 
 def handle_no_watched_items(google_sheet):
     """

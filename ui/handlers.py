@@ -3,7 +3,6 @@ Handles actions triggered by user interactions.
 
 Includes search, selection, rating, watch status toggling, and deletion.
 """
-
 from tmdb.tmdb import fetch_tmdb_results, TMDB_API_KEY
 from models.title import (
     prepare_title_objects_from_tmdb
