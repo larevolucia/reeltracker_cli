@@ -77,7 +77,10 @@ def handle_list_menu(title_list, list_type):
         command (str): user action
         title (obj): selected title, or None if user exits.
     """
-    valid_actions = set(menus[list_type]['options'].keys()) - {'m'}
+    valid_actions = {
+        key.split()[0] for key in menus[list_type]['options'].keys()
+        if key != 'm'
+    }
 
     while True:
         display_menu(list_type)
