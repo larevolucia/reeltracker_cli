@@ -91,7 +91,7 @@ def update_item_in_list(sheet, title_obj):
         for cell, value in updates:
             worksheet.update(cell, [[value]])
 
-        print(f"\n✅ {title_obj.metadata.title} updated successfully ({len(updates)} changes).")
+        print(f"\n✅ {title_obj.metadata.title} updated successfully.")
         return 'updated'
 
     # If not found, just add it
