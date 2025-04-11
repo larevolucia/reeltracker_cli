@@ -83,7 +83,7 @@ def select_item_from_results(title_list, mode):
     valid_actions = {'i'}
     while True:
         display_menu(menu_key)
-        print("\nEnter a command like '1', 'i 2', or 'm':")
+        print("\nEnter a command like '1', 'i 2', or 'm'")
         if mode == "search":
             print("You can also type 'n' to start a new search.")
 

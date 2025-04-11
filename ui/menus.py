@@ -34,17 +34,17 @@ menus = {
     "watchlist": {
         "title": "Manage Watchlist:",
         "options": {
-            "w": "Mark as watched and rate",
-            "d": "Delete title",
+            "w <number>": "Mark as watched and rate",
+            "d <number>": "Delete title",
             "m": "Return to main menu"
         }
     },
     "watched": {
         "title": "Manage Watched Titles:",
         "options": {
-            "r": "Change rating",
-            "w": "Move to watchlist",
-            "d": "Delete title",
+            "r <number>": "Change rating",
+            "w <number>": "Move to watchlist",
+            "d <number>": "Delete title",
             "m": "Return to main menu"
         }
     },
@@ -81,7 +81,8 @@ def handle_list_menu(title_list, list_type):
 
     while True:
         display_menu(list_type)
-        print("\nEnter a command like 'd 2' or 'w 1':")
+        print("\nEnter a command like 'd 2' or 'w 1'")
+        print("You can also type 'm' to go back to main menu.")
         command = input("> ").strip().lower()
 
         if command == 'm':
