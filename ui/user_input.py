@@ -57,7 +57,7 @@ def get_title_rating(title_obj):
             f'Select a number from 1-5: ')
         command = input("> ").strip()
         if not command.isdigit():
-            print("\n⚠️ Invalid input: Please enter a whole number.")
+            print("\n⚠️  Invalid input: Please enter a whole number.")
             continue
 
         rating = int(command)
@@ -66,7 +66,7 @@ def get_title_rating(title_obj):
             print(f"\n🔄 Saving {title_obj.metadata.title} rating...")
             return title_obj
         except ValueError as e:
-            print(f"\n⚠️ Invalid input: {e}")
+            print(f"\n⚠️  Invalid input: {e}")
 
 def select_item_from_results(title_list, mode):
     """
