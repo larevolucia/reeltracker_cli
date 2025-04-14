@@ -17,7 +17,7 @@ from sheets.query import (
 from sheets.utils import build_title_objects_from_sheet
 from utils.utils import sort_items_by_popularity
 from ui.display import display_title_entries
-from .utils import (
+from .smart_recs import (
     get_top_title_by_preferred_genre,
     get_personalized_recommendations
     )

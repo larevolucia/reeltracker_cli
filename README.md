@@ -170,9 +170,13 @@ The codebase is structured in modules by responsibility. This improves readabili
 ├── recommendations/            # Title recommendation system
 │   ├── __init__.py
 │   ├── display.py              # Displays recommendations in the UI
+│   ├── filters.py              # Functions for filtering titles
+│   ├── gemre_analysis.py       # Genre preference and similarity
 │   ├── handlers.py             # Handles recommendation logic (user actions, data routing)
-│   ├── utils.py                # Helper functions for recommendations
-│   └── recommendations.py      # Generates and manages recommendations
+│   ├── recommendations.py      # Generates and manages recommendations
+│   ├── smart_recs.py           # Logic for personalized recommendations
+│   ├── trending.py             # Handles fetching and displaying trending titles for recommendations
+│   └── utils.py                # Helper functions for sorting recommended titles
 
 ├── sheets/                     # Google Sheets integration
 │   ├── __init__.py
@@ -201,8 +205,6 @@ The codebase is structured in modules by responsibility. This improves readabili
 │   ├── search_1.png            # Screenshot demonstrating search functionality
 │   ├── watched_1.png           # Screenshot demonstrating watched list feature
 │   └── ...                     # Additional documentation files and assets
-
-
 ```
 
 #### Classes Overview
