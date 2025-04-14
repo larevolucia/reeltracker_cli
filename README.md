@@ -51,9 +51,21 @@ Titles Data available for read at [Google Sheets](https://docs.google.com/spread
 The following features were *originally planned* but were not implemented in this phase due to a shift in priorities. Instead, we focused on *enhancing the user experience* by:
 
 - Introducing [See title details](https://github.com/larevolucia/reeltracker_cli/issues/16)
-- Handling recommendations edge cases:
+- Handling [recommendations edge cases](https://github.com/larevolucia/reeltracker_cli/issues/11):
   - [No title rated 3+]
   - [List have only few items]
+  - [Tie on preferred genre by frequency]
+  - [No item in list matched preferred genre]
+
+### Features Not Implemented:
+
+#### Categorize your watchlist
+- [As a user, I want to categorize my watchlist into sublists (e.g. “Must Watch”, “For Later”) so that I can organize my movies better.](https://github.com/larevolucia/reeltracker_cli/issues/13)
+  _This feature was *deprioritized* in favor of [See title details](https://github.com/larevolucia/reeltracker_cli/issues/16), which provide more information for user about the titles._
+
+#### Random Movie Suggestion
+- [As a user, I want to receive random movie suggestions so that I can easily pick what to watch next.](https://github.com/larevolucia/reeltracker_cli/issues/12) 
+  _This feature was *deprioritized* in favor of [recommendations edge cases](https://github.com/larevolucia/reeltracker_cli/issues/11), which ensures coherent feedback to user and better recommendations._
 
 ## Features
 
@@ -94,8 +106,33 @@ Related user story:  [#6 Remove a title from lists](https://github.com/larevoluc
 ![Delete action](documentation/delete.png)
 
 #### Title recommendations
+The system analyzes genre patterns from previously watched content, identifies top-rated titles (ratings ≥ 3), and sorts the watchlist based on genre similarity and media type preference. This allows users to receive tailored suggestions that reflect their actual taste—not generic trends or ads.
+Related user stories:[#9 Rate watched title](https://github.com/larevolucia/reeltracker_cli/issues/9), [#11 Get recommendations](https://github.com/larevolucia/reeltracker_cli/issues/11)
+
+##### Recommmendation workflow
+1. **Analyze viewing history** 
+Titles with a rating of 3 or above are analyzed to detect a preferred genre based on frequency or rating-weighted frequency. 
+
+2. **Sort the watchlist** 
+Titles in the user’s watchlist are sorted based on: 
+- Genre similarity to top-rated items 
+- Media type preference (TV or movie) 
+- Popularity scores from TMDb
+
+3. **Show personalized list**
+The user sees a ranked list of recommended titles based on their viewing habits.
+
+4. **Handle edge cases**
+When recommendations cannot be generated due to lack of data, the system will:
+- No rated titles (3+) → Fetch suggestions using TMDb's discovery API based on metadata of titles in list
+- Only 1–3 items in watchlist → Warn user that results may lack accuracy
+- Tied genre frequency → Use rating as tie-breaker
+- No matches in watchlist → Fetch suggestions using genre and media type habits
 
 #### See what's trending
+Allows users to explore trending titles based on real-time popularity data from The Movie Database (TMDb). This feature is especially useful when users are just getting started or looking for something new outside of their personal watchlist. 
+Trending titles are also shown when for recommendation flows where the user has no titles in their watchlist or viewing history.
+Related user story:[#10 See what's trending](https://github.com/larevolucia/reeltracker_cli/issues/10)
 
 ### 📁 Data Storage & Sync
 
