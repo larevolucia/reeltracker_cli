@@ -114,6 +114,48 @@ def fetch_title_base_recommendation(
         print("\n⚠️  Could not connect to TMDb. Please try again later.")
         return []
 
+# def fetch_titles_by_genre(
+#     media_type,
+#     genres,
+#     api_key=TMDB_API_KEY,
+#     page=1,
+#     language=DEFAULT_LANGUAGE
+#     ):
+#     """
+#     Fetches titles that matches genre and media type on TMDB
+
+#     Args:
+#         media_type (str): identifier of media type ('movie', 'tv')
+#         genres (str, optional): list of genre_ids
+#         api_key (str, optional): authentication API key. Defaults to TMDB_API_KEY.
+#         page (int, optional): number of response pages. Defaults to 1
+#         language (str, optional): response language. Defaults to DEFAULT_LANGUAGE
+
+#     Returns:
+#         _type_: _description_
+#     """
+
+#     url = f'{TMDB_URL}/discover/{media_type}'
+
+#     params = {
+#         "api_key": api_key,
+#         'language': language,
+#         'page': page,
+#         # 'with_genres': genres
+#     }
+#     try:
+#         print(f"🔎 Fetching fallback titles from: {url} |"
+#               f" genre_id={genres} | media_type={media_type}")
+
+#         response = requests.get(url, params=params, timeout=10)
+#         print("Full URL:", response.url)
+#         response.raise_for_status()
+#         data = response.json()
+#         return data.get('results', [])
+#     except requests.RequestException as e:
+#         print(f"\n⚠️  Could not connect to TMDb: {e}")
+#         return []
+
 # --- Genre Mapping---
 
 def get_genre_mapping(media_type, api_key):

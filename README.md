@@ -43,9 +43,17 @@ Titles Data available for read at [Google Sheets](https://docs.google.com/spread
 ### Could Have
 - [As a user, I want to see trending/popular titles so that I can explore new content.](https://github.com/larevolucia/reeltracker_cli/issues/10)
 - [As a user, I want to get recommendations based on my ratings so that I can discover similar movies.](https://github.com/larevolucia/reeltracker_cli/issues/11)
-- [As a user, I want to receive random movie suggestions so that I can easily pick what to watch next.](https://github.com/larevolucia/reeltracker_cli/issues/12)
-- [As a user, I want to categorize my watchlist into sublists (e.g. “Must Watch”, “For Later”) so that I can organize my movies better.](https://github.com/larevolucia/reeltracker_cli/issues/13)
+- [As a user, I want to receive random movie suggestions so that I can easily pick what to watch next.](https://github.com/larevolucia/reeltracker_cli/issues/12) _(Not implemented – see backlog)_
+- [As a user, I want to categorize my watchlist into sublists (e.g. “Must Watch”, “For Later”) so that I can organize my movies better.](https://github.com/larevolucia/reeltracker_cli/issues/13) _(Not implemented – see backlog)_
 
+## Backlog
+
+The following features were *originally planned* but were not implemented in this phase due to a shift in priorities. Instead, we focused on *enhancing the user experience* by:
+
+- Introducing [See title details](https://github.com/larevolucia/reeltracker_cli/issues/16)
+- Handling recommendations edge cases:
+  - [No title rated 3+]
+  - [List have only few items]
 
 ## Features
 
@@ -84,6 +92,10 @@ Users can delete a title from the lists.
 Related user story:  [#6 Remove a title from lists](https://github.com/larevolucia/reeltracker_cli/issues/6)
 
 ![Delete action](documentation/delete.png)
+
+#### Title recommendations
+
+#### See what's trending
 
 ### 📁 Data Storage & Sync
 

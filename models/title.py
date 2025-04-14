@@ -115,9 +115,14 @@ class Title:
             obj: reconstructed Title object
         """
         genre_ids = [
-        int(g.strip()) for g in row.get('genre_ids', '').split(',')
+        int(g.strip()) for g in str(row.get('genre_ids', '')).split(',')
         if g.strip().isdigit()
         ] if row.get('genre_ids') else []
+
+        # genre_ids = [
+        # int(g.strip()) for g in row.get('genre_ids', '').split(',')
+        # if g.strip().isdigit()
+        # ] if row.get('genre_ids') else []
 
         genres = [
         g.strip() for g in row.get('genres', '').split(',')
@@ -140,7 +145,7 @@ class Title:
         obj.user_data = user_data
         return obj
 
-def prepare_title_objects_from_tmdb(api_results):
+def prepare_title_objects_from_tmdb(api_results, skip_filter=False):
     """
     Filters, sorts, and converts TMDB api results into Title objects
 
@@ -150,12 +155,13 @@ def prepare_title_objects_from_tmdb(api_results):
     Returns:
         list[Title]: List of Title objects ready to display
     """
-    filtered_results = filter_results_by_media_type(api_results)
-    if not filtered_results:
+    results = api_results if skip_filter else filter_results_by_media_type(api_results)
+    
+    if not results:
         return []
-    for result in filtered_results:
+    for result in results:
         weighted_popularity = calculate_weighted_popularity(result)
         result['weighted_popularity'] = weighted_popularity
-    sorted_results = sort_items_by_popularity(filtered_results)
+    sorted_results = sort_items_by_popularity(results)
     title_objects = [Title(result) for result in sorted_results]
     return title_objects

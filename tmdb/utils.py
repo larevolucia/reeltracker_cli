@@ -19,6 +19,8 @@ def get_genre_names_from_ids(genre_ids, media_type):
     Returns:
         matched_names (list): list of genre names
     """
+    if not isinstance(genre_ids, list):
+        raise TypeError("genre_ids must be a list of integers")
     genre_list = get_genre_mapping(media_type, TMDB_API_KEY)
     genre_dict = {genre['id']: genre['name'] for genre in genre_list}
     matched_genres = [genre_dict.get(genre_id) for genre_id in genre_ids if genre_id in genre_dict]

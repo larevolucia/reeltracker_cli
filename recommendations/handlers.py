@@ -24,7 +24,6 @@ from .utils import (
 from .trending import show_trending_titles
 from .display import display_and_select_title
 
-
 def handle_no_items(google_sheet):
     """
     Handle case when the user has no titles in their list
@@ -41,7 +40,6 @@ def handle_no_items(google_sheet):
     print("\nYour list is looking a little empty.")
     print("Check out what's trending and find something that sparks your interest!")
     show_trending_titles("trending", google_sheet)
-
 
 def handle_no_watched_items(google_sheet):
     """
