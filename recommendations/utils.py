@@ -203,46 +203,6 @@ def get_top_title_by_preferred_genre(title_objects):
 
     return get_top_title(titles_in_genre)
 
-# def get_personalized_recommendations(watched_titles, watchlist_titles):
-#     """
-#     Generate personalized recommendations from watchlist
-
-#     Uses the user's top-rated watched titles to determine a preferred genre,
-#     then sorts watchlist titles by genre and media type matches
-
-#     Args:
-#         watched_titles (list): titles marked as watched
-#         watchlist_titles (list): titles marked as watchlist
-
-#     Returns:
-#         list: personalized and sorted recommendation list
-#     """
-#     top_rated_titles = get_top_rated_titles(watched_titles)
-#     if not top_rated_titles:
-#         print("\nNo title rated above 2...")
-#         media_type, genre_id = get_preferred_media_type_and_genre_ids(watched_titles)
-#         discover_results = fetch_titles_by_genre(media_type, genre_id)
-#         discover_titles_objects = prepare_title_objects_from_tmdb(discover_results, True)
-#         return discover_titles_objects
-#     preferred_genre = get_preferred_genre(top_rated_titles)
-#     top_title = get_top_title_by_preferred_genre(top_rated_titles)
-#     if not top_title or not hasattr(top_title, "metadata"):
-#         print("\n⚠️  Unable to generate personalized recommendations.")
-#         return []
-#     print(f"\nYou've been watching {preferred_genre} titles, such as {top_title.metadata.title}!")
-#     print("\n🔄 Generating recommendations based on viewing history...")
-#     top_title_media_type = top_title.metadata.media_type
-#     titles_matching_genre = filter_list_by_genre(watchlist_titles, preferred_genre)
-#     relevance_sorted_titles = sort_titles_by_relevance(
-#         titles_matching_genre, "watchlist", top_title)
-#     match_media_type_titles, non_match_media_type_titles = partition_list_by_media_type(
-#         relevance_sorted_titles,
-#         top_title_media_type
-#         )
-#     concatenated_titles = match_media_type_titles + non_match_media_type_titles
-#     return concatenated_titles
-
-
 def get_personalized_recommendations(watched_titles, watchlist_titles, google_sheet):
     """
     Generate personalized recommendations from watchlist
