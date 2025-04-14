@@ -145,7 +145,7 @@ class Title:
         obj.user_data = user_data
         return obj
 
-def prepare_title_objects_from_tmdb(api_results, skip_filter=False):
+def prepare_title_objects_from_tmdb(api_results, skip_filter=False, known_media_type=None):
     """
     Filters, sorts, and converts TMDB api results into Title objects
 
@@ -156,12 +156,14 @@ def prepare_title_objects_from_tmdb(api_results, skip_filter=False):
         list[Title]: List of Title objects ready to display
     """
     results = api_results if skip_filter else filter_results_by_media_type(api_results)
-    
+
     if not results:
         return []
     for result in results:
         weighted_popularity = calculate_weighted_popularity(result)
         result['weighted_popularity'] = weighted_popularity
+        if 'media_type' not in result or result['media_type'] == 'Unknown':
+            result['media_type'] = known_media_type
     sorted_results = sort_items_by_popularity(results)
     title_objects = [Title(result) for result in sorted_results]
     return title_objects

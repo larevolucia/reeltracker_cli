@@ -129,7 +129,8 @@ def handle_watched_and_watchlist(google_sheet, mode):
     watchlist_titles_objects = build_title_objects_from_sheet(watchlist_titles)
     recommendation_list = get_personalized_recommendations(
         watched_titles_objects,
-        watchlist_titles_objects
+        watchlist_titles_objects,
+        google_sheet
         )
     if recommendation_list:
         display_title_entries(recommendation_list, mode, 6)

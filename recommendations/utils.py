@@ -5,7 +5,12 @@ Includes logic for genre detection, similarity scoring, and sorting by
 relevance or popularity.
 """
 from collections import defaultdict
-# from .trending import show_trending_titles
+from tmdb.tmdb import discover_titles_by_genre
+from models.title import (
+    prepare_title_objects_from_tmdb
+)
+from .display import display_and_select_title
+
 # --- Filtering ---
 def get_top_rated_titles(title_list):
     """
@@ -29,7 +34,7 @@ def get_preferred_media_type_and_genre_ids(title_list):
         title_list (list): List of Title objects
 
     Returns:
-        tuple [str, str]: (preferred_media_type, preferred_genre_name)
+        tuple [str, str]: (preferred_media_type, preferred_genre_ic)
     """
     media_type_genre_count = defaultdict(int)
 
@@ -43,7 +48,7 @@ def get_preferred_media_type_and_genre_ids(title_list):
             for genre_id in genre_ids:
                 media_type_genre_count[(media_type, genre_id)] += 1
     if not media_type_genre_count:
-        print("⚠️ No media types / genre_ids paris found.")
+        print("⚠️ No media types / genre_ids pairs found.")
         return None
 
     preferred_pair = max(media_type_genre_count, key=media_type_genre_count.get)
@@ -238,7 +243,7 @@ def get_top_title_by_preferred_genre(title_objects):
 #     return concatenated_titles
 
 
-def get_personalized_recommendations(watched_titles, watchlist_titles):
+def get_personalized_recommendations(watched_titles, watchlist_titles, google_sheet):
     """
     Generate personalized recommendations from watchlist
 
@@ -254,22 +259,52 @@ def get_personalized_recommendations(watched_titles, watchlist_titles):
     """
     top_rated_titles = get_top_rated_titles(watched_titles)
 
-    # if not top_rated_titles:
-    #    return handle_no_top_rated(watched_titles)
+    if not top_rated_titles:
+        title_list = watched_titles + watchlist_titles
+        return handle_no_top_rated(title_list, google_sheet)
+    else:
+        return generate_recommendations_from_history(top_rated_titles, watchlist_titles)
 
-    return generate_recommendations_from_history(top_rated_titles, watchlist_titles)
+def handle_no_top_rated(title_list, google_sheet):
+    """
+    Fallback recommendations when no top-rated titles exists
+    
+    Analyze all titles in list to determine media_type and genre preference,
+    then uses discover API to fetch recommendations
 
-# def handle_no_top_rated(watched_titles):
-#     print("\nNo title rated above 2...")
-    # media_type, genre_id = get_preferred_media_type_and_genre_ids(watched_titles)
-    # discover_results = fetch_titles_by_genre(media_type, genre_id)
-    # if not discover_results:
-    #     print("Couldn't connect to TMDB for recommendations")
-    #     return None
-    # return prepare_title_objects_from_tmdb(discover_results, True)
+    Args:
+        title_list (list): Combined list of watched an watchlist
+        google_sheet (obj): Initialized Google Sheet
+
+    Returns:
+        list: Recommended list based on preferences
+    """
+    print("\nIt seems like you didn't find any title you liked yet.")
+    print("\n🔄 Analyzing all titles in your list...")
+    media_type, genre_id = get_preferred_media_type_and_genre_ids(title_list)
+    print(f"\n🔄 Fetching discover titles based on {media_type} preference...")
+    discover_results = discover_titles_by_genre(media_type, genre_id)
+    if not discover_results:
+        print("\n⚠️  Unable to fetch discover titles. Please try again later.")
+        return []
+    discover_titles_objects = prepare_title_objects_from_tmdb(discover_results, True, media_type)
+    return display_and_select_title(discover_titles_objects, 'recommendation', google_sheet)
 
 
 def generate_recommendations_from_history(top_rated_titles, watchlist_titles):
+    """
+    Recommed titles based on user's viewing history
+    
+    Determine prgenre and preference and filters/sorts watchlist
+    based on similarity to user's top-rated content
+
+    Args:
+        top_rated_titles (list): Titles user rated 3 or above
+        watchlist_titles (list): titles in user's watchlist
+
+    Returns:
+        list: Sorted list of recommended titles based on viewing history
+    """
     preferred_genre = get_preferred_genre(top_rated_titles)
     top_title = get_top_title_by_preferred_genre(top_rated_titles)
 
@@ -291,5 +326,15 @@ def generate_recommendations_from_history(top_rated_titles, watchlist_titles):
 
 
 def reorder_titles_by_media_type(titles, preferred_media_type):
+    """
+    Reorder titles by prioritizing the preferred_media_type
+
+    Args:
+        titles (list): List of title objects to order
+        preferred_media_type (str): preferred media type ('movie' or 'tv')
+
+    Returns:
+        list: Reordered list of titles with preferred media_type first
+    """
     match, non_match = partition_list_by_media_type(titles, preferred_media_type)
     return match + non_match
