@@ -111,7 +111,8 @@ def generate_recommendations_from_history(top_rated_titles, watchlist_titles):
         print("\n⚠️  Unable to generate personalized recommendations.")
         return []
 
-    print(f"\nYou've been watching {preferred_genre} titles, such as {top_title.metadata.title}!")
+    print(f"\nYou've been watching {preferred_genre.lower()} titles, "
+          f"such as '{top_title.metadata.title}'!")
     print("\n🔄 Generating recommendations based on genre similarity...")
 
     top_title_media_type = top_title.metadata.media_type
