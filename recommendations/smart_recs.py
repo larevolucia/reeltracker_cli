@@ -57,6 +57,12 @@ def get_personalized_recommendations(watched_titles, watchlist_titles, google_sh
     Returns:
         list: personalized and sorted recommendation list
     """
+    if len(watched_titles) <= 3:
+        print("\n⚠️  Your viewing history is still quite limited.")
+        print("   The more you watch and rate, the better the recommendations!")
+    if len(watchlist_titles) <= 3:
+        print("\n⚠️  You only have a few titles in your watchlist.")
+        print("   Recommendations may be limited. Consider adding more!")
     top_rated_titles = get_top_rated_titles(watched_titles)
 
     if not top_rated_titles:
