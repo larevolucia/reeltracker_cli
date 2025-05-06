@@ -535,7 +535,7 @@ ReelTracker CLI was manually tested throughout development to ensure a smooth us
 |-----------|----------|------------------|--------|
 | Invalid index (e.g. `9` in a list of 3) | Index out of range | Error message + retry prompt | ✅ |
 | TMDb API failure | Force invalid key | Error message shown, app continues | ✅ |
-| Missing Google Sheet | Wrong sheet name | Descriptive error and exit | ✅ |
+| Missing Google Sheet | No matching sheet name | Descriptive error and exit | ✅ |
 
 ### 🛠️ Code Validation
 - All code passed [PEP8](https://www.python.org/dev/peps/pep-0008/) validation using `flake8`
@@ -546,6 +546,7 @@ ReelTracker CLI was manually tested throughout development to ensure a smooth us
 - [Issue #15](https://github.com/larevolucia/reeltracker_cli/issues/15) App was crashing because title.py is importing functions from utils.py and vice versa. The modular structure of the app was modified to avoid circular imports.
 - [Issue #17](https://github.com/larevolucia/reeltracker_cli/issues/17) If a user has only rated titles 2 or below, the recommendation will crash the application. To mitigate this, we provided a feedback to the user that the data was not suficient. 
 - [Issue #18](https://github.com/larevolucia/reeltracker_cli/issues/18) Display of recommendation list for specific use case (no watched titles) was not sorting the titles by popularity. The issue was caused due to an attempt to reuse the function originally created to sort TMDb lists to sort Google Sheets list. Some refactoring was required for the function to work as expected.
+- [Issue #19](https://github.com/larevolucia/reeltracker_cli/issues/19) Edge case testing: sheet is renamed or deleted in the Drive in the middle of an action. Since the app was only handling exceptions for save item, the app would crash in these cases. Although is an edge case, it also improves overall error handling for update and delete items functions.
 
 ## References
 
