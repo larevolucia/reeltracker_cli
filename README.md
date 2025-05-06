@@ -526,7 +526,8 @@ ReelTracker CLI was manually tested throughout development to ensure a smooth us
 | Request recs (no items) | Empty list | Fallback to TMDb trending titles | ✅ |
 | Request recs (no watched) | Only watchlist titles | Display watchlist items in popularity order | ✅ |
 | Request recs (no watchlist) | Only watched titles | Fetch top title and fetch similar titles on TMDb | ✅ |
-| Request recs (no rating) | No ratings ≥3 | Fallback to TMDb discovery results |  ❌ Couldn't determine favorite title |
+| Request recs (no rating) | No ratings ≥3 / 1 watchlist | Fallback to TMDb discovery results |  ✅ |
+| Request recs (no rating) | No ratings ≥3 / no watchlist | Fallback to TMDb trending results |  ✅ |
 | Request recommendations | Enough data present | Sorted personalized list shown |  |
 
 ### ⚠️ Edge Case & Error Handling

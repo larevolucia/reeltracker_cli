@@ -88,6 +88,8 @@ def handle_no_watchlist_items(google_sheet, mode):
     top_title = get_top_title_by_preferred_genre(title_objects)
     if not top_title or not hasattr(top_title, "metadata"):
         print("\n⚠️  Couldn't determine a favorite title to base recommendations on.")
+        print("\nMaybe you need some inspiration...")
+        show_trending_titles('trending', google_sheet)
         return
     print(f"\nYou've recently liked '{top_title.metadata.title}'. "
           "Here are some titles you might also like...")
