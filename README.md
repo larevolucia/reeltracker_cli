@@ -71,6 +71,11 @@ The following features were *originally planned* but were not implemented in thi
 
 ### 🎯 Core Functionality
 
+#### User Flow Overview
+The diagram below illustrates how users interact with the core features of the ReelTracker CLI.
+
+![Reeltracker Flowchart](documentation/reeltracker_flowcharts.png)
+
 #### Search titles via TMDb API
 
 Users can search for movies or TV shows by keyword. The app returns results from The Movie Database (TMDb) API, including title, type, release year, and a short overview.
@@ -109,27 +114,7 @@ Related user story:  [#6 Remove a title from lists](https://github.com/larevoluc
 The system analyzes genre patterns from previously watched content, identifies top-rated titles (ratings ≥ 3), and sorts the watchlist based on genre similarity and media type preference. This allows users to receive tailored suggestions that reflect their actual taste—not generic trends or ads.
 Related user stories:[#9 Rate watched title](https://github.com/larevolucia/reeltracker_cli/issues/9), [#11 Get recommendations](https://github.com/larevolucia/reeltracker_cli/issues/11)
 
-##### Recommmendation workflow
-1. **Analyze viewing history** 
-Titles with a rating of 3 or above are analyzed to detect a preferred genre based on frequency or rating-weighted frequency. 
-
-2. **Sort the watchlist** 
-Titles in the user’s watchlist are sorted based on: 
-- Genre similarity to top-rated items 
-- Media type preference (TV or movie) 
-- Popularity scores from TMDb
-
-3. **Show personalized list**
-The user sees a ranked list of recommended titles based on their viewing habits.
-
-4. **Handle edge cases**
-When recommendations cannot be generated due to lack of data, the system will:
-- No rated titles (3+) → Fetch suggestions using TMDb's discovery API based on metadata of titles in list
-- Only 1–3 items in watchlist → Warn user that results may lack accuracy
-- Tied genre frequency → Use rating as tie-breaker
-- No matches in watchlist → Fetch suggestions using genre and media type habits
-
-#### See what's trending
+##### See what's trending
 Allows users to explore trending titles based on real-time popularity data from The Movie Database (TMDb). This feature is especially useful when users are just getting started or looking for something new outside of their personal watchlist. 
 Trending titles are also shown when for recommendation flows where the user has no titles in their watchlist or viewing history.
 Related user story:[#10 See what's trending](https://github.com/larevolucia/reeltracker_cli/issues/10)
@@ -154,6 +139,26 @@ Consulted references:
 - [Python Math](https://docs.python.org/3/library/math.html)
 - [W3School sorted( )](https://www.w3schools.com/python/ref_func_sorted.asp)
 - [FreeCodeCamp lambda sort list in Python](https://www.freecodecamp.org/news/lambda-sort-list-in-python/)
+
+#### Recommmendation workflow
+1. **Analyze viewing history** 
+Titles with a rating of 3 or above are analyzed to detect a preferred genre based on frequency or rating-weighted frequency. 
+
+2. **Sort the watchlist** 
+Titles in the user’s watchlist are sorted based on: 
+- Genre similarity to top-rated items 
+- Media type preference (TV or movie) 
+- Popularity scores from TMDb
+
+3. **Show personalized list**
+The user sees a ranked list of recommended titles based on their viewing habits.
+
+4. **Handle edge cases**
+When recommendations cannot be generated due to lack of data, the system will:
+- No rated titles (3+) → Fetch suggestions using TMDb's discovery API based on metadata of titles in list
+- Only 1–3 items in watchlist → Warn user that results may lack accuracy
+- Tied genre frequency → Use rating as tie-breaker
+- No matches in watchlist → Fetch suggestions using genre and media type habits
 
 ### 🛡️ Error Handling 
 
@@ -471,9 +476,9 @@ When you create the app, you will need to add two buildpacks from the _Settings_
 2. `heroku/nodejs`
 
 ### Config Var
-You must then create a _Config Var_ called `PORT`. Set this to `8000`
-You must then create a _Config Var_ called `CREDS`. Copy&Paste your `creds.json` file contents.
-You must then create a _Config Var_ called `TMDB_API_KEY`. Copy&Paste your API Key value.
+- You must then create a _Config Var_ called `PORT`. Set this to `8000`
+- You must then create a _Config Var_ called `CREDS`. Copy&Paste your `creds.json` file contents.
+- You must then create a _Config Var_ called `TMDB_API_KEY`. Copy&Paste your API Key value.
 
 Connect your GitHub repository and deploy.
 
