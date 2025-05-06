@@ -38,6 +38,8 @@ def sort_items_by_popularity(items):
     Returns:
         list: Sorted list by descending popularity
     """
+    for item in items:
+        print(f"{getattr(item, 'metadata', item).title}: {get_popularity(item)}")
     return sorted(items, key=get_popularity, reverse=True)
 
 # --- Popularity ---
@@ -52,17 +54,26 @@ def get_popularity(item):
     Returns:
         popularity (float): popularity score
     """
+    # Handle dicts from TMDb or sheets
     if isinstance(item, dict):
-        return item.get('weighted_popularity') or item.get('popularity', 0)
-    # Fall back to .popularity (which is a string in Title)
-    raw_value = getattr(item, 'weighted_popularity', None)
-    if raw_value is None:
-        raw_value = getattr(item, 'popularity', '0')
-    try:
-        return float(raw_value)
-    except (ValueError, TypeError):
-        return 0
+        val = item.get('weighted_popularity') or item.get('popularity', 0)
+    else:
+        # Handle Title object with .metadata
+        metadata = getattr(item, 'metadata', None)
+        if metadata:
+            val = getattr(metadata, 'weighted_popularity', None)
+            if val is None:
+                val = getattr(metadata, 'popularity', 0)
+        else:
+            val = getattr(item, 'weighted_popularity', None)
+            if val is None:
+                val = getattr(item, 'popularity', 0)
 
+    try:
+        return float(val)
+    except (ValueError, TypeError):
+        print(f"⚠️ Could not convert popularity value: {val}")
+        return 0.0
 def calculate_weighted_popularity(item):
     """
     Calculates weighted popularity based on popularity * log10 vote_count

@@ -485,12 +485,62 @@ Connect your GitHub repository and deploy.
 
 ## Testing
 
-Basic functionality can be tested by running the CLI locally and performing operations like:
+ReelTracker CLI was manually tested throughout development to ensure a smooth user experience and correct behavior. Below are the key areas tested:
 
-- Searching for a title
-- Adding it to the watchlist
-- Marking as watched
-- Rating and viewing updated sheet data
+### 🔄 Menu Navigation
+| Test Case | Input | Expected Outcome | Status |
+|-----------|-------|------------------|--------|
+| Launch app | `python run.py` | Main menu displays correctly | ✅ |
+| Invalid menu option | `z` or `10` | Prompt user to try again | ✅ |
+| Back to main menu | `m` | Main menu displays correctly | ✅ |
+
+### 🔍 Search Functionality
+| Test Case | Input | Expected Outcome | Status |
+|-----------|-------|------------------|--------|
+| Valid keyword | `The Office` | TMDb results displayed | ✅ |
+| Empty input | (just Enter) | Prompt for valid input | ✅ |
+| Popular title | `Avatar` | Sorted by relevance/popularity | ✅ |
+| New search | `n` | Request new search prompt | ✅ |
+
+### 🍿 Title Actions
+| Test Case | Input | Expected Outcome | Status |
+|-----------|--------|------------------|--------|
+| More info | i 1 | Details of title 1 | ✅ |
+| Select item | 1 | Promps watch status question for title 1 | ✅ |
+
+### 🎯 Watchlist & Viewing History
+| Test Case | Action | Expected Outcome | Status |
+|-----------|--------|------------------|--------|
+| Empty lists | Open list from main menu | Feedback to user that list is empty | ✅ |
+| Add title to watchlist | Select from search results | Title saved to Watchlist (Google Sheets) | ✅ |
+| Mark as watched | From Watchlist → Mark as watched | Title moved to Viewing History | ✅ |
+| Move back to watchlist | From Viewing History → Move | Rating cleared, added to Watchlist | ✅ |
+| Delete title | From both lists | Item removed from Google Sheet | ✅ |
+| View lists | Watchlist/History menu | Lists load from Google Sheets | ✅ |
+
+### ⭐ Rating & Recommendations
+| Test Case | Action | Expected Outcome | Status |
+|-----------|--------|------------------|--------|
+| Rate title | Input rating 1–5 | Rating saved, impacts recs | ✅ |
+| Invalid rating | Input `goat` or `11` | Prompt to enter number between 1–5 | ✅ |
+| Request recs (no items) | Empty list | Fallback to TMDb trending titles | ✅ |
+| Request recs (no watched) | Only watchlist titles | Display watchlist items in popularity order | ❌ Displayed items in list order |
+| Request recs (no watchlist) | Only watched titles | Fetch top title and fetch similar titles on TMDb | ✅ |
+| Request recs (no rating) | No ratings ≥3 | Fallback to TMDb discovery results |  ❌ Couldn't determine favorite title |
+| Request recommendations | Enough data present | Sorted personalized list shown |  |
+
+### ⚠️ Edge Case & Error Handling
+| Test Case | Scenario | Expected Outcome | Status |
+|-----------|----------|------------------|--------|
+| Invalid index (e.g. `9` in a list of 3) | Index out of range | Error message + retry prompt | ✅ |
+| TMDb API failure | Force invalid key | Error message shown, app continues | ✅ |
+| Missing Google Sheet | Wrong sheet name | Descriptive error and exit | ✅ |
+
+### 🛠️ Code Validation
+- All code passed [PEP8](https://www.python.org/dev/peps/pep-0008/) validation using `flake8`
+- No syntax or runtime errors observed during normal use
+- All credentials and API keys are excluded via `.gitignore` and environment variables
+
 
 ## References
 
