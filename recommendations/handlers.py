@@ -79,6 +79,7 @@ def handle_no_watchlist_items(google_sheet, mode):
         None
     """
     print("\nYou haven't got any titles on your watchlist yet!")
+    print("\n🔄 Analyzing viewing history...")
     watched_titles = get_titles_by_watch_status(google_sheet, True)
     if not watched_titles:
         print("\n⚠️  Your viewing history is empty.")
@@ -88,7 +89,7 @@ def handle_no_watchlist_items(google_sheet, mode):
     if not top_title or not hasattr(top_title, "metadata"):
         print("\n⚠️  Couldn't determine a favorite title to base recommendations on.")
         return
-    print(f"\nYou've recently liked {top_title.metadata.title}. "
+    print(f"\nYou've recently liked '{top_title.metadata.title}'. "
           "Here are some titles you might also like...")
 
     recommended_titles = fetch_title_base_recommendation(
