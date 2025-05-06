@@ -524,7 +524,7 @@ ReelTracker CLI was manually tested throughout development to ensure a smooth us
 | Rate title | Input rating 1–5 | Rating saved, impacts recs | ✅ |
 | Invalid rating | Input `goat` or `11` | Prompt to enter number between 1–5 | ✅ |
 | Request recs (no items) | Empty list | Fallback to TMDb trending titles | ✅ |
-| Request recs (no watched) | Only watchlist titles | Display watchlist items in popularity order | ❌ Displayed items in list order |
+| Request recs (no watched) | Only watchlist titles | Display watchlist items in popularity order | ✅ |
 | Request recs (no watchlist) | Only watched titles | Fetch top title and fetch similar titles on TMDb | ✅ |
 | Request recs (no rating) | No ratings ≥3 | Fallback to TMDb discovery results |  ❌ Couldn't determine favorite title |
 | Request recommendations | Enough data present | Sorted personalized list shown |  |
@@ -541,6 +541,10 @@ ReelTracker CLI was manually tested throughout development to ensure a smooth us
 - No syntax or runtime errors observed during normal use
 - All credentials and API keys are excluded via `.gitignore` and environment variables
 
+### Bug Fixes
+- [Issue #15](https://github.com/larevolucia/reeltracker_cli/issues/15) App was crashing because title.py is importing functions from utils.py and vice versa. The modular structure of the app was modified to avoid circular imports.
+- [Issue #17](https://github.com/larevolucia/reeltracker_cli/issues/17) If a user has only rated titles 2 or below, the recommendation will crash the application. To mitigate this, we provided a feedback to the user that the data was not suficient. 
+- [Issue #18](https://github.com/larevolucia/reeltracker_cli/issues/18) Display of recommendation list for specific use case (no watched titles) was not sorting the titles by popularity. The issue was caused due to an attempt to reuse the function originally created to sort TMDb lists to sort Google Sheets list. Some refactoring was required for the function to work as expected.
 
 ## References
 

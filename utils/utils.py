@@ -38,8 +38,6 @@ def sort_items_by_popularity(items):
     Returns:
         list: Sorted list by descending popularity
     """
-    for item in items:
-        print(f"{getattr(item, 'metadata', item).title}: {get_popularity(item)}")
     return sorted(items, key=get_popularity, reverse=True)
 
 # --- Popularity ---
@@ -74,6 +72,7 @@ def get_popularity(item):
     except (ValueError, TypeError):
         print(f"⚠️ Could not convert popularity value: {val}")
         return 0.0
+
 def calculate_weighted_popularity(item):
     """
     Calculates weighted popularity based on popularity * log10 vote_count
