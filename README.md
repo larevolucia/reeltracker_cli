@@ -513,8 +513,8 @@ ReelTracker CLI was manually tested throughout development to ensure a smooth us
 |-----------|--------|------------------|--------|
 | Empty lists | Open list from main menu | Feedback to user that list is empty | ✅ |
 | Add title to watchlist | Select from search results | Title saved to Watchlist (Google Sheets) | ✅ |
-| Mark as watched | From Watchlist → Mark as watched | Title moved to Viewing History | ✅ |
-| Move back to watchlist | From Viewing History → Move | Rating cleared, added to Watchlist | ✅ |
+| Mark as watched | From Watchlist → Mark as watched | Title moved to Viewing History with correct rating | ✅ |
+| Move back to watchlist | From Viewing History → Move to watchlist | Rating cleared, added to Watchlist | ✅ |
 | Delete title | From both lists | Item removed from Google Sheet | ✅ |
 | View lists | Watchlist/History menu | Lists load from Google Sheets | ✅ |
 
@@ -538,11 +538,11 @@ ReelTracker CLI was manually tested throughout development to ensure a smooth us
 | Missing Google Sheet | No matching sheet name | Descriptive error and exit | ✅ |
 
 ### 🛠️ Code Validation
-- All code passed [PEP8](https://www.python.org/dev/peps/pep-0008/) validation using `flake8`
+- All code passed [PEP8](https://www.python.org/dev/peps/pep-0008/) validation using `flake8` and `pylint`
 - No syntax or runtime errors observed during normal use
 - All credentials and API keys are excluded via `.gitignore` and environment variables
 
-### Bug Fixes
+### 🪲 Bug Fixes
 - [Issue #15](https://github.com/larevolucia/reeltracker_cli/issues/15) App was crashing because title.py is importing functions from utils.py and vice versa. The modular structure of the app was modified to avoid circular imports.
 - [Issue #17](https://github.com/larevolucia/reeltracker_cli/issues/17) If a user has only rated titles 2 or below, the recommendation will crash the application. To mitigate this, we provided a feedback to the user that the data was not suficient. 
 - [Issue #18](https://github.com/larevolucia/reeltracker_cli/issues/18) Display of recommendation list for specific use case (no watched titles) was not sorting the titles by popularity. The issue was caused due to an attempt to reuse the function originally created to sort TMDb lists to sort Google Sheets list. Some refactoring was required for the function to work as expected.
