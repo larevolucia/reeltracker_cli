@@ -6,6 +6,7 @@ Provides a utility to format sheet rows into usable model instances.
 
 from models import Title
 
+
 def build_title_objects_from_sheet(sheet_rows):
     """
     Takes raw rows from a Google Sheet and transforms each into a Title

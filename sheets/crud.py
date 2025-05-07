@@ -8,6 +8,7 @@ from gspread.exceptions import WorksheetNotFound
 from ui.user_input import confirm_action
 from .query import find_existing_row_info
 
+
 def get_or_create_worksheet(sheet, title='My_List'):
     """
     Safely retrieve the worksheet
@@ -38,10 +39,10 @@ def get_or_create_worksheet(sheet, title='My_List'):
 
 
 def save_item_to_list(sheet, title_obj):
-    """Saves an item to worksheet 
+    """Saves an item to worksheet
 
     Args:
-        sheet (gspread.Spreadsheet): Google sheet name 
+        sheet (gspread.Spreadsheet): Google sheet name
         title_obj (Title): The Title object to save
     """
     # print_json(data=title_obj.to_sheet_row())
@@ -54,6 +55,7 @@ def save_item_to_list(sheet, title_obj):
     worksheet.append_row(title_obj.to_sheet_row())
     print(f"\n✅ {title_obj.metadata.title} successfully written to the sheet.")
 
+
 def delete_item_in_list(sheet, title_obj):
     """
     Finds existing row and delete it from sheet
@@ -62,14 +64,19 @@ def delete_item_in_list(sheet, title_obj):
         sheet (gspread.Spreadsheet): Initialized Google Sheet
         title_obj (obj): Selected Title object
     """
-    if not confirm_action(f"\nAre you sure you want to delete '{title_obj.metadata.title}'"
-                          f" from your list? (y/n): "):
+    if not confirm_action(
+        f"\nAre you sure you want to delete '{title_obj.metadata.title}'"
+        f" from your list? (y/n): "
+                          ):
         print("\n❌ Deletion cancelled.")
         return False
     try:
         worksheet = sheet.worksheet('My_List')
     except WorksheetNotFound:
-        print("\n❌ Could not access your sheet. Could have been deleted or renamed.")
+        print(
+            "\n❌ Could not access your sheet. "
+            "Could have been deleted or renamed."
+            )
         return False
 
     found, row_index, _ = find_existing_row_info(title_obj, sheet)
@@ -80,16 +87,19 @@ def delete_item_in_list(sheet, title_obj):
     print("\n⚠️  Item not found. Nothing was deleted.")
     return False
 
+
 def update_item_in_list(sheet, title_obj):
     """
-    Finds title in Google Sheet 
+    Finds title in Google Sheet
     and replace cells with updated values
 
     Args:
         sheet (gspread.Spreadsheet): Initialized Google Sheet
         title_obj (obj): Selected title
     """
-    if not confirm_action(f"\nDo you want to update '{title_obj.metadata.title}'? (y/n): "):
+    if not confirm_action(
+        f"\nDo you want to update '{title_obj.metadata.title}'? (y/n): "
+    ):
         print("\n❌ Update cancelled.")
         return 'skipped'
     worksheet = get_or_create_worksheet(sheet, 'My_List')

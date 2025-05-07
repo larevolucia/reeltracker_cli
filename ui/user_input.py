@@ -5,13 +5,14 @@ Ensures valid, interactive prompts for various workflows.
 """
 from ui.menus import display_menu, handle_action_with_index
 
+
 def get_user_search_input(prompt="\nSearch a title to get started: "):
     """
     Prompts user input for searching a title. Ensures non-empty input
-    
+
     Args:
         prompt (str): Prompt message presented before input
-    
+
     Returns:
         str: User input string
     """
@@ -22,11 +23,12 @@ def get_user_search_input(prompt="\nSearch a title to get started: "):
             return user_query
         print('\n⚠️  Search cannot be emtpy. Please try again.\n')
 
+
 def get_watch_status(title_obj):
     """
     Promps user to inform if item has already been watched
     and updates object using toggle_watched method
-    
+
     Args:
         title_obj (Title): The Title object to save
     Returns:
@@ -43,6 +45,7 @@ def get_watch_status(title_obj):
             print(f'\n🔄 Marking {title_obj.metadata.title} as not watched...')
             return False
         print("\n⚠️  Invalid input. Please type 'y' for yes or 'n' for no.")
+
 
 def get_title_rating(title_obj):
     """
@@ -68,6 +71,7 @@ def get_title_rating(title_obj):
         except ValueError as e:
             print(f"\n⚠️  Invalid input: {e}")
 
+
 def select_item_from_results(title_list, mode):
     """
     Allows user to select a title or view more info from the results list
@@ -77,9 +81,10 @@ def select_item_from_results(title_list, mode):
         title_list (list[Title]): List of Title objects
         mode (str): 'search' or 'recommendation'
     Returns:
-        Title object | None | 'main': Selected item, request new search, or return to main
+        Title object | None | 'main': Selected item,
+        request new search, or return to main
     """
-    menu_key =  mode
+    menu_key = mode
     valid_actions = {'i'}
     while True:
         display_menu(menu_key)
@@ -96,13 +101,17 @@ def select_item_from_results(title_list, mode):
 
         # Handle commands like 'i 2'
         if ' ' in command:
-            action, index, error = handle_action_with_index(command, valid_actions, len(title_list))
+            action, index, error = handle_action_with_index(
+                command, valid_actions,
+                len(title_list)
+                )
             if error:
                 print(error)
                 continue
             if action == 'i':
                 item = title_list[index]
-                print(f"\nAbout {item.metadata.title} ({item.metadata.release_date}):\n")
+                print(f"\nAbout {item.metadata.title} "
+                      f"({item.metadata.release_date}):\n")
                 print(f"   - Type: {item.metadata.media_type}")
                 print(f"   - Genres: {', '.join(item.metadata.genres)}")
                 print(f"   - Popularity: {item.metadata.popularity}")
@@ -115,20 +124,23 @@ def select_item_from_results(title_list, mode):
             if 1 <= selection <= len(title_list):
                 return title_list[selection - 1]
             else:
-                print(f"\n⚠️  Number out of range. Choose between 1 and {len(title_list)}.")
+                print(f"\n⚠️  Number out of range."
+                      f"Choose between 1 and {len(title_list)}.")
         except ValueError:
-            print("\n⚠️  Invalid input. Try a number, 'i <number>', 'n', or 'm'.")
+            print("\n⚠️  Invalid input. "
+                  "Try a number, 'i <number>', 'n', or 'm'.")
+
 
 def confirm_action(prompt="\nAre you sure you want to proceed? (y/n): "):
     """
     Request user action confirmation
 
     Args:
-        prompt (str, optional): Prompts user for action confirmation. 
+        prompt (str, optional): Prompts user for action confirmation.
             Defaults to "\nAre you sure you want to proceed? (y/n): ".
 
     Returns:
-        (bool): True (confirms) / False 
+        (bool): True (confirms) / False
     """
     while True:
         response = input(prompt).strip().lower()

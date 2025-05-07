@@ -5,6 +5,7 @@ Includes utilities to detect duplicates and retrieve rows by watch status.
 """
 import gspread
 
+
 # --- Content ---
 def check_for_duplicate(title_obj, sheet):
     """
@@ -14,7 +15,7 @@ def check_for_duplicate(title_obj, sheet):
     Args:
         title_obj (Title): The Title instance to check
         sheet (gspread.Spreadsheet): initialized google sheet
-    Returns: 
+    Returns:
         (bool): True (already in list) / False (new item)
     """
     try:
@@ -32,14 +33,16 @@ def check_for_duplicate(title_obj, sheet):
                 if (
                     row[id_index] == str(title_obj.metadata.id) and
                     row[type_index] == title_obj.metadata.media_type
-                    ):
-                    watch_status = 'watched' if row[watched_index] == "True" else 'watchlist'
+                ):
+                    is_watched = row[watched_index] == "True"
+                    watch_status = 'watched' if is_watched else 'watchlist'
                     print(f"\n{title_obj.metadata.title} already in list, "
                           f"marked as {watch_status}.")
                     return True, watch_status
         return False, False
     except gspread.exceptions.WorksheetNotFound:
         return False, False
+
 
 def get_titles_by_watch_status(sheet, watched):
     """
@@ -55,13 +58,17 @@ def get_titles_by_watch_status(sheet, watched):
         worksheet = sheet.worksheet('My_List')
         all_values = worksheet.get_all_records()
 
-        filtered = [row for row in all_values
-                    if str(row.get("is_watched", "")).lower() == str(watched).lower()
-                    ]
+        filtered = [
+            row for row in all_values
+            if str(row.get("is_watched", "")).lower() == str(watched).lower()
+        ]
         return filtered
     except gspread.exceptions.WorksheetNotFound:
-        print("\n❌ No data found. Select 1 to search and add your first title.")
+        print(
+            "\n❌ No data found. Select 1 to search and add your first title."
+            )
         return []
+
 
 def find_existing_row_info(title_obj, sheet):
     """
@@ -90,13 +97,16 @@ def find_existing_row_info(title_obj, sheet):
                 if (
                     row[id_index] == str(title_obj.metadata.id) and
                     row[type_index] == title_obj.metadata.media_type
-                    ):
+                ):
                     return True, i, row
         print(f"\n❌ {title_obj.metadata.title} not found in sheet.")
         return False, None, None
     except gspread.exceptions.WorksheetNotFound:
-        print("\n❌ No data found. Select 1 to search and add your first title.")
+        print(
+            "\n❌ No data found. Select 1 to search and add your first title."
+            )
         return False, None, None
+
 
 # --- Status ---
 def has_items(sheet):
@@ -107,15 +117,18 @@ def has_items(sheet):
         sheet (gspread.Spreadsheet): Initialized Google Sheet
 
     Returns:
-        _bool_: True for list with items 
+        _bool_: True for list with items
     """
     try:
         worksheet = sheet.worksheet('My_List')
         all_values = worksheet.get_all_values()
         return len(all_values) > 1  # >1 because the first row is headers
     except gspread.exceptions.WorksheetNotFound:
-        print("\n❌ No data found. Select 1 to search and add your first title.")
+        print(
+            "\n❌ No data found. Select 1 to search and add your first title."
+            )
         return False
+
 
 def has_watchlist(sheet):
     """
@@ -129,6 +142,7 @@ def has_watchlist(sheet):
         bool: True / False
     """
     return len(get_titles_by_watch_status(sheet, watched=False)) > 0
+
 
 def has_watched(sheet):
     """

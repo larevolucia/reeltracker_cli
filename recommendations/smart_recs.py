@@ -4,7 +4,7 @@ Smart recommendation logic based on user history and preferences
 Implements end-to-end recommendation generation using filtering,
 genre analysis, and TMDb discovery fallback mechanisms when necessary
 """
-from tmdb.tmdb import discover_titles_by_genre
+from tmdb.tmdb_api import discover_titles_by_genre
 from models.title import (
     prepare_title_objects_from_tmdb
 )
@@ -20,6 +20,7 @@ from .filters import (
     filter_list_by_genre
 )
 from .genre_analysis import get_preferred_genre
+
 
 def get_top_title_by_preferred_genre(title_objects):
     """
@@ -43,7 +44,12 @@ def get_top_title_by_preferred_genre(title_objects):
 
     return get_top_title(titles_in_genre)
 
-def get_personalized_recommendations(watched_titles, watchlist_titles, google_sheet):
+
+def get_personalized_recommendations(
+    watched_titles,
+    watchlist_titles,
+    google_sheet
+):
     """
     Generate personalized recommendations from watchlist
 
@@ -59,7 +65,9 @@ def get_personalized_recommendations(watched_titles, watchlist_titles, google_sh
     """
     if len(watched_titles) <= 3:
         print("\n⚠️  Your viewing history is still quite limited.")
-        print("   The more you watch and rate, the better the recommendations!")
+        print(
+            "   The more you watch and rate, the better the recommendations!"
+            )
     if len(watchlist_titles) <= 3:
         print("\n⚠️  You only have a few titles in your watchlist.")
         print("   Recommendations may be limited. Consider adding more!")
@@ -69,12 +77,15 @@ def get_personalized_recommendations(watched_titles, watchlist_titles, google_sh
         title_list = watched_titles + watchlist_titles
         return handle_no_top_rated(title_list, google_sheet)
     else:
-        return generate_recommendations_from_history(top_rated_titles, watchlist_titles)
+        return generate_recommendations_from_history(
+            top_rated_titles,
+            watchlist_titles
+            )
+
 
 def handle_no_top_rated(title_list, google_sheet):
     """
     Fallback recommendations when no top-rated titles exists
-    
     Analyze all titles in list to determine media_type and genre preference,
     then uses discover API to fetch recommendations
 
@@ -93,13 +104,21 @@ def handle_no_top_rated(title_list, google_sheet):
     if not discover_results:
         print("\n⚠️  Unable to fetch discover titles. Please try again later.")
         return []
-    discover_titles_objects = prepare_title_objects_from_tmdb(discover_results, True, media_type)
-    return display_and_select_title(discover_titles_objects, 'recommendation', google_sheet)
+    discover_titles_objects = prepare_title_objects_from_tmdb(
+        discover_results,
+        True,
+        media_type
+        )
+    return display_and_select_title(
+        discover_titles_objects,
+        'recommendation',
+        google_sheet
+        )
+
 
 def generate_recommendations_from_history(top_rated_titles, watchlist_titles):
     """
     Recommed titles based on user's viewing history
-    
     Determine prgenre and preference and filters/sorts watchlist
     based on similarity to user's top-rated content
 
@@ -124,11 +143,20 @@ def generate_recommendations_from_history(top_rated_titles, watchlist_titles):
     top_title_media_type = top_title.metadata.media_type
     filtered_titles = filter_list_by_genre(watchlist_titles, preferred_genre)
     if not filtered_titles:
-        relevance_sorted = sort_titles_by_relevance(watchlist_titles, "watchlist", top_title)
+        relevance_sorted = sort_titles_by_relevance(
+            watchlist_titles,
+            "watchlist",
+            top_title
+            )
     else:
-        relevance_sorted = sort_titles_by_relevance(filtered_titles, "watchlist", top_title)
+        relevance_sorted = sort_titles_by_relevance(
+            filtered_titles,
+            "watchlist",
+            top_title
+            )
 
     return reorder_titles_by_media_type(relevance_sorted, top_title_media_type)
+
 
 def reorder_titles_by_media_type(titles, preferred_media_type):
     """
@@ -141,5 +169,8 @@ def reorder_titles_by_media_type(titles, preferred_media_type):
     Returns:
         list: Reordered list of titles with preferred media_type first
     """
-    match, non_match = partition_list_by_media_type(titles, preferred_media_type)
+    match, non_match = partition_list_by_media_type(
+        titles,
+        preferred_media_type
+        )
     return match + non_match

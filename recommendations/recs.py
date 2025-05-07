@@ -9,12 +9,13 @@ from sheets.query import (
     has_watched,
     has_watchlist,
     )
-from .handlers import (
+from recommendations.handlers import (
     handle_no_items,
     handle_no_watched_items,
     handle_no_watchlist_items,
     handle_watched_and_watchlist
 )
+
 
 def handle_recommendations(mode, google_sheet):
     """

@@ -6,6 +6,7 @@ based on user ratings, genres, and media types.
 """
 from collections import defaultdict
 
+
 def get_top_rated_titles(title_list):
     """
     Return titles with a user rating of 3 or higher
@@ -16,9 +17,12 @@ def get_top_rated_titles(title_list):
     Returns:
         list: filtered list of top-rated Title objects
     """
-    top_rated_titles = [title for title in title_list if title.user_data.rating >= 3]
+    top_rated_titles = [
+        title for title in title_list if title.user_data.rating >= 3
+    ]
 
     return top_rated_titles
+
 
 def get_preferred_media_type_and_genre_ids(title_list):
     """
@@ -36,8 +40,8 @@ def get_preferred_media_type_and_genre_ids(title_list):
         metadata = getattr(title, 'metadata', None)
         if not metadata:
             continue
-        media_type =  getattr(metadata, 'media_type', None)
-        genre_ids =  getattr(metadata, 'genre_ids', None)
+        media_type = getattr(metadata, 'media_type', None)
+        genre_ids = getattr(metadata, 'genre_ids', None)
         if media_type and genre_ids:
             for genre_id in genre_ids:
                 media_type_genre_count[(media_type, genre_id)] += 1
@@ -45,9 +49,12 @@ def get_preferred_media_type_and_genre_ids(title_list):
         print("⚠️ No media types / genre_ids pairs found.")
         return None
 
-    preferred_pair = max(media_type_genre_count, key=media_type_genre_count.get)
+    preferred_pair = (
+        max(media_type_genre_count, key=media_type_genre_count.get)
+    )
 
     return preferred_pair
+
 
 def filter_list_by_genre(title_list, genre):
     """
@@ -60,12 +67,15 @@ def filter_list_by_genre(title_list, genre):
     Returns:
         list: Titles that include the given genre
     """
-    titles_in_genre = [title for title in title_list if genre in title.metadata.genres]
+    titles_in_genre = [
+        title for title in title_list if genre in title.metadata.genres
+        ]
     if not titles_in_genre:
         print(f'\nNo title in your watchlist matching {genre.lower()} genre.')
-        print('\n🔄 Recommending titles based on general habits and popularity...')
+        print('\n🔄 Recommending titles...')
         return None
     return titles_in_genre
+
 
 def partition_list_by_media_type(title_list, target_media_type):
     """

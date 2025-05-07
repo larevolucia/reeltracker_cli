@@ -4,7 +4,7 @@ Handles different recommendation scenarios based on user activity.
 Each handler manages a unique user state: no data, no watched items, no
 watchlist, or full history.
 """
-from tmdb.tmdb import (
+from tmdb.tmdb_api import (
     TMDB_API_KEY,
     fetch_title_base_recommendation
     )
@@ -20,9 +20,10 @@ from ui.display import display_title_entries
 from .smart_recs import (
     get_top_title_by_preferred_genre,
     get_personalized_recommendations
-    )
+)
 from .trending import show_trending_titles
 from .display import display_and_select_title
+
 
 def handle_no_items(google_sheet):
     """
@@ -38,8 +39,11 @@ def handle_no_items(google_sheet):
         None
     """
     print("\nYour list is looking a little empty.")
-    print("Check out what's trending and find something that sparks your interest!")
+    print(
+        "Find something that sparks your interest on the trending list!"
+        )
     show_trending_titles("trending", google_sheet)
+
 
 def handle_no_watched_items(google_sheet):
     """
@@ -54,7 +58,10 @@ def handle_no_watched_items(google_sheet):
     Returns:
         None
     """
-    print("\nYou haven't watched anything yet, but your watchlist has some great options.")
+    print(
+        "\nYou haven't watched anything yet, "
+        "but your watchlist has some great options."
+        )
     print("\nHere are the most popular ones to get you started.")
     watchlist_titles = get_titles_by_watch_status(google_sheet, False)
     if not watchlist_titles:
@@ -63,6 +70,7 @@ def handle_no_watched_items(google_sheet):
     title_objects = build_title_objects_from_sheet(watchlist_titles)
     sorted_titles = sort_items_by_popularity(title_objects)
     display_title_entries(sorted_titles, 'recommendation', 6)
+
 
 def handle_no_watchlist_items(google_sheet, mode):
     """
@@ -73,7 +81,7 @@ def handle_no_watchlist_items(google_sheet, mode):
 
     Args:
         google_sheet: Google Sheet object to read watched titles
-        mode (str): Current interaction mode (e.g. 'search', 'recommendations').
+        mode (str): 'search', 'recommendations'
 
     Returns:
         None
@@ -87,7 +95,9 @@ def handle_no_watchlist_items(google_sheet, mode):
     title_objects = build_title_objects_from_sheet(watched_titles)
     top_title = get_top_title_by_preferred_genre(title_objects)
     if not top_title or not hasattr(top_title, "metadata"):
-        print("\n⚠️  Couldn't determine a favorite title to base recommendations on.")
+        print(
+            "\n⚠️   No favorite title found for recommendations."
+            )
         print("\nMaybe you need some inspiration...")
         show_trending_titles('trending', google_sheet)
         return
@@ -102,8 +112,11 @@ def handle_no_watchlist_items(google_sheet, mode):
     if not recommended_titles:
         print("\n⚠️  No similar titles found.")
         return
-    recommended_titles_object = prepare_title_objects_from_tmdb(recommended_titles)
+    recommended_titles_object = prepare_title_objects_from_tmdb(
+        recommended_titles
+        )
     display_and_select_title(recommended_titles_object, mode, google_sheet)
+
 
 def handle_watched_and_watchlist(google_sheet, mode):
     """
@@ -125,7 +138,7 @@ def handle_watched_and_watchlist(google_sheet, mode):
         print("\n⚠️  Your viewing history is empty.")
         return
     watched_titles_objects = build_title_objects_from_sheet(watched_titles)
-    watchlist_titles = get_titles_by_watch_status(google_sheet,False)
+    watchlist_titles = get_titles_by_watch_status(google_sheet, False)
     if not watchlist_titles:
         print("\n⚠️  Your watchlist is empty.")
         return

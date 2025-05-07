@@ -12,9 +12,13 @@ GOOGLE_SHEETS_SCOPE = [
     "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/drive"
     ]
-CREDS='creds.json'
+CREDS = 'creds.json'
 
-def initialize_google_sheets(sheet_name='reeltracker_cli', credentials_file=CREDS):
+
+def initialize_google_sheets(
+    sheet_name='reeltracker_cli',
+    credentials_file=CREDS
+):
     """
     Initializes and returns a Google Sheets
 

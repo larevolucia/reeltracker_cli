@@ -51,22 +51,23 @@ menus = {
         }
     },
     "recommendation": {
-    "title": "Recommended Titles options:",
-    "options": {
-        "i <number>": "View more info",
-        "<number>": "Select a title to save",
-        "m": "Return to main menu"
-    }
-},
-    "trending": {
-    "title": "Trending Titles options:",
-    "options": {
-        "i <number>": "View more info",
-        "<number>": "Select a title to save",
-        "m": "Return to main menu"
-    }
+        "title": "Recommended Titles options:",
+        "options": {
+            "i <number>": "View more info",
+            "<number>": "Select a title to save",
+            "m": "Return to main menu"
+        }
     },
+    "trending": {
+        "title": "Trending Titles options:",
+        "options": {
+            "i <number>": "View more info",
+            "<number>": "Select a title to save",
+            "m": "Return to main menu"
+        }
+     },
 }
+
 
 def display_menu(menu_key):
     """
@@ -76,6 +77,7 @@ def display_menu(menu_key):
     print(f"\n{menu['title']}")
     for key, label in menu["options"].items():
         print(f"{key} → {label}")
+
 
 def handle_list_menu(title_list, list_type):
     """
@@ -100,11 +102,16 @@ def handle_list_menu(title_list, list_type):
 
         if command == 'm':
             return None, None
-        action, index, error = handle_action_with_index(command, valid_actions, len(title_list))
+        action, index, error = handle_action_with_index(
+            command,
+            valid_actions,
+            len(title_list)
+            )
         if error:
             print(error)
             continue
         return action, index
+
 
 def get_menu_choice(menu_key):
     """
@@ -125,12 +132,14 @@ def get_menu_choice(menu_key):
             return valid[command] if menu_key == "main" else command
         print("\n⚠️  Invalid option. Please try again.")
 
+
 def display_main_menu():
     """
     Display the main menu and prompt the user to choose an option
     """
     display_menu("main")
     return get_menu_choice("main")
+
 
 def handle_action_with_index(command, valid_actions, list_length):
     """
@@ -149,12 +158,14 @@ def handle_action_with_index(command, valid_actions, list_length):
     try:
         action, idx_str = command.split(maxsplit=1)
     except ValueError:
-        return None, None, ("\n⚠️  Invalid command format. Try something like 'r 1' or 'd 2'.")
+        return None, None, ("\n⚠️  Invalid command format."
+                            "Try something like 'r 1' or 'd 2'.")
     if action not in valid_actions:
         return None, None, f"\n⚠️  Invalid action '{action}'."
     if not idx_str.isdigit():
         return None, None, f"\n⚠️  Invalid index '{idx_str}'. Use a number."
     index = int(idx_str) - 1
     if index < 0 or index >= list_length:
-        return None, None, f"\n⚠️   Index out of range. Choose between 1 and {list_length}."
+        return None, None, (f"\n⚠️   Index out of range."
+                            f"Choose between 1 and {list_length}.")
     return action, index, None

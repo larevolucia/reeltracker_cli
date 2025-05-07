@@ -1,10 +1,12 @@
 """
-Provides helper functions for formatting dates, scoring popularity, and sorting.
+Provides helper functions for formatting dates,
+scoring popularity, and sorting.
 
 Supports both raw API data and custom objects for flexible handling.
 """
 import math
 from datetime import datetime
+
 
 # --- Formatting ---
 def extract_year(date):
@@ -18,6 +20,7 @@ def extract_year(date):
     year_string = d.strftime("%Y")
     return year_string
 
+
 def get_current_timestamp():
     """
     Give current timestamp
@@ -27,10 +30,12 @@ def get_current_timestamp():
     """
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+
 # --- Sorting ---
 def sort_items_by_popularity(items):
     """
-    Sorts a list of items (dicts or objects) by 'weighted_popularity' if available
+    Sorts a list of items (dicts or objects)
+    by 'weighted_popularity' if available
 
     Args:
         items (list): List of dicts or objects
@@ -40,11 +45,11 @@ def sort_items_by_popularity(items):
     """
     return sorted(items, key=get_popularity, reverse=True)
 
+
 # --- Popularity ---
 def get_popularity(item):
     """
     Cheks if item is dict or object
-    
 
     Args:
         item (dict / obj): title metadata
@@ -72,6 +77,7 @@ def get_popularity(item):
     except (ValueError, TypeError):
         print(f"⚠️ Could not convert popularity value: {val}")
         return 0.0
+
 
 def calculate_weighted_popularity(item):
     """

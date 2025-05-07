@@ -1,13 +1,15 @@
 """
 Title metadata dataclass definition
 
-This module defines the `TitleMetadata` dataclass, which stores the static metadata
+This module defines the `TitleMetadata` dataclass,
+which stores the static metadata
 about a movie or TV show (e.g., title, release year, genre, popularity)
-It is used by the `Title` class to encapsulate media-specific attributes, 
+It is used by the `Title` class to encapsulate media-specific attributes,
 separate from user-generated data
 """
 from dataclasses import dataclass
 from typing import List
+
 
 @dataclass
 class TitleMetadata:
@@ -28,7 +30,7 @@ class TitleMetadata:
     title: str
     media_type: str
     release_date: str
-    genre_ids:List[int]
+    genre_ids: List[int]
     genres: List[str]
     popularity: float
     overview: str

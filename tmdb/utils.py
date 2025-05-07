@@ -3,10 +3,11 @@ Helper functions for processing and preparing TMDB API data.
 
 Filters and formats API results into display-ready Title objects.
 """
-from .tmdb import (
+from tmdb.tmdb_api import (
     TMDB_API_KEY,
     get_genre_mapping
     )
+
 
 def get_genre_names_from_ids(genre_ids, media_type):
     """
@@ -23,16 +24,23 @@ def get_genre_names_from_ids(genre_ids, media_type):
         raise TypeError("genre_ids must be a list of integers")
     genre_list = get_genre_mapping(media_type, TMDB_API_KEY)
     genre_dict = {genre['id']: genre['name'] for genre in genre_list}
-    matched_genres = [genre_dict.get(genre_id) for genre_id in genre_ids if genre_id in genre_dict]
+    matched_genres = [
+        genre_dict.get(genre_id)
+        for genre_id in genre_ids
+        if genre_id in genre_dict]
     return matched_genres
 
-def filter_results_by_media_type(result_list, allowed_media_types=('movie', 'tv')):
+
+def filter_results_by_media_type(
+    result_list,
+    allowed_media_types=('movie', 'tv')
+):
     """
     Filters the TMDB results by media_type
     Args:
         result_list (list): list of dictionaries from API
-        allowed_media_types(tuple): Types used for filtering   
-    Returns: 
+        allowed_media_types(tuple): Types used for filtering
+    Returns:
         list: Filtered list limited to allowed media types
     """
     return [

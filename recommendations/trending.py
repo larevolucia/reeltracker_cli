@@ -3,11 +3,12 @@ Controls the logic for fetchign and displayin trending title recommendations
 
 
 """
-from tmdb.tmdb import fetch_trending_titles, TMDB_API_KEY
+from tmdb.tmdb_api import fetch_trending_titles, TMDB_API_KEY
 from models.title import (
     prepare_title_objects_from_tmdb
 )
 from .display import display_and_select_title
+
 
 def show_trending_titles(mode, google_sheet):
     """
@@ -15,7 +16,7 @@ def show_trending_titles(mode, google_sheet):
 
     Args:
         google_sheet: Google Sheet object
-        mode (str): 'search' or 'recommendation' depending on where it's called from
+        mode (str): 'search' or 'recommendation'
 
     Returns:
         None

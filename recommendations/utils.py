@@ -6,6 +6,7 @@ and media type preference to enhance recommendation relevance
 """
 from .genre_analysis import calculate_genre_similarity
 
+
 def get_top_title(title_list):
     """
     Return the top title based on rating and recency
@@ -21,6 +22,7 @@ def get_top_title(title_list):
         return None
     top_title = sorted_titles[0]
     return top_title
+
 
 def sort_titles_by_relevance(title_list, mode='watched', reference_title=None):
     """

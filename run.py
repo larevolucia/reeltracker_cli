@@ -7,7 +7,7 @@ from ui.handlers import (
     handle_watchlist_or_watched,
 )
 from sheets.auth import initialize_google_sheets
-from recommendations.recommendations import handle_recommendations
+from recommendations.recs import handle_recommendations
 from recommendations.trending import show_trending_titles
 
 
@@ -32,6 +32,7 @@ def main():
             handle_recommendations(user_choice, google_sheet)
         if user_choice == 'trending':
             show_trending_titles(user_choice, google_sheet)
+
 
 if __name__ == "__main__":
     main()
