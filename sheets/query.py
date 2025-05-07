@@ -83,7 +83,7 @@ def find_existing_row_info(title_obj, sheet):
         index (int): row index number
         row (list): row list data
     """
-    print(f"\n🔎 Looking for {title_obj.metadata.title} in sheet...")
+    print(f"\n🔎  Looking for {title_obj.metadata.title} in sheet...")
     try:
         worksheet = sheet.worksheet('My_List')
         all_values = worksheet.get_all_values()
