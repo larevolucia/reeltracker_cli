@@ -121,11 +121,21 @@ def select_item_from_results(title_list, mode):
         # Handle single-number selection
         try:
             selection = int(command)
+            # if 1 <= selection <= len(title_list):
+            #     return title_list[selection - 1]
+            # else:
+            #     print(f"\n⚠️  Number out of range."
+            #           f"Choose between 1 and {len(title_list)}.")
             if 1 <= selection <= len(title_list):
                 return title_list[selection - 1]
             else:
-                print(f"\n⚠️  Number out of range."
-                      f"Choose between 1 and {len(title_list)}.")
+                if len(title_list) == 1:
+                    print("\n⚠️  Only one item available. "
+                          "Use '1' to select it.")
+                else:
+                    print("\n⚠️  Number out of range. "
+                          f"Choose between 1 and {len(title_list)}.")
+
         except ValueError:
             print("\n⚠️  Invalid input. "
                   "Try a number, 'i <number>', 'n', or 'm'.")
