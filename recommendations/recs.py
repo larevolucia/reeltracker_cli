@@ -30,14 +30,14 @@ def handle_recommendations(mode, google_sheet):
     """
     items = has_items(google_sheet)
     if not items:
-        return
-    watched_items = has_watched(google_sheet)
-    watchlist_items = has_watchlist(google_sheet)
-    if not items:
         handle_no_items(google_sheet)
+        return
+    watchlist_items = has_watchlist(google_sheet)
+    watched_items = has_watched(google_sheet)
+    if watched_items and watchlist_items:
+        handle_watched_and_watchlist(google_sheet, mode)
+        return
     elif not watched_items:
         handle_no_watched_items(google_sheet)
     elif not watchlist_items:
         handle_no_watchlist_items(google_sheet, mode)
-    else:
-        handle_watched_and_watchlist(google_sheet, mode)
