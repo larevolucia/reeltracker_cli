@@ -523,6 +523,7 @@ ReelTracker CLI was manually tested throughout development to ensure a smooth us
 |-----------|--------|------------------|--------|
 | Rate title | Input rating 1–5 | Rating saved, impacts recs | ✅ |
 | Invalid rating | Input `goat` or `11` | Prompt to enter number between 1–5 | ✅ |
+| Request recs (no sheet) | List have not yet been created | Fallback to TMDb trending titles | ✅ |
 | Request recs (no items) | Empty list | Fallback to TMDb trending titles | ✅ |
 | Request recs (no watched) | Only watchlist titles | Display watchlist items in popularity order | ✅ |
 | Request recs (no watchlist) | Only watched titles | Fetch top title and fetch similar titles on TMDb | ✅ |

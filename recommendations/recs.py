@@ -29,6 +29,8 @@ def handle_recommendations(mode, google_sheet):
         google_sheet (_type_): _description_
     """
     items = has_items(google_sheet)
+    if not items:
+        return
     watched_items = has_watched(google_sheet)
     watchlist_items = has_watchlist(google_sheet)
     if not items:

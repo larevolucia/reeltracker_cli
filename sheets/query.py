@@ -65,7 +65,8 @@ def get_titles_by_watch_status(sheet, watched):
         return filtered
     except gspread.exceptions.WorksheetNotFound:
         print(
-            "\n❌ No data found. Select 1 to search and add your first title."
+            "\n❌  No data found."
+            "\n➡️  Select 1 to search and add your first title."
             )
         return []
 
@@ -103,7 +104,8 @@ def find_existing_row_info(title_obj, sheet):
         return False, None, None
     except gspread.exceptions.WorksheetNotFound:
         print(
-            "\n❌ No data found. Select 1 to search and add your first title."
+            "\n❌  No data found."
+            "\n➡️  Select 1 to search and add your first title."
             )
         return False, None, None
 
@@ -125,7 +127,8 @@ def has_items(sheet):
         return len(all_values) > 1  # >1 because the first row is headers
     except gspread.exceptions.WorksheetNotFound:
         print(
-            "\n❌ No data found. Select 1 to search and add your first title."
+            "\n❌  No data found."
+            "\n➡️  Select 1 to search and add your first title."
             )
         return False
 
