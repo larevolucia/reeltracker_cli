@@ -1,5 +1,27 @@
 # ReelTracker CLI
 
+## Table of Contents
+
+- [Summary](#summary)
+- [Project Goals](#project-goals)
+- [User Goals](#user-goals)
+- [User Stories](#user-stories)
+  - [Must Have (MVP)](#must-have-mvp)
+  - [Should Have](#should-have)
+  - [Could Have](#could-have)
+- [Backlog](#backlog)
+- [Features](#features)
+  - [Core Functionality](#core-functionality)
+  - [Data Storage & Sync](#data-storage--sync)
+  - [Smart Sorting & Discovery](#smart-sorting--discovery)
+  - [Error Handling](#error-handling)
+  - [Interface & Code Design](#interface--code-design)
+- [Requirements](#requirements)
+- [Run Locally](#run-locally)
+- [Deploy to Heroku](#deploy-to-heroku)
+- [Testing](#testing)
+- [References](#references)
+
 ## Summary
 
 In today's streaming landscape, users face information overload with thousands of movies and TV shows spread across multiple platforms like Netflix, Disney+, etc. Many struggle to keep track of what they want to watch, often relying on messy notes, memory, or scattered lists across different apps. A [recent survey](https://nypost.com/2024/12/19/lifestyle/why-its-so-hard-to-find-something-to-watch-lately/) revealed that people spend an average of 110 hours a year just searching for content, while 51% feel overwhelmed by excessive recommendations. Additionally, growing [privacy concerns](https://www.thetimes.com/uk/technology-uk/article/how-to-stop-smart-tv-spying-on-you-pzfxx7mr8) around smart TVs and streaming services highlight the need for user-controlled, non-intrusive tracking tools.
@@ -499,7 +521,7 @@ ReelTracker CLI was manually tested throughout development to ensure a smooth us
 |-----------|-------|------------------|--------|
 | Valid keyword | `The Office` | TMDb results displayed | ✅ |
 | Empty input | (just Enter) | Prompt for valid input | ✅ |
-| Popular title | `Avatar` | Sorted by relevance/popularity | ✅ |
+| Popular title | `Avatar` | Sorted by popularity (checked with info command: i 1, i 2 etc.) | ✅ |
 | New search | `n` | Request new search prompt | ✅ |
 
 ### 🍿 Title Actions
@@ -524,12 +546,13 @@ ReelTracker CLI was manually tested throughout development to ensure a smooth us
 | Rate title | Input rating 1–5 | Rating saved, impacts recs | ✅ |
 | Invalid rating | Input `goat` or `11` | Prompt to enter number between 1–5 | ✅ |
 | Request recs (no sheet) | List have not yet been created | Fallback to TMDb trending titles | ✅ |
-| Request recs (no items) | Empty list | Fallback to TMDb trending titles | ✅ |
-| Request recs (no watched) | Only watchlist titles | Display watchlist items in popularity order | ✅ |
+| Request recs (no items) | Empty list | Fallback to TMDb trending titles | ✅ | 
+| Request recs (no watched) | Only watchlist titles | Display watchlist items in popularity order (checked in sheet) | ✅ | 
 | Request recs (no watchlist) | Only watched titles | Fetch top title and fetch similar titles on TMDb | ✅ |
-| Request recs (no rating) | No ratings ≥3 / 1 watchlist | Fallback to TMDb discovery results |  ✅ |
-| Request recs (no rating) | No ratings ≥3 / no watchlist | Fallback to TMDb trending results |  ✅ |
-| Request recommendations | Enough data present | Sorted personalized list shown |  |
+| Request recs (no rating) | No ratings ≥3 / 1 watchlist | Fallback to TMDb discovery results |  ✅ | 
+| Request recs (no rating) | No ratings ≥3 / no watchlist | Fallback to TMDb trending results |  ✅ | 
+| Request recommendations | Enough data present | Sorted personalized list shown | ✅ |
+| Request recommendations | No watchlist title in preferred genre | Watchlist is sorted by popularity | ✅ |
 
 ### ⚠️ Edge Case & Error Handling
 | Test Case | Scenario | Expected Outcome | Status |
@@ -548,6 +571,7 @@ ReelTracker CLI was manually tested throughout development to ensure a smooth us
 - [Issue #17](https://github.com/larevolucia/reeltracker_cli/issues/17) If a user has only rated titles 2 or below, the recommendation will crash the application. To mitigate this, we provided a feedback to the user that the data was not suficient. 
 - [Issue #18](https://github.com/larevolucia/reeltracker_cli/issues/18) Display of recommendation list for specific use case (no watched titles) was not sorting the titles by popularity. The issue was caused due to an attempt to reuse the function originally created to sort TMDb lists to sort Google Sheets list. Some refactoring was required for the function to work as expected.
 - [Issue #19](https://github.com/larevolucia/reeltracker_cli/issues/19) Edge case testing: sheet is renamed or deleted in the Drive in the middle of an action. Since the app was only handling exceptions for save item, the app would crash in these cases. Although is an edge case, it also improves overall error handling for update and delete items functions.
+- [Issue #20](https://github.com/larevolucia/reeltracker_cli/issues/20) App crashed when trying to compare ratings in string and integers. This happened because of manual intervention directly in Google Sheets to simulate a test case. Although is unlikely to happen if usage is just done via CLI, a conditional to only compare integers and floats was added to `get_top_rated_titles` function at `filters.py`.
 
 ## References
 
@@ -557,3 +581,9 @@ ReelTracker CLI was manually tested throughout development to ensure a smooth us
 - [Google Workplace Documentation](https://developers.google.com/workspace/guides/get-started)
 - [Python documentation](https://docs.python.org/)
 - [PyNative Object Orienting Programming](https://pynative.com/python/object-oriented-programming/)
+
+## Acknowledgements
+
+- My mentor
+- Code Institute community
+- Friends and families that helped testing and providing useful feedback
