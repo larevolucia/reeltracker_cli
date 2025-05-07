@@ -158,14 +158,24 @@ def handle_action_with_index(command, valid_actions, list_length):
     try:
         action, idx_str = command.split(maxsplit=1)
     except ValueError:
-        return None, None, ("\n⚠️  Invalid command format."
+        return None, None, ("\n⚠️  Invalid command format. "
                             "Try something like 'r 1' or 'd 2'.")
     if action not in valid_actions:
         return None, None, f"\n⚠️  Invalid action '{action}'."
     if not idx_str.isdigit():
         return None, None, f"\n⚠️  Invalid index '{idx_str}'. Use a number."
     index = int(idx_str) - 1
+    # if index < 0 or index >= list_length:
+    #     return None, None, (f"\n⚠️   Index out of range. "
+    #                         f"Choose between 1 and {list_length}.")
     if index < 0 or index >= list_length:
-        return None, None, (f"\n⚠️   Index out of range."
-                            f"Choose between 1 and {list_length}.")
+        if list_length == 1:
+            return None, None, (
+                "\n⚠️  Invalid index. Only one item is available. "
+                "Use '1' as the index."
+            )
+        return None, None, (
+                "\n⚠️  Index out of range. "
+                f"Choose between 1 and {list_length}."
+            )
     return action, index, None

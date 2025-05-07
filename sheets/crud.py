@@ -53,7 +53,7 @@ def save_item_to_list(sheet, title_obj):
 
     worksheet = get_or_create_worksheet(sheet, 'My_List')
     worksheet.append_row(title_obj.to_sheet_row())
-    print(f"\n✅ {title_obj.metadata.title} successfully written to the sheet.")
+    print(f"\n✅  {title_obj.metadata.title} successfully added to the sheet.")
 
 
 def delete_item_in_list(sheet, title_obj):
