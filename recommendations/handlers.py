@@ -87,7 +87,7 @@ def handle_no_watchlist_items(google_sheet, mode):
         None
     """
     print("\nYou haven't got any titles on your watchlist yet!")
-    print("\n🔄 Analyzing viewing history...")
+    print("\n🔄  Analyzing viewing history...")
     watched_titles = get_titles_by_watch_status(google_sheet, True)
     if not watched_titles:
         print("\n⚠️  Your viewing history is empty.")
@@ -132,7 +132,7 @@ def handle_watched_and_watchlist(google_sheet, mode):
     Returns:
         None
     """
-    print("\n🔄 Analyzing viewing history...")
+    print("\n🔄  Analyzing viewing history...")
     watched_titles = get_titles_by_watch_status(google_sheet, True)
     if not watched_titles:
         print("\n⚠️  Your viewing history is empty.")

@@ -138,7 +138,7 @@ def generate_recommendations_from_history(top_rated_titles, watchlist_titles):
 
     print(f"\nYou've been watching {preferred_genre.lower()} titles, "
           f"such as '{top_title.metadata.title}'!")
-    print("\n🔄 Generating recommendations based on genre similarity...")
+    print("\n🔄  Generating recommendations based on genre similarity...")
 
     top_title_media_type = top_title.metadata.media_type
     filtered_titles = filter_list_by_genre(watchlist_titles, preferred_genre)
