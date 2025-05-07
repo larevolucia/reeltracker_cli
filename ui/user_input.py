@@ -158,4 +158,4 @@ def confirm_action(prompt="\nAre you sure you want to proceed? (y/n): "):
             return True
         if response in ('n', 'no'):
             return False
-        print("⚠️  Please enter 'y' for yes or 'n' for no.")
+        print("\n⚠️  Please enter 'y' for yes or 'n' for no.")
