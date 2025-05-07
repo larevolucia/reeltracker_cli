@@ -97,9 +97,9 @@ def handle_no_top_rated(title_list, google_sheet):
         list: Recommended list based on preferences
     """
     print("\nIt seems like you didn't find any title you liked yet.")
-    print("\n🔄 Analyzing all titles in your list...")
+    print("\n🔄  Analyzing all titles in your list...")
     media_type, genre_id = get_preferred_media_type_and_genre_ids(title_list)
-    print(f"\n🔄 Fetching discover titles based on {media_type} preference...")
+    print(f"\n🔄  Fetching discover titles based on {media_type} preference...")
     discover_results = discover_titles_by_genre(media_type, genre_id)
     if not discover_results:
         print("\n⚠️  Unable to fetch discover titles. Please try again later.")
