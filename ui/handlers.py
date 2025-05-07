@@ -126,11 +126,11 @@ def handle_toggle_watched(title, google_sheet):
     """
     title.toggle_watched()
     if title.user_data.watched:
-        print(f'\n🔄  Marking {title.metadata.title} as watched...')
+        print(f"\n🔄  Marking '{title.metadata.title}' as watched...")
         updated_title = get_title_rating(title)
     else:
         updated_title = title
-        print(f'\n🔄  Moving {title.metadata.title} to your watchlist...')
+        print(f"\n🔄  Moving '{title.metadata.title}' to your watchlist...")
     update_item_in_list(google_sheet, updated_title)
 
 
@@ -156,5 +156,5 @@ def handle_delete(title, google_sheet):
     """
     is_deleted = delete_item_in_list(google_sheet, title)
     if is_deleted:
-        print(f'\n✅  {title.metadata.title}'
-              'successfully removed from your list.')
+        print(f"\n✅  '{title.metadata.title}' "
+              "successfully removed from your list.")

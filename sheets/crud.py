@@ -53,7 +53,7 @@ def save_item_to_list(sheet, title_obj):
 
     worksheet = get_or_create_worksheet(sheet, 'My_List')
     worksheet.append_row(title_obj.to_sheet_row())
-    print(f"\n✅  {title_obj.metadata.title} successfully added to the sheet.")
+    print(f"\n✅  '{title_obj.metadata.title}' successfully saved.")
 
 
 def delete_item_in_list(sheet, title_obj):
@@ -124,14 +124,14 @@ def update_item_in_list(sheet, title_obj):
                 cell = gspread.utils.rowcol_to_a1(row_index, col_index + 1)
                 updates.append((cell, new_value))
         if not updates:
-            print(f'\n❌  No updates found for {title_obj.metadata.title}.')
+            print(f"\n❌  No updates found for '{title_obj.metadata.title}'.")
             return 'skipped'
 
-        print(f'\n🔄 Updating {title_obj.metadata.title}...')
+        print(f"\n🔄 Updating '{title_obj.metadata.title}'...")
         for cell, value in updates:
             worksheet.update(cell, [[value]])
 
-        print(f"\n✅ {title_obj.metadata.title} updated successfully.")
+        print(f"\n✅ '{title_obj.metadata.title}' updated successfully.")
         return 'updated'
 
     # If not found, just add it
