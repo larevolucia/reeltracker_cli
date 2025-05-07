@@ -18,7 +18,9 @@ def get_top_rated_titles(title_list):
         list: filtered list of top-rated Title objects
     """
     top_rated_titles = [
-        title for title in title_list if title.user_data.rating >= 3
+        title for title in title_list
+        if isinstance(title.user_data.rating, (int, float))
+        and title.user_data.rating >= 3
     ]
 
     return top_rated_titles
@@ -72,7 +74,7 @@ def filter_list_by_genre(title_list, genre):
         ]
     if not titles_in_genre:
         print(f'\nNo title in your watchlist matching {genre.lower()} genre.')
-        print('\n🔄 Recommending titles...')
+        print('\n🔄  Recommending titles by popularity...')
         return None
     return titles_in_genre
 
