@@ -21,7 +21,7 @@ def show_trending_titles(mode, google_sheet):
     Returns:
         None
     """
-    print("\n🔄 Fetching trending titles...")
+    print("\n🔄  Fetching trending titles...")
     trending_results = fetch_trending_titles(TMDB_API_KEY)
     if not trending_results:
         print("\n⚠️  Unable to fetch trending titles. Please try again later.")
