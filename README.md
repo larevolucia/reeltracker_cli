@@ -539,12 +539,13 @@ ReelTracker CLI was manually tested throughout development to ensure a smooth us
 | Move back to watchlist | From Viewing History → Move to watchlist | Rating cleared, added to Watchlist | ✅ |
 | Delete title | From both lists | Item removed from Google Sheet | ✅ |
 | View lists | Watchlist/History menu | Lists load from Google Sheets | ✅ |
+| Rate title | Input rating 1–5 | Rating saved, impacts recs | ✅ |
 
-### ⭐ Rating & Recommendations
+### ⭐ Trending & Recommendations
 | Test Case | Action | Expected Outcome | Status |
 |-----------|--------|------------------|--------|
-| Rate title | Input rating 1–5 | Rating saved, impacts recs | ✅ |
 | Invalid rating | Input `goat` or `11` | Prompt to enter number between 1–5 | ✅ |
+| Request trending titles | Request from main menu | Display TMDb trending titles | ✅ |
 | Request recs (no sheet) | List have not yet been created | Fallback to TMDb trending titles | ✅ |
 | Request recs (no items) | Empty list | Fallback to TMDb trending titles | ✅ | 
 | Request recs (no watched) | Only watchlist titles | Display watchlist items in popularity order (checked in sheet) | ✅ | 
