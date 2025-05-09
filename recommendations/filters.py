@@ -74,7 +74,7 @@ def filter_list_by_genre(title_list, genre):
         ]
     if not titles_in_genre:
         print(f'\nNo title in your watchlist matching {genre.lower()} genre.')
-        print('\n🔄  Recommending titles by popularity...')
+        print('\n🔄  Recommending titles by similarity and popularity...')
         return None
     return titles_in_genre
 
