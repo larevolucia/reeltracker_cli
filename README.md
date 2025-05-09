@@ -542,7 +542,8 @@ ReelTracker CLI was manually tested throughout development to ensure a smooth us
 | Move back to watchlist | From Viewing History → Move to watchlist | Rating cleared, added to Watchlist | ✅ |
 | Delete title | From both lists | Item removed from Google Sheet | ✅ |
 | View lists | Watchlist/History menu | Lists load from Google Sheets | ✅ |
-| Rate title | Input rating 1–5 | Rating saved, impacts recs | ✅ |
+| Change rating | Input new rating 1–5 | Rating saved, impacts recs | ✅ |
+| Change rating | Input same rating 1–5 | Checks for changes in data and notify that there is nothing to update | ✅ |
 
 ### ⭐ Trending & Recommendations
 | Test Case | Action | Expected Outcome | Status |
