@@ -133,7 +133,7 @@ Related user story:  [#6 Remove a title from lists](https://github.com/larevoluc
 ![Delete action](documentation/delete.png)
 
 #### Title recommendations
-The system analyzes genre patterns from previously watched content, identifies top-rated titles (ratings ≥ 3), and sorts the watchlist based on genre similarity and media type preference. This allows users to receive tailored suggestions that reflect their actual taste—not generic trends or ads.
+The system analyzes genre patterns from previously watched content, identifies top-rated titles (ratings ≥ 3), and sorts the watchlist based on genre similarity and media type preference. This allows users to receive tailored suggestions that reflect their actual taste and not generic trends or ads.
 Related user stories:[#9 Rate watched title](https://github.com/larevolucia/reeltracker_cli/issues/9), [#11 Get recommendations](https://github.com/larevolucia/reeltracker_cli/issues/11)
 
 ##### See what's trending
@@ -164,23 +164,26 @@ Consulted references:
 
 #### Recommmendation workflow
 1. **Analyze viewing history** 
-Titles with a rating of 3 or above are analyzed to detect a preferred genre based on frequency or rating-weighted frequency. 
+The system identifies titles rated 3 or higher in the watched list using `get_top_rated_titles()`. 
+It then determines a preferred genre using rating-weighted frequency via `get_preferred_genre()`
 
 2. **Sort the watchlist** 
-Titles in the user’s watchlist are sorted based on: 
-- Genre similarity to top-rated items 
-- Media type preference (TV or movie) 
-- Popularity scores from TMDb
+If watchlist titles exist:
+
+- It attempts to filter by the preferred genre using `filter_list_by_genre()`.
+- If genre matches are found, titles are ranked by genre similarity to a top-rated title and popularity using `sort_titles_by_relevance()`.
+- Titles are then reordered to prioritize the user’s preferred media type (movie or TV) via `reorder_titles_by_media_type()`
 
 3. **Show personalized list**
-The user sees a ranked list of recommended titles based on their viewing habits.
+The resulting sorted list is displayed to the user for selection via `display_title_entries()` and `display_and_select_title()`
 
 4. **Handle edge cases**
 When recommendations cannot be generated due to lack of data, the system will:
-- No rated titles (3+) → Fetch suggestions using TMDb's discovery API based on metadata of titles in list
-- Only 1–3 items in watchlist → Warn user that results may lack accuracy
-- Tied genre frequency → Use rating as tie-breaker
-- No matches in watchlist → Fetch suggestions using genre and media type habits
+- No top-rated titles: Calls `handle_no_top_rated()`, which analyzes all titles (watched + watchlist) and uses TMDb’s discovery API based on inferred media type and genre.
+- Very few items (≤3): A warning is printed indicating limited recommendation accuracy.
+- Tied genre frequency: The `get_preferred_genre()` function uses rating totals as a tiebreaker.
+- No genre matches in watchlist: Falls back to sorting entire watchlist by genre similarity and popularity, skipping genre filtering.
+
 
 ### 🛡️ Error Handling 
 
@@ -552,8 +555,8 @@ ReelTracker CLI was manually tested throughout development to ensure a smooth us
 | Request recs (no watchlist) | Only watched titles | Fetch top title and fetch similar titles on TMDb | ✅ |
 | Request recs (no rating) | No ratings ≥3 / 1 watchlist | Fallback to TMDb discovery results |  ✅ | 
 | Request recs (no rating) | No ratings ≥3 / no watchlist | Fallback to TMDb trending results |  ✅ | 
-| Request recommendations | Enough data present | Sorted personalized list shown | ✅ |
-| Request recommendations | No watchlist title in preferred genre | Watchlist is sorted by popularity | ✅ |
+| Request recommendations | Enough data present | Shows a list of items matching preferred genre sorted by genre similarity and popularity | ✅ |
+| Request recommendations | No watchlist title in preferred genre | Shows the entire watchlist sorted by genre similarity and popularity | ✅ |
 
 ### ⚠️ Edge Case & Error Handling
 | Test Case | Scenario | Expected Outcome | Status |
