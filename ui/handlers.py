@@ -60,7 +60,7 @@ def handle_search(mode, google_sheet):
         if results_selected_title is None:
             continue  # Go back to search (1)
         # 5. Valid item (int) is selected
-        print(f"\n📥 You've selected {results_selected_title.metadata.title}"
+        print(f"\n📥  You've selected '{results_selected_title.metadata.title}'"
               f" ({results_selected_title.metadata.release_date})")
         # 6. Check for item duplicate before saving
         handle_title_selection(results_selected_title, google_sheet)
