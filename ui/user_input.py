@@ -40,10 +40,10 @@ def get_watch_status(title_obj):
         command = input("> ").strip().lower()
         if command == 'y':
             title_obj.toggle_watched()
-            print(f"\n🔄  Marking '{title_obj.metadata.title}'' as watched...")
+            print(f"\n🔄  Marking '{title_obj.metadata.title}' as watched...")
             return True
         if command == 'n':
-            print(f"\n🔄  Marking '{title_obj.metadata.title}'"
+            print(f"\n🔄  Marking '{title_obj.metadata.title} '"
                   "as not watched...")
             return False
         print("\n⚠️  Invalid input. Please type 'y' for yes or 'n' for no.")
